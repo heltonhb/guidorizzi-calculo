@@ -1,0 +1,29 @@
+
+> guidorizzi-app@1.0.0 build
+> vite build
+
+vite v7.3.1 building client environment for production...
+transforming...
+✓ 2633 modules transformed.
+✗ Build failed in 19.59s
+error during build:
+src/components/StudyMaterial.jsx (4:9): "queryNotebook" is not exported by "src/services/api.js", imported by "src/components/StudyMaterial.jsx".
+file: /home/helton/disciplinas/calculo/app-gemini/src/components/StudyMaterial.jsx:4:9
+
+2: import { ChevronLeft, Info, Loader2, Sparkles, Download } from 'lucide-react';
+3: import { motion, AnimatePresence } from 'framer-motion';
+4: import { queryNotebook } from '../services/api';
+            ^
+5: import ReactMarkdown from 'react-markdown';
+6: import remarkMath from 'remark-math';
+
+    at getRollupError (file:///home/helton/disciplinas/calculo/app-gemini/node_modules/rollup/dist/es/shared/parseAst.js:402:41)
+    at error (file:///home/helton/disciplinas/calculo/app-gemini/node_modules/rollup/dist/es/shared/parseAst.js:398:42)
+    at Module.error (file:///home/helton/disciplinas/calculo/app-gemini/node_modules/rollup/dist/es/shared/node-entry.js:17040:16)
+    at Module.traceVariable (file:///home/helton/disciplinas/calculo/app-gemini/node_modules/rollup/dist/es/shared/node-entry.js:17452:29)
+    at ModuleScope.findVariable (file:///home/helton/disciplinas/calculo/app-gemini/node_modules/rollup/dist/es/shared/node-entry.js:15070:39)
+    at ReturnValueScope.findVariable (file:///home/helton/disciplinas/calculo/app-gemini/node_modules/rollup/dist/es/shared/node-entry.js:5673:38)
+    at FunctionBodyScope.findVariable (file:///home/helton/disciplinas/calculo/app-gemini/node_modules/rollup/dist/es/shared/node-entry.js:5673:38)
+    at ReturnValueScope.findVariable (file:///home/helton/disciplinas/calculo/app-gemini/node_modules/rollup/dist/es/shared/node-entry.js:5673:38)
+    at FunctionBodyScope.findVariable (file:///home/helton/disciplinas/calculo/app-gemini/node_modules/rollup/dist/es/shared/node-entry.js:5673:38)
+    at ReturnValueScope.findVariable (file:///home/helton/disciplinas/calculo/app-gemini/node_modules/rollup/dist/es/shared/node-entry.js:5673:38)
