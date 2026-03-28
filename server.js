@@ -100,6 +100,13 @@ app.use('/api/', apiLimiter);
 let mcpClient = null;
 
 async function initMCP() {
+    // Skip MCP initialization in production (no local server available)
+    if (process.env.NODE_ENV === 'production') {
+        console.log('⚠️ [MCP] Production mode - skipping NotebookLM MCP initialization');
+        console.log('💡 [MCP] Using Groq API for AI responses instead');
+        return;
+    }
+    
     try {
         console.log('Initializing Live NotebookLM Connection (MCP over SSE)...');
         const mcpUrl = new URL(process.env.MCP_SERVER_URL || 'http://127.0.0.1:8000/sse');
@@ -121,7 +128,8 @@ async function initMCP() {
 initMCP();
 
 app.get('/', (req, res) => {
-    res.send('Guidorizzi API Bridge is ACTIVE (Live MCP Mode). Use POST /api/query to interact.');
+    const mode = process.env.NODE_ENV === 'production' ? 'Groq API Mode' : 'Live MCP Mode';
+    res.send(`Guidorizzi API Bridge is ACTIVE (${mode}). Use POST /api/query to interact.`);
 });
 
 app.post('/api/query', async (req, res) => {
