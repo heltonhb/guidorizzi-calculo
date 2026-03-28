@@ -71,9 +71,6 @@ app.use(express.json({ limit: '10mb' }));
 if (nodeEnv === 'production') {
     const distPath = path.join(__dirname, 'dist');
     app.use(express.static(distPath));
-    app.get('*', (req, res) => {
-        res.sendFile(path.join(distPath, 'index.html'));
-    });
 }
 
 const requireApiKey = (req, res, next) => {
@@ -115,7 +112,7 @@ async function initMCP() {
         console.log('💡 [MCP] Using Groq API for AI responses instead');
         return;
     }
-    
+
     try {
         console.log('Initializing Live NotebookLM Connection (MCP over SSE)...');
         const mcpUrl = new URL(process.env.MCP_SERVER_URL || 'http://127.0.0.1:8000/sse');
@@ -677,6 +674,13 @@ app.post('/api/generate/slides', async (req, res) => {
         res.status(500).json({ error: error.message || 'Erro ao gerar slides' });
     }
 });
+
+if (nodeEnv === 'production') {
+    const distPath = path.join(__dirname, 'dist');
+    app.get(/.*/, (req, res) => {
+        res.sendFile(path.join(distPath, 'index.html'));
+    });
+}
 
 app.listen(port, () => {
     console.log(`Guidorizzi API Bridge running at http://localhost:${port}`);
