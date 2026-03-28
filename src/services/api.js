@@ -1,4 +1,5 @@
-const API_URL = 'http://localhost:3001/api';
+// URL da API - usa variável de ambiente em produção
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
 /**
  * Configurações de timeout e retry
