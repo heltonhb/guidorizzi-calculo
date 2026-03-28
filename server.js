@@ -70,7 +70,15 @@ app.use(express.json({ limit: '10mb' }));
 // Servir arquivos estáticos em produção
 if (nodeEnv === 'production') {
     const distPath = path.join(__dirname, 'dist');
-    app.use(express.static(distPath));
+    app.use(express.static(distPath, {
+        setHeaders: (res, filePath) => {
+            if (filePath.endsWith('index.html')) {
+                res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+            } else if (filePath.includes('/assets/')) {
+                res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+            }
+        }
+    }));
 }
 
 const requireApiKey = (req, res, next) => {
@@ -678,6 +686,7 @@ app.post('/api/generate/slides', async (req, res) => {
 if (nodeEnv === 'production') {
     const distPath = path.join(__dirname, 'dist');
     app.get(/.*/, (req, res) => {
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
         res.sendFile(path.join(distPath, 'index.html'));
     });
 }
