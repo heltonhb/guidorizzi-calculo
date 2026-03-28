@@ -67,6 +67,15 @@ app.use(cors({
 
 app.use(express.json({ limit: '10mb' }));
 
+// Servir arquivos estáticos em produção
+if (nodeEnv === 'production') {
+    const distPath = path.join(__dirname, 'dist');
+    app.use(express.static(distPath));
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(distPath, 'index.html'));
+    });
+}
+
 const requireApiKey = (req, res, next) => {
     const providedKey = req.headers['x-api-key'] || req.query.apiKey;
 
