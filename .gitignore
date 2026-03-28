@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+
+# Build
+dist/
+dist-ssr/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+
+# Editor
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Test
+coverage/
+
+# Cache
+.cache/
+.eslintcache
+
+# AI/Debug
+ai_debug.log
+
+# PDF
+*.pdf
+
+# Agent
+.agent/
+.opencode/

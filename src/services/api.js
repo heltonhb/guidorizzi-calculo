@@ -1,0 +1,262 @@
+const API_URL = 'http://localhost:3001/api';
+
+/**
+ * Configurações de timeout e retry
+ */
+const config = {
+    timeout: 60000, // 60 segundos para requisições normais
+    timeoutQuery: 180000, // 180 segundos para queries (processamento MCP)
+    maxRetries: 2,
+    retryDelay: 1000, // ms
+};
+
+/**
+ * Sanitizar erro para evitar circular references
+ * Extrai apenas a mensagem de texto do erro
+ */
+const sanitizeError = (error) => {
+    // Se for string, retorna direto
+    if (typeof error === 'string') return error;
+
+    // Se for Error, extrai mensagem
+    if (error instanceof Error) {
+        return error.message || String(error);
+    }
+
+    // Se tem propriedade message, usa
+    if (error?.message) return String(error.message);
+
+    // Fallback: tenta converter para string
+    try {
+        return String(error)?.substring(0, 200) || 'Erro desconhecido';
+    } catch {
+        return 'Erro desconhecido';
+    }
+};
+
+/**
+ * Tratamento centralizado de erros de API com proteção contra circular references
+ */
+const handleApiError = (error, endpoint) => {
+    const message = sanitizeError(error);
+    console.error(`❌ API Error [${endpoint}]:`, message);
+    throw new Error(`Falha ao conectar com ${endpoint}: ${message}`);
+};
+
+/**
+ * Wrapper para timeout de requisições com retry
+ */
+const fetchWithTimeout = (url, options = {}, timeout = config.timeout, retryCount = 0) => {
+    const apiKey = import.meta.env?.VITE_API_KEY || 'guidorizzi_dev_key_2024';
+
+    options.headers = {
+        ...(options.headers || {}),
+        'X-API-Key': apiKey
+    };
+
+    return Promise.race([
+        fetch(url, options),
+        new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Requisição expirou')), timeout)
+        ),
+    ]).catch(error => {
+        // Retry em caso de timeout ou erro de conexão
+        if (retryCount < config.maxRetries && error.message.includes('expirou')) {
+            const delayMs = config.retryDelay * Math.pow(2, retryCount); // Exponential backoff
+            console.warn(`⏳ Tentativa ${retryCount + 1} falhou, aguardando ${delayMs}ms antes de retry...`);
+            return new Promise(resolve => setTimeout(resolve, delayMs))
+                .then(() => fetchWithTimeout(url, options, timeout, retryCount + 1));
+        }
+        throw error;
+    });
+};
+
+export const queryNotebook = async (notebookId, query) => {
+    try {
+        if (!notebookId || !query) {
+            throw new Error('notebookId e query são obrigatórios');
+        }
+
+        const response = await fetchWithTimeout(`${API_URL}/query`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ notebookId, query }),
+        }, config.timeoutQuery); // Use timeout maior para queries
+
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({ error: 'Erro desconhecido' }));
+            throw new Error(error.error || `Erro HTTP ${response.status}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        handleApiError(error, 'queryNotebook');
+    }
+};
+
+export const fetchStudioArtifacts = async () => {
+    try {
+        const response = await fetchWithTimeout(`${API_URL}/studio`, {}, 5000); // Timeout mais curto
+        if (!response.ok) {
+            throw new Error(`Erro HTTP ${response.status}`);
+        }
+        const data = await response.json();
+        return data || { status: 'ready', artifacts: [] };
+    } catch (error) {
+        // Fallback: retornar dados vazios em vez de erro
+        console.warn('Studio artifacts not available, using mock:', error.message);
+        return {
+            status: 'ready',
+            artifacts: [],
+            message: 'Studio (offline mode)'
+        };
+    }
+};
+
+export const createStudioSlides = async (topic) => {
+    try {
+        if (!topic) throw new Error('Topic é obrigatório');
+
+        const response = await fetchWithTimeout(`${API_URL}/studio/create-slides`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ topic }),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ error: 'Erro desconhecido' }));
+            throw new Error(errorData.error || `Erro HTTP ${response.status}`);
+        }
+        return await response.json();
+    } catch (error) {
+        handleApiError(error, 'createStudioSlides');
+    }
+};
+
+export const createStudioAudio = async (topic) => {
+    try {
+        if (!topic) throw new Error('Topic é obrigatório');
+
+        const response = await fetchWithTimeout(`${API_URL}/studio/audio`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ topic }),
+        });
+
+        if (!response.ok) throw new Error(`Erro HTTP ${response.status}`);
+        return await response.json();
+    } catch (error) {
+        handleApiError(error, 'createStudioAudio');
+    }
+};
+
+export const createStudioQuiz = async (topic) => {
+    try {
+        if (!topic) throw new Error('Topic é obrigatório');
+
+        const response = await fetchWithTimeout(`${API_URL}/studio/quiz`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ topic }),
+        });
+
+        if (!response.ok) throw new Error(`Erro HTTP ${response.status}`);
+        return await response.json();
+    } catch (error) {
+        handleApiError(error, 'createStudioQuiz');
+    }
+};
+
+export const createStudioFlashcards = async (topic) => {
+    try {
+        if (!topic) throw new Error('Topic é obrigatório');
+
+        const response = await fetchWithTimeout(`${API_URL}/studio/flashcards`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ topic }),
+        });
+
+        if (!response.ok) throw new Error(`Erro HTTP ${response.status}`);
+        return await response.json();
+    } catch (error) {
+        handleApiError(error, 'createStudioFlashcards');
+    }
+};
+
+/**
+ * Gera flashcards dinâmicos via notebook_query
+ * Retorna { flashcards: [{ front, back }], source }
+ */
+export const generateFlashcards = async (topic) => {
+    try {
+        if (!topic) throw new Error('Topic é obrigatório');
+
+        const response = await fetchWithTimeout(`${API_URL}/generate/flashcards`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ topic }),
+        }, config.timeoutQuery);
+
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({ error: 'Erro desconhecido' }));
+            throw new Error(error.error || `Erro HTTP ${response.status}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        handleApiError(error, 'generateFlashcards');
+    }
+};
+
+/**
+ * Gera questões de quiz dinâmicas via notebook_query
+ * Retorna { questions: [{ text, options, correct, explanation }], source }
+ */
+export const generateQuizQuestions = async (topic, count = 5) => {
+    try {
+        if (!topic) throw new Error('Topic é obrigatório');
+
+        const response = await fetchWithTimeout(`${API_URL}/generate/quiz`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ topic, count }),
+        }, config.timeoutQuery);
+
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({ error: 'Erro desconhecido' }));
+            throw new Error(error.error || `Erro HTTP ${response.status}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        handleApiError(error, 'generateQuizQuestions');
+    }
+};
+
+/**
+ * Gera slides dinâmicos 9:16 via notebook_query
+ * Retorna { slides: [{ title, subtitle, blocks: [{ type, content }] }], source }
+ */
+export const generateSlides = async (topic, count = 6) => {
+    try {
+        if (!topic) throw new Error('Topic é obrigatório');
+
+        const response = await fetchWithTimeout(`${API_URL}/generate/slides`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ topic, count }),
+        }, config.timeoutQuery);
+
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({ error: 'Erro desconhecido' }));
+            throw new Error(error.error || `Erro HTTP ${response.status}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        handleApiError(error, 'generateSlides');
+    }
+};

@@ -1,0 +1,111 @@
+{
+    "Limites": {
+        "material": "O conceito de limite surge de forma natural para entender o comportamento de uma função próximo a um ponto $p$, ajudando a formalizar a ideia de continuidade. Intuitivamente, uma função $f$ é contínua em um ponto $p$ se o seu gráfico não apresenta 'saltos' em $p$.\n\nDizer que o limite de $f(x)$, quando $x$ tende a $p$, é igual a $L$, sgnifica que, à medida que $x$ se aproxima de $p$, os valores de $f(x)$ se aproximam de $L$.\n\n**Exemplo:**\nPara calcular $\\lim_{x \\to 1} \\frac{x^2 - 1}{x - 1}$, notamos que a função não está definida em $x = 1$. No entanto, para $x \\neq 1$, podemos simplificar:\n$$ f(x) = \\frac{(x-1)(x+1)}{x-1} = x + 1 $$\nPortanto, $\\lim_{x \\to 1} \\frac{x^2 - 1}{x - 1} = \\lim_{x \\to 1} (x + 1) = 2$.\n\n**Definição Formal (\\epsilon-\\delta):**\nDizemos que $f$ tem limite $L$ em $p$ se, para todo $\\epsilon > 0$ dado, existir um $\\delta > 0$ tal que:\n$$ 0 < |x - p| < \\delta \\Rightarrow |f(x) - L| < \\epsilon $$",
+        "exercises": [
+            {
+                "id": "e1",
+                "title": "Nível Fácil",
+                "content": "Calcule e justifique: $$ \\lim_{x \\to 3} \\frac{x^2 - 9}{x - 3} $$",
+                "difficulty": "Fácil"
+            },
+            {
+                "id": "e2",
+                "title": "Nível Médio",
+                "content": "Calcule e justifique: $$ \\lim_{x \\to 1} \\frac{\\sqrt{x} - 1}{\\sqrt{2x + 3} - \\sqrt{5}} $$",
+                "difficulty": "Médio"
+            },
+            {
+                "id": "e3",
+                "title": "Nível Difícil",
+                "content": "Sejam $f$ e $g$ tais que $[g(x)]^4 + [f(x)]^4 = 4$. Calcule: $$ \\lim_{x \\to 0} x^3 g(x) $$",
+                "difficulty": "Difícil"
+            }
+        ],
+        "presentation": [
+            {
+                "title": "Definição de Limite",
+                "content": "A ideia intuitiva descreve o comportamento de f(x) próximo a p. Formalmente, aproximamos f(x) de L com erro ε.",
+                "formula": "lim_{x -> p} f(x) = L"
+            },
+            {
+                "title": "Limites Laterais",
+                "content": "O limite existe se, e somente se, os limites laterais pela direita e esquerda forem iguais.",
+                "formula": "lim_{x->p+} f(x) = lim_{x->p-} f(x)"
+            },
+            {
+                "title": "Limite Trigonométrico",
+                "content": "Utilizando o Teorema do Confronto, demonstra-se o limite fundamental para análise circular.",
+                "formula": "lim_{x->0} (sen x / x) = 1"
+            }
+        ]
+    },
+    "Derivadas": {
+        "material": "O conceito de derivada surge de modo natural tanto na geometria quanto na física. Geometricamente, o problema está centrado na definição da reta tangente ao gráfico de uma função em um ponto.\n\nA **derivada** de uma função $f$ em um ponto $p$ é definida pelo limite:\n$$f'(p) = \\lim_{h \\to 0} \\frac{f(p+h) - f(p)}{h}$$\n\n**Regras de Derivação:**\n- Regra da Soma: $(f + g)' = f' + g'$\n- Regra do Produto: $(f \\cdot g)' = f'g + fg'$\n- Regra da Cadeia: $[f(g(x))]' = f'(g(x)) \\cdot g'(x)$",
+        "exercises": [
+            {
+                "id": "d1",
+                "title": "Nível Fácil",
+                "content": "Seja $f(x) = x^2 + 1$. Calcule $f'(1)$ e $f'(0)$.",
+                "difficulty": "Fácil"
+            },
+            {
+                "id": "d2",
+                "title": "Nível Médio",
+                "content": "Expresse dy/dx em termos de x e y para a equação implicitada: $y^3 + sen(xy) = 1$",
+                "difficulty": "Médio"
+            },
+            {
+                "id": "d3",
+                "title": "Nível Difícil",
+                "content": "Seja $f'(x) = x + [f(x)]^3$ com $f(1)=1$. Calcule $f''(1)$ e a reta tangente em x=1.",
+                "difficulty": "Difícil"
+            }
+        ],
+        "presentation": [
+            {
+                "title": "Definição de Derivada",
+                "content": "A derivada representa o coeficiente angular da reta tangente ao gráfico da função no ponto p.",
+                "formula": "f'(p) = lim_{h->0} [f(p+h) - f(p)] / h"
+            },
+            {
+                "title": "Regra do Produto",
+                "content": "Para agilizar o cálculo, usamos regras operatórias como a derivada do produto de duas funções.",
+                "formula": "(f * g)' = f'g + fg'"
+            },
+            {
+                "title": "Regra da Cadeia",
+                "content": "Utilizada para derivar funções compostas, multiplicando a derivada externa pela interna.",
+                "formula": "dy/dx = (dy/du) * (du/dx)"
+            }
+        ]
+    },
+    "Funções": {
+        "material": "Uma função $f: A \\to B$ é uma regra que associa a cada elemento $x \\in A$ um único elemento $y = f(x) \\in B$. No livro do Guidorizzi, funções de uma variável real a valores reais são o foco principal, onde tanto o domínio quanto o contradomínio são subconjuntos de $\\mathbb{R}$.\n\n**Conceitos Principais:**\n- **Domínio ($D_f$):** O conjunto de todos os valores de $x$ para os quais $f(x)$ está definida.\n- **Gráfico:** O conjunto de pares $(x, f(x))$ representados no plano cartesiano.\n- **Tipos:** Funções constantes, lineares, polinomiais, racionais e trigonométricas.\n- **Composição:** $(g \\circ f)(x) = g(f(x))$, exigindo que a imagem de $f$ esteja contida no domínio de $g$.",
+        "exercises": [
+            {
+                "id": "f1",
+                "title": "Domínio",
+                "content": "Determine o domínio da função $f(x) = \\frac{1}{\\sqrt{x^2 - 4}}$.",
+                "difficulty": "Médio"
+            },
+            {
+                "id": "f2",
+                "title": "Composição",
+                "content": "Dadas $f(x) = 2x+1$ e $g(x) = x^2$, calcule $(g \\circ f)(x)$.",
+                "difficulty": "Fácil"
+            }
+        ],
+        "presentation": [
+            {
+                "title": "Definição Curta",
+                "content": "Associação única entre elementos de dois conjuntos.",
+                "formula": "f: A \\to B"
+            },
+            {
+                "title": "Teste da Reta Vertical",
+                "content": "Uma curva no plano é o gráfico de uma função se nenhuma reta vertical a intercepta mais de uma vez.",
+                "formula": "x \\mapsto y"
+            }
+        ]
+    }
+}
