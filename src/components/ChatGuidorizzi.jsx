@@ -126,7 +126,7 @@ const ChatGuidorizzi = ({ onBack, currentTopic = 'Cálculo Geral' }) => {
             {/* Main Chat Area */}
             <div className="flex-1 flex flex-col md:border-4 md:border-white/20 md:bg-zinc-950 md:p-6 shadow-[8px_8px_0_rgba(255,255,255,0.1)]">
                 <div className="hidden md:flex items-center justify-between mb-6 pb-6 border-b-4 border-white/20">
-                    <div className="space-y-1 pl-4 border-l-4 border-signal">
+                    <div className="space-y-1 pl-4 border-l-4 border-[#00f0ff]">
                         <h2 className="text-2xl font-black tracking-tighter uppercase text-white">Ask Guidorizzi</h2>
                         <p className="text-xs text-zinc-400 font-bold tracking-widest uppercase">Contexto Inteligente</p>
                     </div>
@@ -154,7 +154,7 @@ const ChatGuidorizzi = ({ onBack, currentTopic = 'Cálculo Geral' }) => {
                                 className={cn(
                                     "relative flex gap-4 p-6 border-2 transition-all duration-300",
                                     message.role === 'user'
-                                        ? "bg-zinc-900 border-signal ml-12 shadow-[4px_4px_0_theme(colors.signal)]"
+                                        ? "bg-zinc-900 border-[#00f0ff] ml-12 shadow-[4px_4px_0_#00f0ff]"
                                         : message.isError
                                             ? "bg-zinc-900 border-red-500 mr-12 shadow-[4px_4px_0_theme(colors.red.500)]"
                                             : "bg-white text-zinc-950 border-white mr-12 shadow-[4px_4px_0_theme(colors.zinc.700)]"
@@ -162,7 +162,7 @@ const ChatGuidorizzi = ({ onBack, currentTopic = 'Cálculo Geral' }) => {
                             >
                                 {message.role === 'assistant' && !message.isError && (
                                     <div className="absolute -top-3 -right-3 w-8 h-8 bg-zinc-950 border-2 border-zinc-950 rounded-none flex items-center justify-center shadow-[2px_2px_0_#fff]">
-                                        {message.hasContext ? <Zap className="w-4 h-4 text-signal" /> : <Sparkles className="w-4 h-4 text-signal" />}
+                                        {message.hasContext ? <Zap className="w-4 h-4 text-[#00f0ff]" /> : <Sparkles className="w-4 h-4 text-[#00f0ff]" />}
                                     </div>
                                 )}
                                 {message.isError && (
@@ -173,7 +173,7 @@ const ChatGuidorizzi = ({ onBack, currentTopic = 'Cálculo Geral' }) => {
                                 <div className={cn(
                                     "w-12 h-12 flex items-center justify-center flex-shrink-0 border-2 shadow-[2px_2px_0_rgba(0,0,0,1)]",
                                     message.role === 'user'
-                                        ? "bg-signal border-zinc-950 text-zinc-950"
+                                        ? "bg-[#00f0ff] border-zinc-950 text-zinc-950"
                                         : message.isError
                                             ? "bg-red-500 border-zinc-950 text-zinc-950"
                                             : "bg-zinc-950 border-zinc-900 text-white"
@@ -212,9 +212,9 @@ const ChatGuidorizzi = ({ onBack, currentTopic = 'Cálculo Geral' }) => {
                             <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
-                                className="bg-zinc-900 border-2 border-signal p-6 mr-12 flex items-center gap-4 shadow-[4px_4px_0_theme(colors.signal)]"
+                                className="bg-zinc-900 border-2 border-[#00f0ff] p-6 mr-12 flex items-center gap-4 shadow-[4px_4px_0_#00f0ff]"
                             >
-                                <Loader2 className="w-6 h-6 text-signal animate-spin" />
+                                <Loader2 className="w-6 h-6 text-[#00f0ff] animate-spin" />
                                 <span className="text-sm font-bold text-white uppercase tracking-widest">Consultando inteligência Guidorizzi...</span>
                             </motion.div>
                         )}
@@ -247,21 +247,21 @@ const ChatGuidorizzi = ({ onBack, currentTopic = 'Cálculo Geral' }) => {
                             onChange={(e) => setInput(e.target.value)}
                             onKeyPress={(e) => e.key === 'Enter' && handleSend()}
                             placeholder="Tire sua dúvida de Cálculo..."
-                            className="flex-1 bg-zinc-950 border-4 border-white/20 px-6 py-5 focus:outline-none focus:border-signal text-white placeholder:text-zinc-500 font-bold tracking-wide transition-colors rounded-none"
+                            className="flex-1 bg-zinc-950 border-4 border-white/20 px-6 py-5 focus:outline-none focus:border-[#00f0ff] text-white placeholder:text-zinc-500 font-bold tracking-wide transition-colors rounded-none"
                         />
                         <motion.button
-                            whileHover={{ x: -2, y: -2, boxShadow: "4px 4px 0px 0px theme(colors.signal)" }}
+                            whileHover={{ x: -2, y: -2, boxShadow: "4px 4px 0px 0px #00f0ff" }}
                             whileTap={{ scale: 0.95, x: 0, y: 0, boxShadow: "0px 0px 0px transparent" }}
                             onClick={handleSend}
                             disabled={!input.trim() || loading}
-                            className="w-16 h-auto bg-signal border-2 border-signal flex items-center justify-center disabled:opacity-50 disabled:grayscale transition-all text-zinc-950"
+                            className="w-16 h-auto bg-[#00f0ff] border-2 border-[#00f0ff] flex items-center justify-center disabled:opacity-50 disabled:grayscale transition-all text-zinc-950"
                         >
                             <Send className="w-6 h-6 ml-1" />
                         </motion.button>
                     </div>
 
                     <div className="flex items-center justify-center gap-2 text-xs">
-                        <Zap className="w-4 h-4 text-signal" />
+                        <Zap className="w-4 h-4 text-[#00f0ff]" />
                         <span className="text-zinc-500 font-black uppercase tracking-widest">Guidorizzi 4 volumes</span>
                     </div>
                 </div>

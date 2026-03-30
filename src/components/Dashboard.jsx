@@ -48,40 +48,34 @@ const Dashboard = ({ onNavigate }) => {
             variants={containerVariants}
             className="flex flex-col gap-8 pb-10"
         >
-            <header className="space-y-4">
-                <div className="flex items-center justify-between">
+            <header className="space-y-6">
+                <div className="flex flex-col items-start gap-3">
+                    <div className="flex items-center gap-2 px-3 py-1 bg-zinc-900 border-2 border-white/20 text-white text-[10px] uppercase font-black tracking-widest shadow-[2px_2px_0_rgba(255,255,255,0.2)]">
+                        <div className="flex h-2 w-2 relative">
+                            <span className="animate-ping absolute inline-flex h-full w-full bg-emerald-400 opacity-75"></span>
+                            <span className="relative inline-flex h-2 w-2 bg-emerald-500"></span>
+                        </div>
+                        {isTopicFromAI ? 'IA Generativa Ativa' : 'NotebookLM Online'}
+                    </div>
                     <motion.h1
                         initial={{ x: -20, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
-                        className="text-4xl font-black tracking-tighter bg-gradient-to-br from-white via-zinc-200 to-zinc-600 bg-clip-text text-transparent"
+                        className="text-5xl md:text-6xl font-black tracking-tighter text-white uppercase"
                     >
                         Guidorizzi
+                        <span className="block text-signal text-3xl md:text-4xl mt-1 tracking-tight">Cálculo Precision</span>
                     </motion.h1>
-                    <motion.div
-                        whileHover={{ rotate: 15 }}
-                        className="w-10 h-10 rounded-2xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center shadow-lg shadow-purple-500/10"
-                    >
-                        <Zap className="w-5 h-5 text-purple-400 fill-purple-400/20" />
-                    </motion.div>
-                </div>
-
-                <div className="flex items-center gap-2 px-3 py-1.5 w-fit rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[9px] uppercase font-black tracking-[0.2em]">
-                    <div className="flex h-1.5 w-1.5 relative">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
-                    </div>
-                    {isTopicFromAI ? 'IA Generativa Ativa' : 'NotebookLM Online'}
                 </div>
             </header>
 
             <motion.div variants={itemVariants} className="relative z-50">
                 <div className={cn(
-                    "relative flex items-center bg-white/5 border transition-all duration-500 rounded-[24px] overflow-hidden",
-                    isFocused ? "border-purple-500/50 ring-4 ring-purple-500/10 bg-white/10" : "border-white/10"
+                    "relative flex items-center bg-zinc-950 border-2 transition-all duration-300",
+                    isFocused ? "border-signal shadow-[4px_4px_0_theme(colors.signal)]" : "border-white/20 shadow-[4px_4px_0_rgba(255,255,255,0.2)]"
                 )}>
                     <Search className={cn(
-                        "ml-4 w-5 h-5 transition-colors duration-300",
-                        isFocused ? "text-purple-400" : "text-zinc-500"
+                        "ml-5 w-6 h-6 transition-colors duration-300",
+                        isFocused ? "text-signal" : "text-zinc-500"
                     )} />
                     <input
                         type="text"
@@ -89,8 +83,8 @@ const Dashboard = ({ onNavigate }) => {
                         onChange={(e) => setSearch(e.target.value)}
                         onFocus={() => setIsFocused(true)}
                         onBlur={() => setTimeout(() => setIsFocused(false), 200)}
-                        placeholder="O que vamos estudar hoje?"
-                        className="w-full bg-transparent px-4 py-5 focus:outline-none placeholder:text-zinc-600 text-zinc-200 font-medium"
+                        placeholder="O QUE VAMOS ESTUDAR HOJE?"
+                        className="w-full bg-transparent px-4 py-5 focus:outline-none placeholder:text-zinc-600 text-white font-bold uppercase tracking-wider"
                     />
                 </div>
 
@@ -100,25 +94,25 @@ const Dashboard = ({ onNavigate }) => {
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 5 }}
                             exit={{ opacity: 0, y: -10 }}
-                            className="absolute top-full left-0 right-0 p-2 bg-zinc-900/95 border border-white/10 rounded-2xl backdrop-blur-2xl shadow-2xl overflow-hidden"
+                            className="absolute top-full mt-2 left-0 right-0 p-2 bg-zinc-950 border-2 border-white/20 shadow-[8px_8px_0_rgba(255,255,255,0.2)] z-50"
                         >
                             {filteredTopics.map(t => (
                                 <button
                                     key={t}
                                     onClick={() => { setSearch(t); setIsFocused(false); }}
-                                    className="flex items-center gap-3 w-full text-left p-4 hover:bg-white/5 rounded-xl text-sm font-medium transition-colors border border-transparent hover:border-white/5"
+                                    className="flex items-center gap-3 w-full text-left p-4 hover:bg-zinc-800 text-sm font-bold uppercase tracking-wider text-white transition-colors border-2 border-transparent hover:border-white/20"
                                 >
-                                    <Sparkles className="w-4 h-4 text-purple-400" />
+                                    <Sparkles className="w-5 h-5 text-signal" />
                                     {t}
                                 </button>
                             ))}
                             {!topics.some(t => t.toLowerCase() === search.toLowerCase()) && (
                                 <button
                                     onClick={() => setIsFocused(false)}
-                                    className="flex items-center gap-3 w-full text-left p-4 bg-purple-500/10 hover:bg-purple-500/20 rounded-xl text-sm font-bold transition-colors border border-purple-500/20 mt-1"
+                                    className="flex items-center gap-3 w-full text-left p-4 bg-signal/10 hover:bg-signal/20 text-sm font-black uppercase tracking-wider transition-colors border-2 border-signal mt-2"
                                 >
-                                    <Wand2 className="w-4 h-4 text-purple-400 animate-pulse" />
-                                    Gerar assunto: "{search}"
+                                    <Wand2 className="w-5 h-5 text-signal" />
+                                    <span className="text-signal">GERAR ALVO: "{search}"</span>
                                 </button>
                             )}
                         </motion.div>
@@ -128,39 +122,39 @@ const Dashboard = ({ onNavigate }) => {
 
             {/* Stats de Progresso */}
             {topicsStudied > 0 && (
-                <motion.div variants={itemVariants} className="grid grid-cols-2 gap-3">
-                    <div className="p-4 rounded-[24px] bg-white/5 border border-white/10 space-y-1">
-                        <p className="text-[9px] font-black text-zinc-500 uppercase tracking-widest">Tópicos</p>
-                        <p className="text-2xl font-black text-white">{topicsStudied}</p>
-                        <p className="text-[10px] text-zinc-600">{totalStudyMinutes}min estudados</p>
+                <motion.div variants={itemVariants} className="grid grid-cols-2 gap-4">
+                    <div className="p-4 bg-zinc-950 border-2 border-white/20 shadow-[4px_4px_0_rgba(255,255,255,0.2)] space-y-1">
+                        <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Tópicos Totais</p>
+                        <p className="text-3xl font-black text-white font-mono">{topicsStudied}</p>
+                        <p className="text-xs font-bold text-zinc-500">{totalStudyMinutes} MIN</p>
                     </div>
-                    <div className="p-4 rounded-[24px] bg-white/5 border border-white/10 space-y-1">
-                        <p className="text-[9px] font-black text-zinc-500 uppercase tracking-widest">Desempenho</p>
+                    <div className="p-4 bg-zinc-950 border-2 border-white/20 shadow-[4px_4px_0_rgba(255,255,255,0.2)] space-y-1">
+                        <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Desempenho</p>
                         <p className={cn(
-                            "text-2xl font-black",
-                            overallScore >= 70 ? "text-emerald-400" : overallScore >= 40 ? "text-amber-400" : "text-red-400"
-                        )}>{overallScore}%</p>
-                        <p className="text-[10px] text-zinc-600">{recentSessions.length} sessões recentes</p>
+                            "text-3xl font-black font-mono",
+                            overallScore >= 70 ? "text-emerald-400" : overallScore >= 40 ? "text-amber-400" : "text-signal"
+                        )}>{Math.round(overallScore)}%</p>
+                        <p className="text-xs font-bold text-zinc-500">{recentSessions.length} RECENTES</p>
                     </div>
                     {bestTopic && bestTopic[1].score > 0 && (
-                        <div className="col-span-2 p-4 rounded-[24px] bg-emerald-500/5 border border-emerald-500/10 flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-xl bg-emerald-500/20 flex items-center justify-center">
-                                <Sparkles className="w-4 h-4 text-emerald-400" />
+                        <div className="col-span-2 p-4 bg-emerald-950/20 border-2 border-emerald-500 shadow-[4px_4px_0_theme(colors.emerald.500)] flex items-center gap-4">
+                            <div className="w-10 h-10 bg-emerald-900 flex items-center justify-center border-2 border-emerald-500">
+                                <Sparkles className="w-5 h-5 text-emerald-400" />
                             </div>
                             <div className="flex-1">
-                                <p className="text-[9px] font-black text-emerald-500/60 uppercase tracking-widest">Melhor área</p>
-                                <p className="text-sm font-bold text-emerald-400">{bestTopic[0]} — {bestTopic[1].score}%</p>
+                                <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Excelência</p>
+                                <p className="text-lg font-black text-emerald-400 uppercase">{bestTopic[0]} <span className="font-mono">[{Math.round(bestTopic[1].score)}%]</span></p>
                             </div>
                         </div>
                     )}
                     {problemAreas.length > 0 && (
-                        <div className="col-span-2 p-4 rounded-[24px] bg-red-500/5 border border-red-500/10 flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-xl bg-red-500/20 flex items-center justify-center">
-                                <Zap className="w-4 h-4 text-red-400" />
+                        <div className="col-span-2 p-4 bg-signal/5 border-2 border-signal shadow-[4px_4px_0_theme(colors.signal)] flex items-center gap-4">
+                            <div className="w-10 h-10 bg-orange-950 flex items-center justify-center border-2 border-signal">
+                                <Zap className="w-5 h-5 text-signal" />
                             </div>
                             <div className="flex-1">
-                                <p className="text-[9px] font-black text-red-500/60 uppercase tracking-widest">Reforço necessário</p>
-                                <p className="text-sm font-medium text-red-400">{problemAreas.map(a => a.topic).join(', ')}</p>
+                                <p className="text-[10px] font-black text-signal uppercase tracking-widest">Atenção Crítica</p>
+                                <p className="text-lg font-black text-signal uppercase">{problemAreas.map(a => a.topic).join(' | ')}</p>
                             </div>
                         </div>
                     )}
@@ -172,39 +166,39 @@ const Dashboard = ({ onNavigate }) => {
                     variants={itemVariants}
                     title="Audio Overview"
                     description="Ouça a explicação baseada no livro"
-                    icon={<Headphones className="w-6 h-6 text-purple-400" />}
-                    color="purple"
+                    icon={<Headphones className="w-6 h-6 text-[#00f0ff]" />}
+                    color="cyan"
                     onClick={() => onNavigate('audio', currentTopic)}
                 />
                 <Card
                     variants={itemVariants}
                     title="Desafio Guidorizzi"
                     description="Teste seus conhecimentos"
-                    icon={<Trophy className="w-6 h-6 text-blue-400" />}
-                    color="blue"
+                    icon={<Trophy className="w-6 h-6 text-[#ccff00]" />}
+                    color="lime"
                     onClick={() => onNavigate('quiz', currentTopic)}
                 />
                 <Card
                     variants={itemVariants}
                     title="Flashcards AI"
                     description="Reforce conceitos fundamentais"
-                    icon={<BookCheck className="w-6 h-6 text-orange-400" />}
-                    color="orange"
+                    icon={<BookCheck className="w-6 h-6 text-[#ff5500]" />}
+                    color="signal"
                     onClick={() => onNavigate('flashcards', currentTopic)}
                 />
                 <Card
                     variants={itemVariants}
                     title="Modo Aula"
                     description="Apresentação em alta definição"
-                    icon={<Presentation className="w-6 h-6 text-rose-400" />}
-                    color="rose"
+                    icon={<Presentation className="w-6 h-6 text-[#00f0ff]" />}
+                    color="cyan"
                     onClick={() => onNavigate('presentation', currentTopic)}
                 />
                 <Card
                     variants={itemVariants}
                     title="Chat IA"
                     description="Tire dúvidas agora mesmo"
-                    icon={<MessageSquare className="w-6 h-6 text-emerald-400" />}
+                    icon={<MessageSquare className="w-6 h-6 text-[#22c55e]" />}
                     color="emerald"
                     onClick={() => onNavigate('chat')}
                 />
@@ -214,34 +208,47 @@ const Dashboard = ({ onNavigate }) => {
 };
 
 const Card = ({ title, description, icon, color, onClick, variants }) => {
-    const colors = {
-        purple: "from-purple-500/20 to-indigo-500/20 group-hover:from-purple-500/40 group-hover:to-indigo-500/40",
-        blue: "from-blue-500/20 to-cyan-500/20 group-hover:from-blue-500/40 group-hover:to-cyan-500/40",
-        rose: "from-rose-500/20 to-orange-500/20 group-hover:from-rose-500/40 group-hover:to-orange-500/40",
-        orange: "from-orange-500/20 to-yellow-500/20 group-hover:from-orange-500/40 group-hover:to-yellow-500/40",
-        emerald: "from-emerald-500/20 to-teal-500/20 group-hover:from-emerald-500/40 group-hover:to-teal-500/40"
+    const shadowColors = {
+        cyan: "shadow-[4px_4px_0_#00f0ff] hover:shadow-[8px_8px_0_#00f0ff]",
+        signal: "shadow-[4px_4px_0_#ff5500] hover:shadow-[8px_8px_0_#ff5500]",
+        lime: "shadow-[4px_4px_0_#ccff00] hover:shadow-[8px_8px_0_#ccff00]",
+        orange: "shadow-[4px_4px_0_#ff5500] hover:shadow-[8px_8px_0_#ff5500]",
+        emerald: "shadow-[4px_4px_0_#22c55e] hover:shadow-[8px_8px_0_#22c55e]"
+    };
+
+    const borderColors = {
+        cyan: "border-[#00f0ff]",
+        signal: "border-[#ff5500]",
+        lime: "border-[#ccff00]",
+        orange: "border-[#ff5500]",
+        emerald: "border-[#22c55e]"
     };
 
     return (
         <motion.button
             variants={variants}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            whileHover={{ x: -2, y: -2 }}
+            whileTap={{ x: 2, y: 2, boxShadow: "0px 0px 0px transparent" }}
             onClick={onClick}
-            className="group relative w-full p-px rounded-[32px] overflow-hidden transition-all text-white shadow-xl shadow-black/40"
+            className={cn(
+                "group relative w-full p-6 text-left transition-all bg-zinc-950",
+                "border-2 rounded-none outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-950 focus:ring-white",
+                borderColors[color],
+                shadowColors[color]
+            )}
         >
-            <div className={cn("absolute inset-0 bg-gradient-to-br transition-all duration-500 opacity-40 group-hover:opacity-100", colors[color])}></div>
-            <div className="relative flex items-center gap-6 w-full p-6 rounded-[31px] bg-zinc-950/80 backdrop-blur-3xl border border-white/5">
-                <div className="flex-shrink-0 w-16 h-16 flex items-center justify-center rounded-[22px] bg-white/5 border border-white/10 group-hover:rotate-6 transition-all duration-500">
-                    <div className="group-hover:scale-110 transition-transform duration-500">
-                        {icon}
-                    </div>
+            <div className="flex items-center gap-6">
+                <div className={cn(
+                    "flex-shrink-0 w-16 h-16 flex items-center justify-center border-2 bg-zinc-900 transition-transform duration-300 group-hover:rotate-3",
+                    borderColors[color]
+                )}>
+                    {icon}
                 </div>
-                <div className="flex-1 text-left space-y-1">
-                    <h3 className="font-extrabold text-xl tracking-tight">{title}</h3>
-                    <p className="text-zinc-500 text-sm font-medium">{description}</p>
+                <div className="flex-1 space-y-1">
+                    <h3 className="font-black text-xl tracking-tight uppercase">{title}</h3>
+                    <p className="text-zinc-400 text-sm font-bold uppercase tracking-wider">{description}</p>
                 </div>
-                <div className="w-10 h-10 rounded-full flex items-center justify-center bg-white/5 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 -translate-x-4 transition-all duration-500">
+                <div className="w-10 h-10 border-2 border-transparent group-hover:border-zinc-700 flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:translate-x-0 -translate-x-4 transition-all duration-300">
                     <ChevronRight className="w-5 h-5 text-white" />
                 </div>
             </div>

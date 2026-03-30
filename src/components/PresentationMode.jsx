@@ -25,31 +25,31 @@ const SlideBlock = ({ block }) => {
   switch (type) {
     case 'formula':
       return (
-        <div className="py-6 px-4 my-4 rounded-[28px] bg-white/5 border border-white/10 flex items-center justify-center text-center">
-          <div className="prose prose-invert prose-lg max-w-none">
+        <div className="py-6 px-4 my-4 bg-zinc-950 border-4 border-white/20 shadow-[4px_4px_0_rgba(255,255,255,0.1)] flex items-center justify-center text-center">
+          <div className="prose prose-invert prose-lg max-w-none prose-p:leading-relaxed">
             <ReactMarkdown {...mdProps} />
           </div>
         </div>
       );
     case 'highlight':
       return (
-        <div className="py-4 px-5 my-3 rounded-[20px] bg-amber-500/10 border border-amber-500/20">
-          <div className="prose prose-invert prose-sm max-w-none text-amber-200/90 font-medium">
+        <div className="py-4 px-5 my-4 bg-zinc-900 border-2 border-signal shadow-[4px_4px_0_theme(colors.signal)]">
+          <div className="prose prose-invert prose-sm max-w-none text-white font-bold leading-relaxed">
             <ReactMarkdown {...mdProps} />
           </div>
         </div>
       );
     case 'graph':
       return (
-        <div className="py-2 px-1 my-4 h-[250px] w-full relative">
+        <div className="py-2 px-1 my-4 h-[250px] w-full relative border-4 border-white/10 bg-zinc-950 shadow-[4px_4px_0_rgba(255,255,255,0.05)]">
           <InteractiveGraph equation={block.equation || "x^2"} />
         </div>
       );
     case 'example':
       return (
-        <div className="py-4 px-5 my-3 rounded-[20px] bg-emerald-500/10 border border-emerald-500/20">
-          <p className="text-[9px] font-black text-emerald-500/60 uppercase tracking-widest mb-2 text-center">Exemplo Prático</p>
-          <div className="prose prose-invert prose-sm max-w-none text-emerald-200/90">
+        <div className="py-4 px-5 my-4 bg-zinc-900 border-2 border-emerald-500 shadow-[4px_4px_0_theme(colors.emerald.500)]">
+          <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-2 border-b-2 border-emerald-500/30 pb-2">Exemplo Prático</p>
+          <div className="prose prose-invert prose-sm max-w-none text-white leading-relaxed">
             <ReactMarkdown {...mdProps} />
           </div>
         </div>
@@ -163,15 +163,15 @@ const PresentationMode = ({ topic, onBack }) => {
 
   // Loading
   if (loading) return (
-    <div className="flex flex-col items-center justify-center h-screen gap-6">
-      <div className="w-20 h-20 rounded-[28px] bg-rose-500/10 border border-rose-500/20 flex items-center justify-center">
-        <Loader2 className="w-10 h-10 text-rose-500 animate-spin" />
+    <div className="flex flex-col items-center justify-center h-screen gap-8">
+      <div className="w-24 h-24 bg-zinc-950 border-4 border-[#00f0ff] shadow-[8px_8px_0_#00f0ff] flex items-center justify-center">
+        <Loader2 className="w-12 h-12 text-[#00f0ff] animate-spin" />
       </div>
-      <div className="text-center space-y-2">
-        <span className="text-zinc-400 font-black uppercase tracking-widest text-[10px] block text-center">
+      <div className="text-center space-y-4 border-2 border-white/10 p-6 bg-zinc-900">
+        <span className="text-white font-black uppercase tracking-widest text-xs block text-center bg-[#00f0ff] text-zinc-950 px-3 py-1 border-2 border-zinc-950 inline-block">
           Modo Aula • Guidorizzi
         </span>
-        <p className="text-zinc-600 text-xs max-w-[200px] text-center">
+        <p className="text-zinc-400 font-bold text-xs max-w-[250px] text-center uppercase tracking-widest">
           Consultando fontes e gerando slides sobre "{topic}"...
         </p>
       </div>
@@ -181,34 +181,38 @@ const PresentationMode = ({ topic, onBack }) => {
   // Error / Empty
   if (slides.length === 0) return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-8 p-8 text-center">
-      <div className="w-24 h-24 rounded-[32px] bg-white/5 border border-white/10 flex items-center justify-center">
-        <Sparkles className="w-10 h-10 text-zinc-500" />
+      <div className="w-24 h-24 bg-zinc-950 border-4 border-white/20 shadow-[8px_8px_0_rgba(255,255,255,0.1)] flex items-center justify-center">
+        <Sparkles className="w-10 h-10 text-white/50" />
       </div>
-      <div className="space-y-2">
-        <h2 className="text-2xl font-black text-white">Aula: "{topic}"</h2>
-        <p className="text-zinc-500 text-sm max-w-[280px]">
+      <div className="space-y-4">
+        <h2 className="text-2xl font-black text-white uppercase tracking-tighter border-b-4 border-[#00f0ff] pb-2 inline-block">Aula: "{topic}"</h2>
+        <p className="text-zinc-400 font-bold text-sm max-w-[280px]">
           {error || 'Não foi possível gerar os slides dinâmicos.'}
         </p>
       </div>
-      <div className="flex flex-col gap-3 w-full max-w-xs">
-        <button
+      <div className="flex flex-col gap-4 w-full max-w-xs mt-4">
+        <motion.button
+          whileHover={{ x: -2, y: -2, boxShadow: "4px 4px 0px 0px #00f0ff" }}
+          whileTap={{ scale: 0.98, x: 0, y: 0, boxShadow: "0px 0px 0px transparent" }}
           onClick={() => loadSlides(slideCount)}
-          className="w-full py-6 rounded-[32px] bg-rose-500 text-white font-black uppercase tracking-widest text-[11px] shadow-xl shadow-rose-500/20 flex items-center justify-center gap-3"
+          className="w-full py-4 bg-[#00f0ff] border-2 border-[#00f0ff] text-zinc-950 font-black uppercase tracking-widest text-[11px] flex items-center justify-center gap-3 transition-all"
         >
           <RefreshCw className="w-5 h-5" />
-          Tentar Novamente
-        </button>
-        <button
+          TENTAR NOVAMENTE
+        </motion.button>
+        <motion.button
+          whileHover={{ x: -2, y: -2, boxShadow: "4px 4px 0px 0px rgba(255,255,255,0.2)" }}
+          whileTap={{ scale: 0.98, x: 0, y: 0, boxShadow: "0px 0px 0px transparent" }}
           onClick={handleCreateInStudio}
           disabled={isGeneratingStudio}
-          className="w-full py-4 rounded-[28px] bg-white/5 border border-white/10 text-zinc-300 font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-2"
+          className="w-full py-4 bg-zinc-950 border-2 border-white/20 text-white font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 transition-all disabled:opacity-50"
         >
           {isGeneratingStudio ? <Loader2 className="w-4 h-4 animate-spin" /> : <ExternalLink className="w-4 h-4" />}
-          Gerar no Studio (Desktop)
-        </button>
+          GERAR NO STUDIO (DESKTOP)
+        </motion.button>
       </div>
-      <button onClick={onBack} className="text-zinc-600 text-[10px] font-black uppercase tracking-widest">
-        Voltar ao Dashboard
+      <button onClick={onBack} className="mt-8 text-zinc-500 hover:text-white transition-colors text-[10px] font-black uppercase tracking-widest border-b-2 border-zinc-700 hover:border-white pb-1">
+        VOLTAR AO DASHBOARD
       </button>
     </div>
   );
@@ -216,13 +220,13 @@ const PresentationMode = ({ topic, onBack }) => {
   const slide = slides[currentSlide];
   const progress = ((currentSlide + 1) / slides.length) * 100;
 
-  // Gradient palette
+  // Gradient palette - Cores Vibrantes Brutalistas
   const gradients = [
-    'from-purple-600/30 to-indigo-600/30',
-    'from-rose-600/30 to-orange-600/30',
-    'from-emerald-600/30 to-teal-600/30',
-    'from-blue-600/30 to-cyan-600/30',
-    'from-amber-600/30 to-yellow-600/30',
+    'from-[#00f0ff]/30 to-[#ff5500]/30',
+    'from-[#ff5500]/30 to-[#ccff00]/30',
+    'from-[#ccff00]/30 to-[#00f0ff]/30',
+    'from-[#00f0ff]/30 to-[#ccff00]/30',
+    'from-[#ff5500]/30 to-[#00f0ff]/30',
   ];
   const gradient = gradients[currentSlide % gradients.length];
 
@@ -233,17 +237,21 @@ const PresentationMode = ({ topic, onBack }) => {
       onTouchEnd={handleTouchEnd}
     >
       {/* Header */}
-      <header className="w-full flex items-center justify-between">
-        <button onClick={onBack} className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-2xl border border-white/10 text-zinc-500 hover:text-white transition-colors">
-          <ChevronLeft className="w-5 h-5" />
-        </button>
-        <div className="text-center flex-1">
-          <h2 className="text-sm font-black text-rose-400 uppercase tracking-tighter">{topic}</h2>
-          <p className="text-[9px] text-zinc-600 font-black uppercase tracking-widest">
+      <header className="w-full flex items-center justify-between bg-zinc-950 border-b-4 border-white/20 pb-4 mb-2">
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          onClick={onBack}
+          className="w-12 h-12 flex items-center justify-center bg-zinc-950 border-2 border-white/20 text-white hover:bg-white hover:text-zinc-950 shadow-[2px_2px_0_rgba(255,255,255,0.2)] transition-colors"
+        >
+          <ChevronLeft className="w-6 h-6" />
+        </motion.button>
+        <div className="text-center flex-1 px-4">
+          <h2 className="text-lg font-black text-[#00f0ff] uppercase tracking-tighter truncate">{topic}</h2>
+          <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest mt-1">
             Slide {currentSlide + 1} de {slides.length}
           </p>
         </div>
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-3 items-center">
           <select
             value={slideCount}
             onChange={(e) => {
@@ -251,39 +259,41 @@ const PresentationMode = ({ topic, onBack }) => {
               setSlideCount(newCount);
               loadSlides(newCount);
             }}
-            className="appearance-none h-10 px-3 bg-white/5 rounded-2xl border border-white/10 text-zinc-400 text-[10px] font-black uppercase tracking-widest hover:text-white hover:border-white/30 transition-all outline-none cursor-pointer text-center"
+            className="appearance-none h-12 px-4 bg-zinc-950 border-2 border-white/20 text-white text-[10px] font-black uppercase tracking-widest hover:border-white shadow-[2px_2px_0_rgba(255,255,255,0.2)] transition-all outline-none cursor-pointer text-center"
             title="Quantidade de Slides"
           >
             <option value={3} className="bg-zinc-900 text-white">3 Slides</option>
             <option value={6} className="bg-zinc-900 text-white">6 Slides</option>
             <option value={10} className="bg-zinc-900 text-white">10 Slides</option>
-            <option value={15} className="bg-zinc-900 text-rose-400">15 (Lento)</option>
+            <option value={15} className="bg-zinc-900 text-signal">15 (Lento)</option>
           </select>
-          <button
+          <motion.button
+            whileTap={{ scale: 0.9 }}
             onClick={handleCreateInStudio}
             disabled={isGeneratingStudio}
-            className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-2xl border border-white/10 text-zinc-500 hover:text-emerald-400 transition-colors"
+            className="w-12 h-12 flex items-center justify-center bg-zinc-950 border-2 border-emerald-500 shadow-[2px_2px_0_theme(colors.emerald.500)] text-emerald-500 hover:bg-emerald-500 hover:text-zinc-950 transition-colors"
             title="Gerar no NotebookLM Studio"
           >
-            {isGeneratingStudio ? <Loader2 className="w-4 h-4 animate-spin" /> : <ExternalLink className="w-4 h-4" />}
-          </button>
-          <button
+            {isGeneratingStudio ? <Loader2 className="w-5 h-5 animate-spin" /> : <ExternalLink className="w-5 h-5" />}
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.9 }}
             onClick={() => loadSlides(slideCount)}
-            className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-2xl border border-white/10 text-zinc-500 hover:text-rose-400 transition-colors"
+            className="w-12 h-12 flex items-center justify-center bg-zinc-950 border-2 border-[#00f0ff] shadow-[2px_2px_0_#00f0ff] text-[#00f0ff] hover:bg-[#00f0ff] hover:text-zinc-950 transition-colors"
             title="Novo conteúdo"
           >
-            <RefreshCw className="w-4 h-4" />
-          </button>
+            <RefreshCw className="w-5 h-5" />
+          </motion.button>
         </div>
       </header>
 
       {/* Progress bar */}
-      <div className="w-full">
-        <div className="h-1 rounded-full bg-white/5 overflow-hidden">
+      <div className="w-full px-2">
+        <div className="h-3 border-2 border-white/20 bg-zinc-900">
           <motion.div
-            className="h-full bg-gradient-to-r from-rose-500 to-orange-400 rounded-full"
+            className="h-full bg-[#00f0ff] border-r-2 border-white/20"
             animate={{ width: `${progress}%` }}
-            transition={{ type: 'spring', stiffness: 150, damping: 20 }}
+            transition={{ type: 'spring', stiffness: 200, damping: 25 }}
           />
         </div>
       </div>
@@ -300,38 +310,36 @@ const PresentationMode = ({ topic, onBack }) => {
         >
           <div
             className={cn(
-              "relative rounded-[48px] border border-white/10 overflow-hidden",
-              "bg-gradient-to-br shadow-2xl", gradient,
+              "relative border-8 border-white overflow-hidden",
+              "bg-zinc-950 shadow-[16px_16px_0_#00f0ff]",
             )}
             style={{ aspectRatio: '9/16' }}
           >
-            <div className="absolute inset-0 bg-black/50 backdrop-blur-3xl" />
-
-            <div className="relative z-10 flex flex-col h-full p-8 pt-12">
+            <div className="relative z-10 flex flex-col h-full p-8 pt-10">
               {/* LIVE indicator */}
-              <div className="flex items-center gap-3 mb-6">
-                <div className="px-3 py-1 rounded-full bg-white/10 border border-white/10 text-[9px] font-black text-white/50 uppercase tracking-widest">
+              <div className="flex items-center gap-4 mb-8 pb-4 border-b-4 border-white/10">
+                <div className="px-3 py-1 bg-zinc-900 border-2 border-white/20 text-[10px] font-black text-white uppercase tracking-widest shadow-[2px_2px_0_rgba(255,255,255,0.1)]">
                   {currentSlide + 1}/{slides.length}
                 </div>
                 {source.includes('LIVE') && (
-                  <div className="flex items-center gap-1.5 text-[8px] font-black text-emerald-500 uppercase tracking-widest">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse outline outline-emerald-500/30" />
-                    Geração em Tempo Real
+                  <div className="flex items-center gap-2 text-[10px] font-black text-emerald-500 uppercase tracking-widest bg-zinc-900 border-2 border-emerald-500 px-3 py-1 shadow-[2px_2px_0_theme(colors.emerald.500)]">
+                    <div className="w-2 h-2 bg-emerald-500 border border-zinc-950" />
+                    Tempo Real
                   </div>
                 )}
               </div>
 
-              <h2 className="text-2xl font-black text-white leading-tight mb-2">
+              <h2 className="text-3xl font-black text-white leading-none tracking-tighter uppercase mb-4">
                 {slide.title}
               </h2>
 
               {slide.subtitle && (
-                <p className="text-[11px] text-zinc-500 font-bold mb-6 border-b border-white/5 pb-5 uppercase tracking-wide">
+                <p className="text-xs text-[#00f0ff] font-black mb-6 uppercase tracking-widest bg-zinc-900 p-3 border-l-4 border-[#00f0ff]">
                   {slide.subtitle}
                 </p>
               )}
 
-              <div className="flex-1 overflow-y-auto pr-2 space-y-1 custom-scrollbar scroll-smooth">
+              <div className="flex-1 overflow-y-auto pr-4 space-y-4 custom-scrollbar scroll-smooth">
                 {slide.blocks?.map((block, i) => (
                   <SlideBlock key={i} block={block} />
                 ))}
@@ -340,14 +348,14 @@ const PresentationMode = ({ topic, onBack }) => {
                 )}
               </div>
 
-              <div className="flex justify-center gap-1.5 mt-8 pt-4 border-t border-white/5">
+              <div className="flex justify-center gap-2 mt-8 pt-6 border-t-4 border-white/10">
                 {slides.map((_, i) => (
                   <button
                     key={i}
                     onClick={() => setCurrentSlide(i)}
                     className={cn(
-                      "h-1 rounded-full transition-all",
-                      i === currentSlide ? "bg-rose-500 w-8" : "bg-white/10 w-2 hover:bg-white/20"
+                      "h-3 transition-all border-2",
+                      i === currentSlide ? "bg-[#00f0ff] border-zinc-950 w-12" : "bg-zinc-900 border-white/20 w-4 hover:border-white"
                     )}
                   />
                 ))}
@@ -359,38 +367,41 @@ const PresentationMode = ({ topic, onBack }) => {
 
       {/* Nav */}
       <div className="flex items-center gap-4 w-full">
-        <button
+        <motion.button
+          whileTap={{ scale: 0.9 }}
           onClick={prevSlide}
           disabled={currentSlide === 0}
           className={cn(
-            "w-14 h-14 rounded-3xl border flex items-center justify-center transition-all",
-            currentSlide === 0 ? "border-white/5 text-zinc-800" : "border-white/10 text-zinc-400 hover:text-white bg-white/5"
+            "w-16 h-16 border-2 flex items-center justify-center transition-all",
+            currentSlide === 0 ? "border-white/10 text-zinc-700 bg-zinc-950" : "border-white/30 text-white hover:bg-white hover:text-zinc-950 bg-zinc-900 shadow-[4px_4px_0_rgba(255,255,255,0.2)]"
           )}
         >
-          <ChevronLeft className="w-6 h-6" />
-        </button>
+          <ChevronLeft className="w-8 h-8" />
+        </motion.button>
 
-        <button
+        <motion.button
+          whileTap={{ scale: 0.95 }}
           onClick={() => setAutoPlay(!autoPlay)}
           className={cn(
-            "flex-1 h-14 rounded-3xl font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 transition-all border",
-            autoPlay ? "bg-rose-500 text-white border-rose-500 shadow-lg shadow-rose-500/20" : "bg-white/5 border-white/10 text-zinc-400 hover:text-white"
+            "flex-1 h-16 font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 transition-all border-2",
+            autoPlay ? "bg-[#00f0ff] text-zinc-950 border-[#00f0ff] shadow-[4px_4px_0_#00f0ff]" : "bg-zinc-900 border-white/30 text-white hover:border-white shadow-[4px_4px_0_rgba(255,255,255,0.2)]"
           )}
         >
-          {autoPlay ? <Pause className="w-4 h-4 fill-white" /> : <Play className="w-4 h-4 fill-current text-zinc-500" />}
-          {autoPlay ? 'Pausar' : 'Apresentar'}
-        </button>
+          {autoPlay ? <Pause className="w-5 h-5 fill-zinc-950" /> : <Play className="w-5 h-5 fill-current text-white" />}
+          {autoPlay ? 'PAUSAR APRESENTAÇÃO' : 'INICIAR APRESENTAÇÃO'}
+        </motion.button>
 
-        <button
+        <motion.button
+          whileTap={{ scale: 0.9 }}
           onClick={nextSlide}
           disabled={currentSlide === slides.length - 1}
           className={cn(
-            "w-14 h-14 rounded-3xl border flex items-center justify-center transition-all",
-            currentSlide === slides.length - 1 ? "border-white/5 text-zinc-800" : "border-white/10 text-zinc-400 hover:text-white bg-white/5"
+            "w-16 h-16 border-2 flex items-center justify-center transition-all",
+            currentSlide === slides.length - 1 ? "border-white/10 text-zinc-700 bg-zinc-950" : "border-white/30 text-white hover:bg-white hover:text-zinc-950 bg-zinc-900 shadow-[4px_4px_0_rgba(255,255,255,0.2)]"
           )}
         >
-          <ChevronRight className="w-6 h-6" />
-        </button>
+          <ChevronRight className="w-8 h-8" />
+        </motion.button>
       </div>
 
       <style dangerouslySetInnerHTML={{

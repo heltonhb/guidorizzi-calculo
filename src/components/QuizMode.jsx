@@ -111,16 +111,16 @@ const QuizMode = ({ topic, onBack }) => {
     };
 
     if (loading) return (
-        <div className="flex flex-col items-center justify-center h-screen gap-6">
-            <div className="w-20 h-20 rounded-[28px] bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
-                <Loader2 className="w-10 h-10 text-purple-500 animate-spin" />
+        <div className="flex flex-col items-center justify-center min-h-[80vh] gap-8">
+            <div className="relative w-24 h-24 bg-zinc-950 border-2 border-[#00f0ff] shadow-[8px_8px_0_#00f0ff] flex items-center justify-center">
+                <Loader2 className="w-10 h-10 text-[#00f0ff] animate-spin" />
             </div>
-            <div className="text-center space-y-2">
-                <span className="text-zinc-400 font-black uppercase tracking-widest text-[10px] block">
+            <div className="text-center space-y-3 bg-zinc-950 border-2 border-white/20 p-6 shadow-[4px_4px_0_rgba(255,255,255,0.2)]">
+                <span className="text-xl font-black text-white tracking-widest uppercase block">
                     Gerando Questões com IA
                 </span>
-                <p className="text-zinc-600 text-xs max-w-[200px]">
-                    Consultando o Guidorizzi sobre "{topic}"...
+                <p className="text-zinc-400 font-bold max-w-[250px] leading-relaxed mx-auto uppercase text-xs tracking-wider">
+                    CONSULTANDO O GUIDORIZZI SOBRE "{topic}"...
                 </p>
             </div>
         </div>
@@ -132,31 +132,33 @@ const QuizMode = ({ topic, onBack }) => {
             animate={{ opacity: 1 }}
             className="flex flex-col gap-8 pb-20"
         >
-            <header className="flex items-center justify-between">
+            <header className="flex items-center justify-between border-b-2 border-white/20 pb-4 mb-8">
                 <motion.button
-                    whileTap={{ scale: 0.9 }}
+                    whileTap={{ scale: 0.9, x: 2, y: 2, boxShadow: "0px 0px 0px transparent" }}
                     onClick={quizStarted && !showResults ? () => setQuizStarted(false) : onBack}
-                    className="w-12 h-12 flex items-center justify-center bg-white/5 rounded-2xl border border-white/10"
+                    className="w-10 h-10 flex items-center justify-center bg-zinc-950 border-2 border-white/20 shadow-[2px_2px_0_rgba(255,255,255,0.2)] hover:border-[#00f0ff] hover:shadow-[2px_2px_0_#00f0ff] hover:text-[#00f0ff] transition-colors text-white"
                 >
-                    <ChevronLeft className="w-6 h-6 text-zinc-400" />
+                    <ChevronLeft className="w-5 h-5" />
                 </motion.button>
                 <div className="flex-1 text-center">
-                    <h2 className="text-xl font-bold tracking-tight">
+                    <h2 className="text-xl font-black uppercase tracking-tight text-white mt-1">
                         {quizStarted ? `Quiz: ${topic}` : 'Desafio Guidorizzi'}
                     </h2>
-                    <p className="text-zinc-500 text-[10px] uppercase font-black tracking-widest">
-                        {quizStarted && !showResults
-                            ? `Questão ${currentQuestionIndex + 1} de ${questions.length}`
-                            : `${questions.length} questões • ${source}`
-                        }
+                    <p className="text-zinc-500 text-[10px] uppercase font-black tracking-widest mt-1">
+                        <span className="border-2 border-white/10 bg-zinc-900 px-2 py-0.5 inline-block">
+                            {quizStarted && !showResults
+                                ? `Questão ${currentQuestionIndex + 1} / ${questions.length}`
+                                : `${questions.length} Questões • ${source}`
+                            }
+                        </span>
                     </p>
                 </div>
                 <button
                     onClick={loadQuiz}
-                    className="w-12 h-12 flex items-center justify-center bg-white/5 rounded-2xl border border-white/10 text-zinc-500 hover:text-purple-400 transition-colors"
+                    className="w-10 h-10 flex items-center justify-center bg-zinc-950 border-2 border-white/20 shadow-[2px_2px_0_rgba(255,255,255,0.2)] hover:border-orange-500 hover:shadow-[2px_2px_0_theme(colors.orange.500)] hover:text-orange-500 transition-colors text-zinc-400 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
                     title="Gerar novas questões"
                 >
-                    <RefreshCw className="w-5 h-5" />
+                    <RefreshCw className="w-4 h-4" />
                 </button>
             </header>
 
@@ -167,59 +169,59 @@ const QuizMode = ({ topic, onBack }) => {
                     animate={{ y: 0, opacity: 1 }}
                     className="flex flex-col items-center gap-8 py-8"
                 >
-                    <div className="w-28 h-28 rounded-[36px] bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
-                        <Zap className="w-14 h-14 text-purple-400 fill-purple-400/20" />
+                    <div className="w-28 h-28 bg-zinc-950 border-4 border-[#00f0ff] shadow-[8px_8px_0_#00f0ff] flex items-center justify-center">
+                        <Zap className="w-12 h-12 text-[#00f0ff]" fill="currentColor" />
                     </div>
 
-                    <div className="text-center space-y-3">
-                        <h3 className="text-3xl font-black text-white">{topic}</h3>
-                        <p className="text-zinc-500 text-sm max-w-[280px]">
+                    <div className="text-center space-y-3 bg-zinc-950 border-2 border-white/20 p-6 shadow-[4px_4px_0_rgba(255,255,255,0.2)]">
+                        <h3 className="text-2xl font-black text-white uppercase tracking-tight">{topic}</h3>
+                        <p className="text-zinc-400 font-bold text-xs uppercase tracking-wider max-w-[280px] mx-auto">
                             {questions.length} questões de múltipla escolha baseadas no Guidorizzi
                         </p>
                         {source.includes('LIVE') && (
-                            <div className="flex items-center gap-2 justify-center text-[9px] font-black uppercase tracking-widest text-emerald-500">
-                                <div className="flex h-1.5 w-1.5 relative">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                            <div className="flex items-center gap-2 justify-center text-[9px] font-black uppercase tracking-widest text-orange-500 border-t-2 border-white/10 pt-3 mt-3">
+                                <div className="flex h-2 w-2 relative">
+                                    <span className="animate-ping absolute inline-flex h-full w-full bg-orange-400 opacity-75"></span>
+                                    <span className="relative inline-flex h-2 w-2 bg-orange-500 border border-orange-200"></span>
                                 </div>
-                                Questões geradas pela IA
+                                GERADO POR IA
                             </div>
                         )}
                     </div>
 
-                    <div className="grid grid-cols-3 gap-3 w-full max-w-xs">
+                    <div className="grid grid-cols-3 gap-4 w-full max-w-md">
                         {[
-                            { label: 'Fáceis', count: 2, color: 'text-emerald-400' },
-                            { label: 'Médias', count: 2, color: 'text-amber-400' },
-                            { label: 'Difíceis', count: 1, color: 'text-red-400' },
+                            { label: 'Fáceis', count: 2, color: 'text-emerald-400', border: 'border-emerald-500' },
+                            { label: 'Médias', count: 2, color: 'text-amber-400', border: 'border-amber-500' },
+                            { label: 'Difíceis', count: 1, color: 'text-signal', border: 'border-signal' },
                         ].map(d => (
-                            <div key={d.label} className="p-3 rounded-2xl bg-white/5 border border-white/10 text-center">
-                                <p className={cn("text-lg font-black", d.color)}>{d.count}</p>
-                                <p className="text-[9px] text-zinc-600 font-black uppercase tracking-widest">{d.label}</p>
+                            <div key={d.label} className={cn("p-4 bg-zinc-950 border-2 shadow-[2px_2px_0_rgba(255,255,255,0.1)] text-center", d.border)}>
+                                <p className={cn("text-2xl font-black", d.color)}>{d.count}</p>
+                                <p className="text-[9px] text-zinc-500 font-black uppercase tracking-widest mt-1">{d.label}</p>
                             </div>
                         ))}
                     </div>
 
                     <button
                         onClick={startQuiz}
-                        className="w-full max-w-xs py-6 rounded-[32px] bg-purple-500 text-white font-black uppercase tracking-widest text-[11px] shadow-xl shadow-purple-500/20 flex items-center justify-center gap-3"
+                        className="w-full max-w-sm py-5 bg-[#00f0ff] border-2 border-[#00f0ff] text-zinc-950 hover:bg-zinc-950 hover:text-[#00f0ff] font-black uppercase tracking-widest text-sm shadow-[4px_4px_0_#00f0ff] hover:shadow-[0px_0px_0_transparent] transition-all flex items-center justify-center gap-3 active:translate-x-1 active:translate-y-1 mt-4"
                     >
                         <Sparkles className="w-5 h-5" />
-                        Iniciar Desafio
+                        INICIAR DESAFIO
                     </button>
                 </motion.div>
             ) : (
                 <div className="flex-1 flex flex-col gap-8">
-                    {/* Progress dots */}
+                    {/* Progress squares */}
                     {!showResults && (
-                        <div className="flex justify-center gap-2">
+                        <div className="flex justify-center gap-3">
                             {questions.map((_, i) => (
                                 <div
                                     key={i}
                                     className={cn(
-                                        "w-2 h-2 rounded-full transition-all",
-                                        i === currentQuestionIndex ? "bg-purple-500 w-6" :
-                                            i < currentQuestionIndex ? "bg-purple-500/40" : "bg-white/10"
+                                        "h-3 transition-all border-2",
+                                        i === currentQuestionIndex ? "bg-[#00f0ff] border-[#00f0ff] w-8 shadow-[2px_2px_0_#00f0ff]" :
+                                            i < currentQuestionIndex ? "bg-[#00f0ff]/20 border-[#00f0ff]/40 w-3" : "bg-transparent border-white/20 w-3"
                                     )}
                                 />
                             ))}
@@ -233,10 +235,10 @@ const QuizMode = ({ topic, onBack }) => {
                                 initial={{ x: 50, opacity: 0 }}
                                 animate={{ x: 0, opacity: 1 }}
                                 exit={{ x: -50, opacity: 0 }}
-                                className="space-y-10"
+                                className="space-y-6 max-w-2xl mx-auto w-full"
                             >
-                                <div className="p-10 rounded-[48px] bg-white/5 border border-white/10 backdrop-blur-3xl min-h-[200px] flex items-center justify-center text-center">
-                                    <div className="prose prose-invert prose-lg">
+                                <div className="p-8 bg-zinc-950 border-2 border-white/20 shadow-[8px_8px_0_rgba(255,255,255,0.2)] min-h-[160px] flex items-center justify-center text-center">
+                                    <div className="prose prose-invert prose-lg prose-headings:font-black prose-headings:uppercase prose-p:font-bold max-w-none">
                                         <ReactMarkdown
                                             remarkPlugins={[remarkMath]}
                                             rehypePlugins={[rehypeKatex]}
@@ -250,35 +252,47 @@ const QuizMode = ({ topic, onBack }) => {
                                     {questions[currentQuestionIndex].options.map((opt, i) => {
                                         const isCorrect = i === questions[currentQuestionIndex].correct;
                                         const isSelected = selectedAnswer === i;
-                                        let optionStyle = 'bg-white/5 border-white/10';
+                                        let optionStyle = 'bg-zinc-950 border-white/20 text-zinc-300';
+                                        let shadowStyle = 'shadow-[4px_4px_0_rgba(255,255,255,0.1)]';
+
                                         if (showFeedback) {
-                                            if (isCorrect) optionStyle = 'bg-emerald-500/20 border-emerald-500/40';
-                                            else if (isSelected && !isCorrect) optionStyle = 'bg-red-500/20 border-red-500/40';
-                                            else optionStyle = 'bg-white/3 border-white/5 opacity-50';
+                                            if (isCorrect) {
+                                                optionStyle = 'bg-emerald-950 border-emerald-500 text-emerald-50';
+                                                shadowStyle = 'shadow-[4px_4px_0_theme(colors.emerald.500)]';
+                                            }
+                                            else if (isSelected && !isCorrect) {
+                                                optionStyle = 'bg-rose-950 border-signal text-rose-50';
+                                                shadowStyle = 'shadow-[4px_4px_0_theme(colors.signal)]';
+                                            }
+                                            else {
+                                                optionStyle = 'bg-zinc-900 border-white/5 text-zinc-600 opacity-50';
+                                                shadowStyle = 'shadow-none';
+                                            }
                                         }
                                         return (
                                             <motion.button
                                                 key={i}
-                                                whileHover={!showFeedback ? { x: 10, backgroundColor: 'rgba(255,255,255,0.08)' } : {}}
-                                                whileTap={!showFeedback ? { scale: 0.98 } : {}}
+                                                whileHover={!showFeedback ? { x: -2, y: -2, boxShadow: "4px 4px 0px 0px rgba(255,255,255,0.4)" } : {}}
+                                                whileTap={!showFeedback ? { x: 2, y: 2, boxShadow: "0px 0px 0px transparent" } : {}}
                                                 onClick={() => handleAnswer(i)}
                                                 disabled={showFeedback}
                                                 className={cn(
-                                                    `w-full p-6 border rounded-[28px] text-left flex items-center gap-4 group transition-all`,
-                                                    optionStyle
+                                                    `w-full p-6 border-2 text-left flex items-center gap-4 transition-all uppercase font-bold tracking-wide`,
+                                                    optionStyle,
+                                                    shadowStyle
                                                 )}
                                             >
                                                 <div className={cn(
-                                                    'w-8 h-8 rounded-full flex items-center justify-center text-xs font-black transition-colors border',
-                                                    showFeedback && isCorrect ? 'bg-emerald-500 text-white border-emerald-500' :
-                                                        showFeedback && isSelected && !isCorrect ? 'bg-red-500 text-white border-red-500' :
-                                                            'bg-white/5 border-white/10 text-zinc-500 group-hover:bg-purple-500 group-hover:text-white'
+                                                    'w-8 h-8 flex items-center justify-center text-xs font-black transition-colors border-2',
+                                                    showFeedback && isCorrect ? 'bg-emerald-500 text-zinc-950 border-emerald-500' :
+                                                        showFeedback && isSelected && !isCorrect ? 'bg-signal text-zinc-950 border-signal' :
+                                                            'bg-zinc-900 border-zinc-700 text-zinc-500 group-hover:bg-white group-hover:text-zinc-950 group-hover:border-white'
                                                 )}>
-                                                    {showFeedback && isCorrect ? <CheckCircle2 className="w-4 h-4" /> :
-                                                        showFeedback && isSelected && !isCorrect ? <XCircle className="w-4 h-4" /> :
+                                                    {showFeedback && isCorrect ? <CheckCircle2 className="w-5 h-5" /> :
+                                                        showFeedback && isSelected && !isCorrect ? <XCircle className="w-5 h-5" /> :
                                                             String.fromCharCode(65 + i)}
                                                 </div>
-                                                <div className="text-zinc-300 font-medium text-sm">
+                                                <div className="flex-1">
                                                     <ReactMarkdown
                                                         remarkPlugins={[remarkMath]}
                                                         rehypePlugins={[rehypeKatex]}
@@ -297,21 +311,23 @@ const QuizMode = ({ topic, onBack }) => {
                                             className="space-y-4 mt-2"
                                         >
                                             <div className={cn(
-                                                'p-5 rounded-[24px] border',
+                                                'p-6 border-2 shadow-[4px_4px_0_rgba(255,255,255,0.1)]',
                                                 selectedAnswer === questions[currentQuestionIndex].correct
-                                                    ? 'bg-emerald-500/10 border-emerald-500/20'
-                                                    : 'bg-red-500/10 border-red-500/20'
+                                                    ? 'bg-emerald-950 border-emerald-500'
+                                                    : 'bg-rose-950 border-signal'
                                             )}>
-                                                <div className="flex items-center gap-2 mb-2">
+                                                <div className="flex items-center gap-3 mb-4 border-b-2 border-white/10 pb-3">
                                                     {selectedAnswer === questions[currentQuestionIndex].correct
-                                                        ? <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                                                        : <XCircle className="w-5 h-5 text-red-400" />
+                                                        ? <CheckCircle2 className="w-6 h-6 text-emerald-400" />
+                                                        : <XCircle className="w-6 h-6 text-signal" />
                                                     }
-                                                    <span className="font-black text-sm">
-                                                        {selectedAnswer === questions[currentQuestionIndex].correct ? 'Correto!' : 'Incorreto'}
+                                                    <span className={cn("font-black tracking-widest uppercase",
+                                                        selectedAnswer === questions[currentQuestionIndex].correct ? "text-emerald-400" : "text-signal"
+                                                    )}>
+                                                        {selectedAnswer === questions[currentQuestionIndex].correct ? 'CORRETO!' : 'INCORRETO!'}
                                                     </span>
                                                 </div>
-                                                <div className="prose prose-invert prose-sm max-w-none">
+                                                <div className="prose prose-invert prose-sm max-w-none text-white font-medium">
                                                     <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
                                                         {questions[currentQuestionIndex].explanation}
                                                     </ReactMarkdown>
@@ -319,9 +335,9 @@ const QuizMode = ({ topic, onBack }) => {
                                             </div>
                                             <button
                                                 onClick={handleNextQuestion}
-                                                className="w-full py-5 rounded-[28px] bg-purple-500 text-white font-black text-xs uppercase tracking-widest shadow-xl shadow-purple-500/20"
+                                                className="w-full py-5 bg-white border-2 border-white text-zinc-950 hover:bg-zinc-950 hover:text-white font-black text-sm uppercase tracking-widest shadow-[4px_4px_0_rgba(255,255,255,0.5)] hover:shadow-[0px_0px_0_transparent] transition-all flex items-center justify-center gap-2 active:translate-x-1 active:translate-y-1"
                                             >
-                                                {currentQuestionIndex < questions.length - 1 ? 'Próxima Questão →' : 'Ver Resultado'}
+                                                {currentQuestionIndex < questions.length - 1 ? 'PRÓXIMA QUESTÃO →' : 'VER RESULTADO'}
                                             </button>
                                         </motion.div>
                                     )}
@@ -330,9 +346,9 @@ const QuizMode = ({ topic, onBack }) => {
                         ) : (
                             <motion.div
                                 key="results"
-                                initial={{ scale: 0.9, opacity: 0 }}
+                                initial={{ scale: 0.95, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
-                                className="flex-1 flex flex-col items-center justify-center gap-8 py-12"
+                                className="flex-1 flex flex-col items-center justify-center gap-8 py-12 max-w-md mx-auto w-full"
                             >
                                 {(() => {
                                     const result = getResultMessage();
@@ -340,39 +356,42 @@ const QuizMode = ({ topic, onBack }) => {
                                     return (
                                         <>
                                             <div className={cn(
-                                                "w-32 h-32 rounded-full border flex items-center justify-center mb-4",
-                                                pct >= 60 ? "bg-emerald-500/10 border-emerald-500/20" : "bg-amber-500/10 border-amber-500/20"
+                                                "w-32 h-32 border-4 shadow-[8px_8px_0_rgba(255,255,255,0.1)] flex items-center justify-center mb-4 bg-zinc-950",
+                                                pct >= 60 ? "border-emerald-500" : "border-amber-500"
                                             )}>
-                                                <span className="text-5xl">{result.emoji}</span>
+                                                <span className="text-6xl">{result.emoji}</span>
                                             </div>
-                                            <div className="text-center space-y-2">
-                                                <h3 className="text-4xl font-black text-white">{result.text}</h3>
-                                                <p className="text-zinc-500 font-medium">Você acertou {score} de {questions.length} questões ({pct}%).</p>
-                                                <p className="text-zinc-600 text-sm">{result.sub}</p>
+                                            <div className="text-center space-y-4 bg-zinc-950 border-2 border-white/20 p-8 shadow-[4px_4px_0_rgba(255,255,255,0.2)] w-full">
+                                                <h3 className="text-3xl font-black text-white uppercase tracking-tight">{result.text}</h3>
+                                                <div className="border-2 border-white/10 bg-zinc-900 p-3 mx-auto">
+                                                    <p className="text-white font-black tracking-widest uppercase">VOCÊ ACERTOU {score} DE {questions.length}</p>
+                                                    <p className="text-[#00f0ff] font-bold text-lg">{pct}% DE PRECISÃO</p>
+                                                </div>
+                                                <p className="text-zinc-400 text-xs font-black uppercase tracking-widest">{result.sub}</p>
                                             </div>
                                         </>
                                     );
                                 })()}
-                                <div className="flex gap-4 w-full">
+                                <div className="flex flex-col sm:flex-row gap-4 w-full">
                                     <button
                                         onClick={onBack}
-                                        className="flex-1 py-5 rounded-[28px] bg-white/5 border border-white/10 font-bold text-sm text-zinc-400"
+                                        className="flex-1 py-4 bg-zinc-950 border-2 border-white/20 text-white font-black uppercase tracking-widest text-[10px] shadow-[4px_4px_0_rgba(255,255,255,0.2)] hover:border-white hover:shadow-[0px_0px_0_transparent] transition-all active:translate-x-1 active:translate-y-1"
                                     >
-                                        Dashboard
+                                        DASHBOARD
                                     </button>
                                     <button
                                         onClick={loadQuiz}
-                                        className="flex-1 py-5 rounded-[28px] bg-purple-500/20 border border-purple-500/30 font-bold text-sm text-purple-400 flex items-center justify-center gap-2"
+                                        className="flex-1 py-4 bg-zinc-950 border-2 border-[#00f0ff] text-[#00f0ff] font-black uppercase tracking-widest text-[10px] shadow-[4px_4px_0_#00f0ff] hover:bg-[#00f0ff] hover:text-zinc-950 hover:shadow-[0px_0px_0_transparent] transition-all flex items-center justify-center gap-2 active:translate-x-1 active:translate-y-1"
                                     >
                                         <RefreshCw className="w-4 h-4" />
-                                        Novas Questões
+                                        NOVAS
                                     </button>
                                 </div>
                                 <button
                                     onClick={startQuiz}
-                                    className="w-full py-5 rounded-[28px] bg-emerald-500 font-bold text-sm text-black shadow-xl shadow-emerald-500/10"
+                                    className="w-full py-5 bg-emerald-500 border-2 border-emerald-500 text-zinc-950 hover:bg-zinc-950 hover:text-emerald-500 font-black uppercase tracking-widest text-[11px] shadow-[4px_4px_0_theme(colors.emerald.500)] hover:shadow-[0px_0px_0_transparent] transition-all active:translate-x-1 active:translate-y-1 mt-2"
                                 >
-                                    Tentar Novamente (mesmas questões)
+                                    TENTAR NOVAMENTE (MESMAS QUESTÕES)
                                 </button>
                             </motion.div>
                         )}

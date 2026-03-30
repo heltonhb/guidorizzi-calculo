@@ -1,2 +1,91 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+
+@theme {
+    --color-ink: #050505;
+    --color-technical: #f8f9fa;
+    --color-signal: #ff5500;
+    --color-acid: #a3e635;
+    /* Cores Vibrantes Brutalistas */
+    --color-cyber: #00f0ff;
+    --color-neon-lime: #ccff00;
+    --color-hot-pink: #ff0080;
+    --color-electric-orange: #ff4400;
+}
+
+/* Brutalist utilities */
+@layer utilities {
+    .brutalist-shadow {
+        box-shadow: 4px 4px 0px 0px theme('colors.signal');
+    }
+
+    .brutalist-shadow-sm {
+        box-shadow: 2px 2px 0px 0px theme('colors.signal');
+    }
+
+    .brutalist-shadow-cyber {
+        box-shadow: 4px 4px 0px 0px theme('colors.cyber');
+    }
+
+    .brutalist-shadow-lime {
+        box-shadow: 4px 4px 0px 0px theme('colors.neon-lime');
+    }
+
+    .brutalist-glow-cyber {
+        box-shadow: 0 0 20px theme('colors.cyber'), 4px 4px 0px 0px theme('colors.cyber');
+    }
+
+    .brutalist-glow-signal {
+        box-shadow: 0 0 20px theme('colors.signal'), 4px 4px 0px 0px theme('colors.signal');
+    }
+}
+
+/* Custom Scrollbar Brutalist */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: theme('colors.zinc.950');
+    border-left: 2px solid theme('colors.white / 0.1');
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: theme('colors.signal');
+    border: 2px solid theme('colors.zinc.950');
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: theme('colors.cyber');
+}
+
+/* Brutalist Focus States */
+input:focus,
+button:focus,
+textarea:focus {
+    outline: 3px solid theme('colors.cyber');
+    outline-offset: 2px;
+}
+
+/* Brutalist Animations */
+@keyframes glitch {
+    0%, 100% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+}
+
+.animate-glitch {
+    animation: glitch 0.3s ease-in-out infinite;
+}
+
+@keyframes pulse-border-cyber {
+    0%, 100% { border-color: theme('colors.cyber'); }
+    50% { border-color: theme('colors.signal'); }
+}
+
+.animate-pulse-border-cyber {
+    animation: pulse-border-cyber 1s ease-in-out infinite;
+}

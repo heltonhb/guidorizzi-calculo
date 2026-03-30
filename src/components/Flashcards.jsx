@@ -77,18 +77,14 @@ const Flashcards = ({ topic, onBack }) => {
 
     // Loading state
     if (loading) return (
-        <div className="flex flex-col items-center justify-center h-screen gap-6">
-            <div className="relative">
-                <div className="w-20 h-20 rounded-[28px] bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
-                    <Loader2 className="w-10 h-10 text-orange-500 animate-spin" />
-                </div>
+        <div className="flex flex-col items-center justify-center min-h-[80vh] gap-8">
+            <div className="relative w-24 h-24 bg-zinc-950 border-2 border-[#ccff00] shadow-[8px_8px_0_#ccff00] flex items-center justify-center">
+                <Loader2 className="w-10 h-10 text-[#ccff00] animate-spin" />
             </div>
-            <div className="text-center space-y-2">
-                <span className="text-zinc-400 font-black uppercase tracking-widest text-[10px] block">
-                    Gerando Flashcards com IA
-                </span>
-                <p className="text-zinc-600 text-xs max-w-[200px]">
-                    Consultando o Guidorizzi sobre "{topic}"...
+            <div className="text-center space-y-3 bg-zinc-950 border-2 border-white/20 p-6 shadow-[4px_4px_0_rgba(255,255,255,0.2)]">
+                <h3 className="text-xl font-black text-white tracking-widest uppercase">Gerando Flashcards com IA</h3>
+                <p className="text-zinc-400 font-bold max-w-[250px] leading-relaxed mx-auto uppercase text-xs tracking-wider">
+                    CONSULTANDO O GUIDORIZZI SOBRE "{topic}"...
                 </p>
             </div>
         </div>
@@ -96,24 +92,24 @@ const Flashcards = ({ topic, onBack }) => {
 
     // Error / Empty state
     if (flashcards.length === 0) return (
-        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-8 p-8 text-center">
-            <div className="w-24 h-24 rounded-[32px] bg-white/5 border border-white/10 flex items-center justify-center mb-4">
+        <div className="flex flex-col items-center justify-center min-h-[80vh] gap-8 p-8 text-center">
+            <div className="w-24 h-24 bg-zinc-950 border-2 border-white/20 shadow-[8px_8px_0_rgba(255,255,255,0.2)] flex items-center justify-center mb-4">
                 <BookCheck className="w-10 h-10 text-zinc-500" />
             </div>
-            <div className="space-y-2">
-                <h2 className="text-2xl font-black text-white">Flashcards para "{topic}"</h2>
-                <p className="text-zinc-500 text-sm max-w-[280px]">
+            <div className="space-y-3 bg-zinc-950 border-2 border-white/20 p-6 shadow-[4px_4px_0_rgba(255,255,255,0.2)]">
+                <h2 className="text-2xl font-black text-white uppercase tracking-tight">Flashcards para "{topic}"</h2>
+                <p className="text-zinc-400 font-bold text-xs max-w-[280px] uppercase tracking-wider">
                     {error || 'Gere flashcards inteligentes baseados no conteúdo do Guidorizzi.'}
                 </p>
             </div>
             <button
                 onClick={loadFlashcards}
-                className="w-full max-w-xs py-6 rounded-[32px] bg-orange-500 text-white font-black uppercase tracking-widest text-[11px] shadow-xl shadow-orange-500/20 flex items-center justify-center gap-3"
+                className="w-full max-w-xs py-5 bg-[#ccff00] border-2 border-[#ccff00] text-zinc-950 hover:bg-zinc-950 hover:text-[#ccff00] font-black uppercase tracking-widest text-sm shadow-[4px_4px_0_#ccff00] hover:shadow-[0px_0px_0_transparent] transition-all flex items-center justify-center gap-3 active:translate-x-1 active:translate-y-1"
             >
                 <Sparkles className="w-5 h-5" />
-                {error ? 'Tentar Novamente' : 'Gerar Flashcards com IA'}
+                {error ? 'TENTAR NOVAMENTE' : 'GERAR FLASHCARDS'}
             </button>
-            <button onClick={onBack} className="text-zinc-600 text-[10px] font-black uppercase tracking-widest">Voltar ao Dashboard</button>
+            <button onClick={onBack} className="text-zinc-500 hover:text-white text-[10px] font-black uppercase tracking-widest transition-colors mt-4">VOLTAR AO DASHBOARD</button>
         </div>
     );
 
@@ -122,38 +118,38 @@ const Flashcards = ({ topic, onBack }) => {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-[80vh] gap-10 p-8">
-            <header className="w-full max-w-sm flex items-center justify-between">
-                <button onClick={onBack} className="text-zinc-500 hover:text-white transition-colors">
-                    <ChevronLeft className="w-6 h-6" />
+            <header className="w-full max-w-sm flex items-center justify-between border-b-2 border-white/20 pb-4">
+                <button onClick={onBack} className="w-10 h-10 flex items-center justify-center bg-zinc-950 border-2 border-white/20 shadow-[2px_2px_0_rgba(255,255,255,0.2)] text-white hover:border-signal hover:shadow-[2px_2px_0_theme(colors.signal)] hover:text-signal transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none">
+                    <ChevronLeft className="w-5 h-5" />
                 </button>
                 <div className="text-center">
-                    <h2 className="text-lg font-black text-white uppercase tracking-tighter">Flashcards</h2>
-                    <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest">
-                        {currentIndex + 1} de {flashcards.length}
+                    <h2 className="text-xl font-black text-white uppercase tracking-tighter">Flashcards</h2>
+                    <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest border-2 border-white/10 px-2 py-0.5 mt-1 bg-zinc-900 inline-block">
+                        {currentIndex + 1} / {flashcards.length}
                     </p>
                 </div>
                 <button
                     onClick={loadFlashcards}
-                    className="text-zinc-500 hover:text-orange-400 transition-colors"
+                    className="w-10 h-10 flex items-center justify-center bg-zinc-950 border-2 border-white/20 shadow-[2px_2px_0_rgba(255,255,255,0.2)] text-zinc-400 hover:border-[#ccff00] hover:shadow-[2px_2px_0_#ccff00] hover:text-[#ccff00] transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
                     title="Gerar novos flashcards"
                 >
-                    <RefreshCw className="w-5 h-5" />
+                    <RefreshCw className="w-4 h-4" />
                 </button>
             </header>
 
             {/* Progress bar */}
-            <div className="w-full max-w-sm space-y-2">
-                <div className="flex justify-between text-[9px] font-black uppercase tracking-widest">
-                    <span className="text-zinc-600">{topic}</span>
+            <div className="w-full max-w-sm space-y-3">
+                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest bg-zinc-950 border-2 border-white/20 p-2 shadow-[2px_2px_0_rgba(255,255,255,0.2)]">
+                    <span className="text-zinc-400 truncate max-w-[150px]">{topic}</span>
                     <span className={cn(
                         progress >= 80 ? 'text-emerald-400' : progress >= 40 ? 'text-amber-400' : 'text-zinc-500'
                     )}>
-                        {knownCount}/{flashcards.length} dominados
+                        {knownCount}/{flashcards.length} DOMINADOS
                     </span>
                 </div>
-                <div className="h-1 rounded-full bg-white/5 overflow-hidden">
+                <div className="h-3 border-2 border-white/20 bg-zinc-950 w-full overflow-hidden">
                     <motion.div
-                        className="h-full bg-gradient-to-r from-orange-500 to-amber-400 rounded-full"
+                        className="h-full bg-[#ccff00]"
                         initial={{ width: 0 }}
                         animate={{ width: `${progress}%` }}
                         transition={{ type: 'spring', stiffness: 150, damping: 20 }}
@@ -181,17 +177,17 @@ const Flashcards = ({ topic, onBack }) => {
                         >
                             {/* Front */}
                             <div className={cn(
-                                "absolute inset-0 backface-hidden rounded-[48px] p-8 flex flex-col items-center justify-center text-center border",
+                                "absolute inset-0 backface-hidden p-8 flex flex-col items-center justify-center text-center border-2 shadow-[8px_8px_0_rgba(255,255,255,0.1)] transition-colors",
                                 known.has(currentIndex)
-                                    ? "bg-emerald-500/5 border-emerald-500/20"
-                                    : "bg-white/5 border-white/10"
+                                    ? "bg-emerald-950 border-emerald-500 text-emerald-50 shadow-[8px_8px_0_theme(colors.emerald.500)]"
+                                    : "bg-zinc-900 border-white/20"
                             )}>
                                 {known.has(currentIndex) && (
-                                    <div className="absolute top-4 right-4">
-                                        <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                                    <div className="absolute top-4 right-4 bg-emerald-500 text-zinc-900 border-2 border-emerald-950 p-1">
+                                        <CheckCircle2 className="w-5 h-5" />
                                     </div>
                                 )}
-                                <div className="prose prose-invert prose-lg max-w-none">
+                                <div className="prose prose-invert prose-lg max-w-none prose-headings:font-black prose-headings:uppercase prose-p:font-bold prose-p:tracking-wide">
                                     <ReactMarkdown
                                         remarkPlugins={[remarkMath]}
                                         rehypePlugins={[rehypeKatex]}
@@ -199,14 +195,14 @@ const Flashcards = ({ topic, onBack }) => {
                                         {flashcards[currentIndex]?.front || ''}
                                     </ReactMarkdown>
                                 </div>
-                                <p className="text-[9px] text-zinc-600 font-black uppercase tracking-widest mt-6 flex items-center gap-1.5">
-                                    <Eye className="w-3 h-3" /> Toque para ver resposta
+                                <p className="absolute bottom-6 text-[10px] text-zinc-500 font-black uppercase tracking-[0.2em] flex items-center gap-2 border-2 border-zinc-800 bg-zinc-950 px-3 py-1">
+                                    <Eye className="w-3 h-3" /> VER RESPOSTA
                                 </p>
                             </div>
 
                             {/* Back */}
-                            <div className="absolute inset-0 backface-hidden bg-white text-zinc-900 rounded-[48px] p-8 flex items-center justify-center text-center transform rotate-y-180 overflow-auto">
-                                <div className="prose prose-zinc prose-sm max-w-none">
+                            <div className="absolute inset-0 backface-hidden bg-white text-zinc-950 border-4 border-zinc-950 shadow-[8px_8px_0_rgba(255,255,255,0.2)] p-8 flex flex-col items-center justify-center text-center transform rotate-y-180 overflow-y-auto">
+                                <div className="prose prose-zinc prose-sm max-w-none w-full prose-headings:font-black prose-headings:uppercase font-medium text-left">
                                     <ReactMarkdown
                                         remarkPlugins={[remarkMath]}
                                         rehypePlugins={[rehypeKatex]}
@@ -221,35 +217,35 @@ const Flashcards = ({ topic, onBack }) => {
             </div>
 
             {/* Controls */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 w-full max-w-sm justify-between mt-4">
                 <button
                     onClick={prevCard}
-                    className="w-14 h-14 rounded-full border border-white/10 flex items-center justify-center text-zinc-500 hover:text-white hover:bg-white/5 transition-all"
+                    className="w-14 h-14 border-2 border-white/20 bg-zinc-950 shadow-[4px_4px_0_rgba(255,255,255,0.2)] flex items-center justify-center text-white hover:border-[#00f0ff] hover:text-[#00f0ff] hover:shadow-[4px_4px_0_#00f0ff] transition-all active:translate-x-1 active:translate-y-1 active:shadow-none"
                 >
                     <ChevronLeft className="w-6 h-6" />
                 </button>
                 <button
                     onClick={() => setIsFlipped(!isFlipped)}
-                    className="px-6 h-14 rounded-full bg-white/5 border border-white/10 text-white font-black uppercase tracking-widest text-[10px] flex items-center gap-2"
+                    className="flex-1 h-14 bg-zinc-950 border-2 border-white/20 shadow-[4px_4px_0_rgba(255,255,255,0.2)] text-white font-black uppercase tracking-widest text-[11px] flex items-center justify-center gap-3 hover:border-white hover:shadow-[4px_4px_0_rgba(255,255,255,0.5)] transition-all active:translate-x-1 active:translate-y-1 active:shadow-none"
                 >
                     <RotateCcw className="w-4 h-4" />
-                    Virar
+                    VIRAR
                 </button>
                 <button
                     onClick={toggleKnown}
                     className={cn(
-                        "px-6 h-14 rounded-full font-black uppercase tracking-widest text-[10px] flex items-center gap-2 border transition-all",
+                        "flex-1 h-14 font-black uppercase tracking-widest text-[11px] flex items-center justify-center gap-2 border-2 shadow-[4px_4px_0_rgba(255,255,255,0.2)] transition-all active:translate-x-1 active:translate-y-1 active:shadow-none",
                         known.has(currentIndex)
-                            ? "bg-emerald-500/20 border-emerald-500/30 text-emerald-400"
-                            : "bg-white/5 border-white/10 text-zinc-400 hover:text-emerald-400"
+                            ? "bg-emerald-500 border-emerald-500 text-zinc-950 shadow-[4px_4px_0_theme(colors.emerald.500)]"
+                            : "bg-zinc-950 border-white/20 text-zinc-400 hover:border-emerald-500 hover:text-emerald-500 hover:shadow-[4px_4px_0_theme(colors.emerald.500)]"
                     )}
                 >
                     <CheckCircle2 className="w-4 h-4" />
-                    {known.has(currentIndex) ? 'Sei' : 'Marcar'}
+                    {known.has(currentIndex) ? 'SEI' : 'MARCAR'}
                 </button>
                 <button
                     onClick={nextCard}
-                    className="w-14 h-14 rounded-full border border-white/10 flex items-center justify-center text-zinc-500 hover:text-white hover:bg-white/5 transition-all"
+                    className="w-14 h-14 border-2 border-white/20 bg-zinc-950 shadow-[4px_4px_0_rgba(255,255,255,0.2)] flex items-center justify-center text-white hover:border-[#00f0ff] hover:text-[#00f0ff] hover:shadow-[4px_4px_0_#00f0ff] transition-all active:translate-x-1 active:translate-y-1 active:shadow-none"
                 >
                     <ChevronRight className="w-6 h-6" />
                 </button>
@@ -257,9 +253,9 @@ const Flashcards = ({ topic, onBack }) => {
 
             {/* Source badge */}
             {source && (
-                <p className="text-[9px] text-zinc-700 font-medium">
-                    Fonte: {source}
-                </p>
+                <div className="px-3 py-1 border-2 border-zinc-800 bg-zinc-950 text-[9px] text-zinc-500 font-black uppercase tracking-widest mt-2">
+                    FONTE: {source}
+                </div>
             )}
 
             <style dangerouslySetInnerHTML={{

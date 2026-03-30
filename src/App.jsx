@@ -24,30 +24,35 @@ function AppContent() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#050505] text-zinc-100 font-sans selection:bg-purple-500/30 overflow-x-hidden relative">
-      {/* Premium Ambient Background */}
+    <div className="min-h-screen bg-[#050505] text-zinc-100 font-sans selection:bg-cyber selection:text-zinc-950 overflow-x-hidden relative">
+      {/* Brutalist Vibrant Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        {/* Laranja Vibrante */}
         <motion.div
           animate={{
-            x: [0, 80, 0],
-            y: [0, -40, 0],
-            scale: [1, 1.1, 1],
-            opacity: [0.1, 0.2, 0.1]
-          }}
-          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -top-[15%] -left-[15%] w-[60%] h-[60%] bg-purple-600 blur-[140px] rounded-full"
-        />
-        <motion.div
-          animate={{
-            x: [0, -80, 0],
-            y: [0, 40, 0],
+            x: [0, 100, 0],
+            y: [0, -50, 0],
             scale: [1, 1.2, 1],
-            opacity: [0.15, 0.25, 0.15]
+            opacity: [0.15, 0.3, 0.15]
           }}
-          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -bottom-[20%] -right-[20%] w-[70%] h-[70%] bg-blue-600 blur-[160px] rounded-full"
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute -top-[20%] -left-[20%] w-[60%] h-[60%] bg-[#ff5500] blur-[120px] rounded-full"
         />
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.14] contrast-150 brightness-100 pointer-events-none"></div>
+        {/* Ciano Elétrico */}
+        <motion.div
+          animate={{
+            x: [0, -100, 0],
+            y: [0, 50, 0],
+            scale: [1, 1.3, 1],
+            opacity: [0.12, 0.25, 0.12]
+          }}
+          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute -bottom-[20%] -right-[20%] w-[70%] h-[70%] bg-[#00f0ff] blur-[140px] rounded-full"
+        />
+        {/* Noise Texture */}
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.08] contrast-150 brightness-100 pointer-events-none"></div>
+        {/* Grid Pattern Overlay */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none"></div>
       </div>
 
       <main className="relative z-10 max-w-lg mx-auto px-6 pt-12 pb-24 min-h-screen">
