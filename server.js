@@ -142,7 +142,7 @@ const getLocalContext = (query) => {
     return null;
 };
 
-const GUIDORIZZI_RULES = `REGRAS ESTRITAS: Você deve basear suas explicações ÚNICA E EXCLUSIVAMENTE no livro "Um Curso de Cálculo" Vol. 1 de Hamilton Guidorizzi. Aplique conceitos APENAS para limites, derivadas e integrais de funções de UMA variável real. NUNCA utilize conceitos de convergência de séries ou sequências numéricas infinitas (ex: O Teorema do Confronto DEVE ser explicado no contexto de Limites de Funções, NÃO para séries).`;
+const GUIDORIZZI_RULES = `REGRAS ESTRITAS: Você deve basear suas explicações ÚNICA E EXCLUSIVAMENTE no livro "Um Curso de Cálculo" Vol. 1 de Hamilton Guidorizzi. Aplique conceitos APENAS para limites, derivadas e integrais de funções de UMA variável real. NUNCA utilize conceitos de convergência de séries ou sequências numéricas infinitas (ex: O Teorema do Confronto DEVE ser explicado no contexto de Limites de Funções, NÃO para séries). É OBRIGATÓRIO que você referencie explicitamente o capítulo e a seção do livro de onde a informação foi retirada em todas as suas respostas, questões, flashcards e explicações.`;
 
 app.get('/', (req, res) => {
     res.send(`Guidorizzi API Bridge is ACTIVE (Groq/Llama-3 Mode). Use POST /api/query to interact.`);
