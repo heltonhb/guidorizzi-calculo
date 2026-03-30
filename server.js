@@ -112,9 +112,17 @@ const getLocalContext = (query) => {
     try {
         const contentPath = path.join(__dirname, 'src/data/content.json');
         const content = JSON.parse(fs.readFileSync(contentPath, 'utf8'));
-        const isExercises = query.toLowerCase().includes('exercício') || query.toLowerCase().includes('lista');
-        const isPresentation = query.toLowerCase().includes('slide') || query.toLowerCase().includes('apresentação');
-        const topicMatch = Object.keys(content).find(t => query.toLowerCase().includes(t.toLowerCase()));
+        const queryLower = query.toLowerCase();
+
+        const isExercises = queryLower.includes('exercício') || queryLower.includes('lista');
+        const isPresentation = queryLower.includes('slide') || queryLower.includes('apresentação');
+
+        // Encontra o tópico pela chave ou se o termo pesquisado aparece no conteúdo
+        const topicMatch = Object.keys(content).find(t =>
+            queryLower.includes(t.toLowerCase()) ||
+            content[t].material.toLowerCase().includes(queryLower) ||
+            JSON.stringify(content[t].presentation).toLowerCase().includes(queryLower)
+        );
 
         if (topicMatch) {
             if (isExercises) {
@@ -124,12 +132,17 @@ const getLocalContext = (query) => {
             } else {
                 return content[topicMatch].material;
             }
+        } else {
+            // Fallback: retorna um resumo de tudo se não achar termo específico
+            return Object.keys(content).map(t => `Tópico ${t}: ${content[t].material}`).join('\n\n');
         }
     } catch (e) {
         console.error('Erro ao ler content.json para contexto RAG:', e);
     }
     return null;
 };
+
+const GUIDORIZZI_RULES = `REGRAS ESTRITAS: Você deve basear suas explicações ÚNICA E EXCLUSIVAMENTE no livro "Um Curso de Cálculo" Vol. 1 de Hamilton Guidorizzi. Aplique conceitos APENAS para limites, derivadas e integrais de funções de UMA variável real. NUNCA utilize conceitos de convergência de séries ou sequências numéricas infinitas (ex: O Teorema do Confronto DEVE ser explicado no contexto de Limites de Funções, NÃO para séries).`;
 
 app.get('/', (req, res) => {
     res.send(`Guidorizzi API Bridge is ACTIVE (Groq/Llama-3 Mode). Use POST /api/query to interact.`);
@@ -152,6 +165,7 @@ app.post('/api/query', async (req, res) => {
                 {
                     role: 'system',
                     content: `Você é um tutor especialista em Cálculo focado na metodologia do livro Guidorizzi. 
+${GUIDORIZZI_RULES}
 Use o contexto fornecido para responder à pergunta de forma precisa em formato Markdown com fórmulas em LaTeX envelopadas em $.
 Contexto de Conhecimento Guidorizzi:
 ${localContext}`
@@ -199,7 +213,7 @@ app.post('/api/generate/flashcards', async (req, res) => {
 
         const completion = await groq.chat.completions.create({
             messages: [
-                { role: 'system', content: `Você é um gerador de flashcards focado no livro de cálculo de Guidorizzi. Retorne EXATAMENTE um objeto JSON encapsulado na raiz com a propriedade "flashcards" cujo valor é um array. Cada item deve ser um objeto com as chaves: "front" (a pergunta) e "back" (a resposta, formatada com LaTeX $...$ se houver fórmulas). IMPORTANTE: Você DEVE usar barra invertida dupla (\\\\) para TODOS os comandos LaTeX para não quebrar o JSON. Exemplo: use \\\\frac ao invés de \\frac, \\\\int ao invés de \\int, \\\\to ao invés de \\to. Baseie-se fortemente no rigor matemático e no seguinte contexto para extrair o material: ${localContext}` },
+                { role: 'system', content: `Você é um gerador de flashcards focado no livro de cálculo de Guidorizzi. Retorne EXATAMENTE um objeto JSON encapsulado na raiz com a propriedade "flashcards" cujo valor é um array. Cada item deve ser um objeto com as chaves: "front" (a pergunta) e "back" (a resposta, formatada com LaTeX $...$ se houver fórmulas). IMPORTANTE: Você DEVE usar barra invertida dupla (\\\\) para TODOS os comandos LaTeX para não quebrar o JSON. Exemplo: use \\\\frac ao invés de \\frac, \\\\int ao invés de \\int, \\\\to ao invés de \\to. ${GUIDORIZZI_RULES} Baseie-se no seguinte contexto para extrair o material: ${localContext}` },
                 { role: 'user', content: prompt }
             ],
             model: GROQ_MODEL,
@@ -244,7 +258,7 @@ app.post('/api/generate/quiz', async (req, res) => {
 
         const completion = await groq.chat.completions.create({
             messages: [
-                { role: 'system', content: `Você é um gerador de quizzes inspirados nos problemas do livro Guidorizzi. Retorne EXATAMENTE um objeto JSON com a propriedade "questions" contendo um array de questões. Cada objeto do array deve ter: "text" (o enunciado), "options" (array de 4 strings de respostas usando $...$ para equações), "correct" (um inteiro com o índice 0-3 da resposta correta), "explanation" (explicação do raciocínio passo a passo no estilo Guidorizzi). IMPORTANTE: Você DEVE usar barra invertida dupla (\\\\) para TODOS os comandos LaTeX dentro do JSON. Exemplo: obrigatório usar \\\\frac ao invés de \\frac, \\\\lim ao invés de \\lim, \\\\infty ao invés de \\infty, \\\\to ao invés de \\to. Restrição estrita de saída APENAS para JSON, sem conversas extras. Contexto de base: ${localContext}` },
+                { role: 'system', content: `Você é um gerador de quizzes inspirados nos problemas do livro Guidorizzi. Retorne EXATAMENTE um objeto JSON com a propriedade "questions" contendo um array de questões. Cada objeto do array deve ter: "text" (o enunciado), "options" (array de 4 strings de respostas usando $...$ para equações), "correct" (um inteiro com o índice 0-3 da resposta correta), "explanation" (explicação do raciocínio passo a passo no estilo Guidorizzi). IMPORTANTE: Você DEVE usar barra invertida dupla (\\\\) para TODOS os comandos LaTeX dentro do JSON. Exemplo: obrigatório usar \\\\frac ao invés de \\frac, \\\\lim ao invés de \\lim, \\\\infty ao invés de \\infty, \\\\to ao invés de \\to. ${GUIDORIZZI_RULES} Restrição estrita de saída APENAS para JSON. Contexto de base: ${localContext}` },
                 { role: 'user', content: prompt }
             ],
             model: GROQ_MODEL,
@@ -294,7 +308,7 @@ app.post('/api/generate/slides', async (req, res) => {
 
         const completion = await groq.chat.completions.create({
             messages: [
-                { role: 'system', content: `Você é um gerador de slides educacionais de Cálculo baseado no livro Guidorizzi. Retorne EXATAMENTE um objeto JSON raiz com a chave "slides" contendo um array de slides. Cada slide é um objeto contendo: "title" (string), "subtitle" (string), "blocks" (array de objetos onde cada block tem "type": "text" e "content": string com texto mesclado com notação LaTeX). IMPORTANTE: Você DEVE usar barra invertida dupla (\\\\) para TODOS os comandos LaTeX no JSON. Exemplo: use \\\\frac ao invés de \\frac, \\\\lim ao invés de \\lim, \\\\infty ao invés de \\infty, \\\\to ao invés de \\to. Mantenha as explicações formais mas legíveis em uma tela 9:16 de celular. Use o conteúdo como guia: ${localContext}` },
+                { role: 'system', content: `Você é um gerador de slides educacionais de Cálculo baseado no livro Guidorizzi. Retorne EXATAMENTE um objeto JSON raiz com a chave "slides" contendo um array de slides. Cada slide é um objeto contendo: "title" (string), "subtitle" (string), "blocks" (array de objetos onde cada block tem "type": "text" e "content": string com texto mesclado com notação LaTeX). IMPORTANTE: Você DEVE usar barra invertida dupla (\\\\) para TODOS os comandos LaTeX no JSON. Exemplo: use \\\\frac ao invés de \\frac, \\\\lim ao invés de \\lim, \\\\infty ao invés de \\infty, \\\\to ao invés de \\to. ${GUIDORIZZI_RULES} Mantenha as explicações formais mas legíveis em uma tela 9:16 de celular. Use o conteúdo como guia: ${localContext}` },
                 { role: 'user', content: prompt }
             ],
             model: GROQ_MODEL,
