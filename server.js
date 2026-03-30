@@ -199,14 +199,19 @@ app.post('/api/generate/flashcards', async (req, res) => {
 
         const completion = await groq.chat.completions.create({
             messages: [
-                { role: 'system', content: `Você é um gerador de flashcards focado no livro de cálculo de Guidorizzi. Retorne EXATAMENTE um objeto JSON encapsulado na raiz com a propriedade "flashcards" cujo valor é um array. Cada item deve ser um objeto com as chaves: "front" (a pergunta) e "back" (a resposta, formatada com LaTeX $...$ se houver fórmulas). Baseie-se fortemente no rigor matemático e no seguinte contexto para extrair o material: ${localContext}` },
+                { role: 'system', content: `Você é um gerador de flashcards focado no livro de cálculo de Guidorizzi. Retorne EXATAMENTE um objeto JSON encapsulado na raiz com a propriedade "flashcards" cujo valor é um array. Cada item deve ser um objeto com as chaves: "front" (a pergunta) e "back" (a resposta, formatada com LaTeX $...$ se houver fórmulas). IMPORTANTE: Você DEVE usar barra invertida dupla (\\\\) para TODOS os comandos LaTeX para não quebrar o JSON. Exemplo: use \\\\frac ao invés de \\frac, \\\\int ao invés de \\int, \\\\to ao invés de \\to. Baseie-se fortemente no rigor matemático e no seguinte contexto para extrair o material: ${localContext}` },
                 { role: 'user', content: prompt }
             ],
             model: GROQ_MODEL,
             response_format: { type: 'json_object' }
         });
 
-        const rawText = completion.choices[0]?.message?.content;
+        let rawText = completion.choices[0]?.message?.content;
+
+        // Fix single backslashes in LaTeX commands that Llama 3 might have missed
+        // Converts \frac to \\frac, but respects already double-escaped \\frac
+        rawText = rawText.replace(/(?<!\\)\\(?![\\n"'])/g, "\\\\");
+
         const parsed = JSON.parse(rawText);
 
         if (parsed && parsed.flashcards && Array.isArray(parsed.flashcards)) {
@@ -239,14 +244,18 @@ app.post('/api/generate/quiz', async (req, res) => {
 
         const completion = await groq.chat.completions.create({
             messages: [
-                { role: 'system', content: `Você é um gerador de quizzes inspirado nos problemas do livro Guidorizzi. Retorne EXATAMENTE um objeto JSON com a propriedade "questions" contendo um array de questões. Cada objeto do array deve ter: "text" (o enunciado), "options" (array de 4 strings de respostas usando $...$ para equações), "correct" (um inteiro com o índice 0-3 da resposta correta), "explanation" (explicação do raciocínio passo a passo no estilo Guidorizzi). Restrição estrita de saída APENAS para JSON, sem conversas extras. Contexto de base: ${localContext}` },
+                { role: 'system', content: `Você é um gerador de quizzes inspirados nos problemas do livro Guidorizzi. Retorne EXATAMENTE um objeto JSON com a propriedade "questions" contendo um array de questões. Cada objeto do array deve ter: "text" (o enunciado), "options" (array de 4 strings de respostas usando $...$ para equações), "correct" (um inteiro com o índice 0-3 da resposta correta), "explanation" (explicação do raciocínio passo a passo no estilo Guidorizzi). IMPORTANTE: Você DEVE usar barra invertida dupla (\\\\) para TODOS os comandos LaTeX dentro do JSON. Exemplo: obrigatório usar \\\\frac ao invés de \\frac, \\\\lim ao invés de \\lim, \\\\infty ao invés de \\infty, \\\\to ao invés de \\to. Restrição estrita de saída APENAS para JSON, sem conversas extras. Contexto de base: ${localContext}` },
                 { role: 'user', content: prompt }
             ],
             model: GROQ_MODEL,
             response_format: { type: 'json_object' }
         });
 
-        const rawText = completion.choices[0]?.message?.content;
+        let rawText = completion.choices[0]?.message?.content;
+
+        // Fix single backslashes in LaTeX commands that Llama 3 might have missed
+        rawText = rawText.replace(/(?<!\\)\\(?![\\n"'])/g, "\\\\");
+
         const parsed = JSON.parse(rawText);
 
         if (parsed && parsed.questions && Array.isArray(parsed.questions)) {
@@ -285,14 +294,18 @@ app.post('/api/generate/slides', async (req, res) => {
 
         const completion = await groq.chat.completions.create({
             messages: [
-                { role: 'system', content: `Você é um gerador de slides educacionais de Cálculo baseado no livro Guidorizzi. Retorne EXATAMENTE um objeto JSON raiz com a chave "slides" contendo um array de slides. Cada slide é um objeto contendo: "title" (string), "subtitle" (string), "blocks" (array de objetos onde cada block tem "type": "text" e "content": string com texto mesclado com notação LaTeX). Mantenha as explicações formais mas legíveis em uma tela 9:16 de celular. Use o conteúdo como guia: ${localContext}` },
+                { role: 'system', content: `Você é um gerador de slides educacionais de Cálculo baseado no livro Guidorizzi. Retorne EXATAMENTE um objeto JSON raiz com a chave "slides" contendo um array de slides. Cada slide é um objeto contendo: "title" (string), "subtitle" (string), "blocks" (array de objetos onde cada block tem "type": "text" e "content": string com texto mesclado com notação LaTeX). IMPORTANTE: Você DEVE usar barra invertida dupla (\\\\) para TODOS os comandos LaTeX no JSON. Exemplo: use \\\\frac ao invés de \\frac, \\\\lim ao invés de \\lim, \\\\infty ao invés de \\infty, \\\\to ao invés de \\to. Mantenha as explicações formais mas legíveis em uma tela 9:16 de celular. Use o conteúdo como guia: ${localContext}` },
                 { role: 'user', content: prompt }
             ],
             model: GROQ_MODEL,
             response_format: { type: 'json_object' }
         });
 
-        const rawText = completion.choices[0]?.message?.content;
+        let rawText = completion.choices[0]?.message?.content;
+
+        // Fix single backslashes in LaTeX commands that Llama 3 might have missed
+        rawText = rawText.replace(/(?<!\\)\\(?![\\n"'])/g, "\\\\");
+
         const parsed = JSON.parse(rawText);
 
         if (parsed && parsed.slides && Array.isArray(parsed.slides)) {
