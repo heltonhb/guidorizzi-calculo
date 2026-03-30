@@ -56,7 +56,7 @@ app.use(cors({
         if (nodeEnv === 'development') {
             return callback(null, true);
         }
-        if (!origin || allowedOrigins.includes(origin)) {
+        if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.onrender.com')) {
             return callback(null, true);
         }
         return callback(new Error(`CORS: Origem ${origin} não permitida`));
