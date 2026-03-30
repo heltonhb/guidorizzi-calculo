@@ -5,16 +5,9 @@ import helmet from 'helmet';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
-import * as EventSourcePkg from "eventsource";
+import { Groq } from 'groq-sdk';
 
-if (!global.EventSource) {
-    global.EventSource = EventSourcePkg.default || EventSourcePkg;
-}
 import {
-    getStudioSlidePrompt,
-    getStudioAudioPrompt,
     getDynamicFlashcardsPrompt,
     getDynamicQuizPrompt,
     getDynamicSlidesPrompt
@@ -31,12 +24,15 @@ const nodeEnv = process.env.NODE_ENV || 'development';
 
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:5173').split(',');
 const apiKey = process.env.API_KEY;
-const notebookId = process.env.GUIDORIZZI_NOTEBOOK_ID;
 
-if (!notebookId) {
-    console.error('[CONFIG] GUIDORIZZI_NOTEBOOK_ID não definido no .env');
+const groqApiKey = process.env.GROQ_API_KEY;
+if (!groqApiKey) {
+    console.error('[CONFIG] GROQ_API_KEY não definido no .env');
     process.exit(1);
 }
+
+const groq = new Groq({ apiKey: groqApiKey });
+const GROQ_MODEL = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
 
 app.use(helmet({
     contentSecurityPolicy: {
@@ -45,7 +41,7 @@ app.use(helmet({
             scriptSrc: ["'self'", "'unsafe-inline'"],
             styleSrc: ["'self'", "'unsafe-inline'"],
             imgSrc: ["'self'", "data:", "https:"],
-            connectSrc: ["'self'", "https://notebooklm.google.com"],
+            connectSrc: ["'self'", "https://api.groq.com"],
         },
     },
     crossOriginEmbedderPolicy: false,
@@ -111,320 +107,81 @@ const apiLimiter = rateLimit({
 
 app.use('/api/', apiLimiter);
 
-let mcpClient = null;
-
-async function initMCP() {
-    // Skip MCP initialization in production (no local server available)
-    if (process.env.NODE_ENV === 'production') {
-        console.log('⚠️ [MCP] Production mode - skipping NotebookLM MCP initialization');
-        console.log('💡 [MCP] Using Groq API for AI responses instead');
-        return;
-    }
-
+// HELPER: Busca conteúdo local para usar como contexto RAG
+const getLocalContext = (query) => {
     try {
-        console.log('Initializing Live NotebookLM Connection (MCP over SSE)...');
-        const mcpUrl = new URL(process.env.MCP_SERVER_URL || 'http://127.0.0.1:8000/sse');
-        const transport = new SSEClientTransport(mcpUrl);
+        const contentPath = path.join(__dirname, 'src/data/content.json');
+        const content = JSON.parse(fs.readFileSync(contentPath, 'utf8'));
+        const isExercises = query.toLowerCase().includes('exercício') || query.toLowerCase().includes('lista');
+        const isPresentation = query.toLowerCase().includes('slide') || query.toLowerCase().includes('apresentação');
+        const topicMatch = Object.keys(content).find(t => query.toLowerCase().includes(t.toLowerCase()));
 
-        mcpClient = new Client(
-            { name: "guidorizzi-bridge-sse", version: "1.0.0" },
-            { capabilities: {} }
-        );
-
-        await mcpClient.connect(transport);
-        console.log('Live NotebookLM Connection READY.');
-    } catch (error) {
-        console.error('Failed to initialize MCP Client over SSE:', error);
-        console.warn('Falling back to static content only.');
+        if (topicMatch) {
+            if (isExercises) {
+                return content[topicMatch].exercises.map(ex => `${ex.title} (${ex.difficulty}): ${ex.content}`).join('\n\n');
+            } else if (isPresentation) {
+                return content[topicMatch].presentation.map(s => `${s.title}: ${s.content} [Fórmula: ${s.formula}]`).join('\n\n');
+            } else {
+                return content[topicMatch].material;
+            }
+        }
+    } catch (e) {
+        console.error('Erro ao ler content.json para contexto RAG:', e);
     }
-}
-
-initMCP();
+    return null;
+};
 
 app.get('/', (req, res) => {
-    const mode = process.env.NODE_ENV === 'production' ? 'Groq API Mode' : 'Live MCP Mode';
-    res.send(`Guidorizzi API Bridge is ACTIVE (${mode}). Use POST /api/query to interact.`);
+    res.send(`Guidorizzi API Bridge is ACTIVE (Groq/Llama-3 Mode). Use POST /api/query to interact.`);
 });
 
 app.post('/api/query', async (req, res) => {
-    const { notebookId, query } = req.body;
-    const targetNotebookId = notebookId || notebookId;
+    const { query } = req.body;
 
     if (!query) {
         return res.status(400).json({ error: 'Missing query' });
     }
 
     try {
-        console.log(`[API] Querying with: "${query.substring(0, 50)}..."`);
+        console.log(`[Groq] Querying with: "${query.substring(0, 50)}..."`);
 
-        // 1. Try Live Query first if MCP is available (with timeout)
-        if (mcpClient) {
-            try {
-                console.log('[MCP] Attempting Live NotebookLM query...');
-                console.log('[MCP] Tool: notebook_query | ID:', targetNotebookId);
+        const localContext = getLocalContext(query) || 'Responda como um professor de cálculo no estilo Guidorizzi.';
 
-                // Timeout para MCP call (30 segundos)
-                const mcpPromise = mcpClient.callTool({
-                    name: "notebook_query",
-                    arguments: {
-                        notebook_id: targetNotebookId,
-                        query: query
-                    },
-                }, undefined, { timeout: 180000 });
-
-                const timeoutPromise = new Promise((_, reject) =>
-                    setTimeout(() => reject(new Error('MCP query timeout')), 180000)  // 3 minutos
-                );
-
-                const response = await Promise.race([mcpPromise, timeoutPromise]);
-
-                console.log('[MCP] Raw Response:', JSON.stringify(response)?.substring(0, 200));
-                console.log('[MCP] Response Keys:', response ? Object.keys(response) : 'null');
-                console.log('[MCP] Has isError?', response?.isError);
-                console.log('[MCP] Has content?', !!response?.content);
-
-                // MCP response structure: { content: [{ type: 'text', text: '...' }] }
-                if (response && response.content && Array.isArray(response.content)) {
-                    const textContent = response.content.find(c => c.type === 'text');
-                    if (textContent && textContent.text) {
-                        // Parse the JSON response from NotebookLM
-                        try {
-                            const parsed = JSON.parse(textContent.text);
-                            const answer = parsed.answer || parsed.content || JSON.stringify(parsed);
-                            console.log('[MCP] ✅ Live response received successfully.');
-                            return res.json({
-                                status: 'success',
-                                answer: answer,
-                                source: 'NotebookLM (LIVE AI)'
-                            });
-                        } catch (parseError) {
-                            // If not JSON, use raw text
-                            console.log('[MCP] ✅ Live response (raw text).');
-                            return res.json({
-                                status: 'success',
-                                answer: textContent.text,
-                                source: 'NotebookLM (LIVE AI)'
-                            });
-                        }
-                    }
-                } else {
-                    console.warn('[MCP] Response missing content or returned error:', response?.isError);
-                    console.warn('[MCP] Full response:', JSON.stringify(response)?.substring(0, 500));
+        const chatCompletion = await groq.chat.completions.create({
+            messages: [
+                {
+                    role: 'system',
+                    content: `Você é um tutor especialista em Cálculo focado na metodologia do livro Guidorizzi. 
+Use o contexto fornecido para responder à pergunta de forma precisa em formato Markdown com fórmulas em LaTeX envelopadas em $.
+Contexto de Conhecimento Guidorizzi:
+${localContext}`
+                },
+                {
+                    role: 'user',
+                    content: query
                 }
-            } catch (mcpError) {
-                console.warn('[MCP] Live query failed:', mcpError.message);
-                console.error('[MCP] Error details:', mcpError);
-            }
-        } else {
-            console.warn('[MCP] Client not available, using fallback knowledge base.');
-        }
-        const contentPath = path.join(__dirname, 'src/data/content.json');
-        const content = JSON.parse(fs.readFileSync(contentPath, 'utf8'));
-
-        const isExercises = query.toLowerCase().includes('exercício') || query.toLowerCase().includes('lista');
-        const isPresentation = query.toLowerCase().includes('slide') || query.toLowerCase().includes('apresentação');
-
-        // Simple keyword matching for demo topics
-        const topicMatch = Object.keys(content).find(t => query.includes(t));
-
-        if (topicMatch) {
-            let answer = '';
-            if (isExercises) {
-                answer = content[topicMatch].exercises.map(ex => `${ex.title} (${ex.difficulty}): ${ex.content}`).join('\n\n');
-            } else if (isPresentation) {
-                answer = content[topicMatch].presentation.map(s => `${s.title}: ${s.content} [Fórmula: ${s.formula}]`).join('\n\n');
-            } else {
-                answer = content[topicMatch].material;
-            }
-
-            return res.json({
-                status: 'success',
-                answer: answer,
-                source: 'NotebookLM (Static Fallback)'
-            });
-        }
-
-        // 3. Absolute fallback
-        res.json({
-            status: 'success',
-            answer: `Estou processando sua dúvida sobre "${query}". No momento, o Guidorizzi está indisponível para esta consulta específica, mas tente perguntar sobre Limites, Derivadas ou Funções para ver o conhecimento estruturado!`,
-            source: 'NotebookLM Bridge (Fallback)'
+            ],
+            model: GROQ_MODEL,
         });
 
+        const answer = chatCompletion.choices[0]?.message?.content || '';
+
+        return res.json({
+            status: 'success',
+            answer: answer,
+            source: 'Groq (Llama 3)'
+        });
     } catch (error) {
-        console.error('❌ [API ERROR] Error querying bridge:', error?.message);
+        console.error('❌ [Groq ERROR] Error querying LLM:', error?.message);
         res.status(500).json({
-            error: 'Erro ao processar a consulta. O servidor da IA pode estar indisponível.',
+            error: 'Erro ao processar a consulta via Groq Llama 3.',
             details: error?.message
         });
     }
 });
 
-// GET Studio Artifacts
-app.get('/api/studio', async (req, res) => {
-    try {
-        if (!mcpClient) {
-            console.warn('[Studio] MCP Client not initialized, returning mock data');
-            return res.json({
-                status: 'ready',
-                artifacts: [],
-                message: 'Studio (mock mode - MCP not available)'
-            });
-        }
-
-        console.log('[Studio] Fetching Studio Artifacts...');
-
-        try {
-            const response = await mcpClient.callTool({
-                name: "notebook_query",
-                arguments: {
-                    notebook_id: notebookId,
-                    query: "What recent Studio artifacts or generated content is available?"
-                },
-            }, undefined, { timeout: 180000 });
-
-            if (response && response.content) {
-                const textContent = response.content.find(c => c.type === 'text');
-                const data = textContent ? textContent.text : '[]';
-
-                return res.json({
-                    status: 'ready',
-                    artifacts: JSON.parse(data),
-                    source: 'NotebookLM Live'
-                });
-            }
-        } catch (mcpError) {
-            console.warn('[Studio] MCP query failed, returning mock data:', mcpError.message);
-            return res.json({
-                status: 'ready',
-                artifacts: [],
-                message: 'Studio (fallback mode)',
-                error_note: mcpError.message
-            });
-        }
-
-        res.json({
-            status: 'ready',
-            artifacts: [],
-            message: 'Studio (fallback mode)'
-        });
-    } catch (error) {
-        console.error('[Studio] Unexpected error:', error);
-        res.status(200).json({
-            status: 'ready',
-            artifacts: [],
-            message: 'Studio (fallback mode)',
-            error: 'MCP unavailable'
-        });
-    }
-});
-
-// POST Create Slide Deck
-app.post('/api/studio/create-slides', async (req, res) => {
-    const { topic } = req.body;
-    try {
-        if (!mcpClient) {
-            return res.status(503).json({ error: 'MCP Client not initialized' });
-        }
-
-        console.log(`Triggering Slide Generation for: ${topic}`);
-        const response = await mcpClient.callTool({
-            name: "slide_deck_create",
-            arguments: {
-                notebook_id: notebookId,
-                format: "detailed_deck",
-                focus_prompt: getStudioSlidePrompt(topic),
-                confirm: true
-            },
-        }, undefined, { timeout: 180000 });
-
-        res.json({ status: 'success', message: 'Generation started', response });
-    } catch (error) {
-        console.error('Slide creation error:', error);
-        res.status(500).json({ error: error.message || 'Internal Bridge Error' });
-    }
-});
-
-// POST Create Audio Overview
-app.post('/api/studio/audio', async (req, res) => {
-    const { topic } = req.body;
-    try {
-        if (!mcpClient) {
-            return res.status(503).json({ error: 'MCP Client not initialized' });
-        }
-
-        console.log(`Triggering Audio Overview for topic: ${topic}`);
-        const response = await mcpClient.callTool({
-            name: "audio_overview_create",
-            arguments: {
-                notebook_id: notebookId,
-                format: "deep_dive",
-                length: "default",
-                focus_prompt: getStudioAudioPrompt(topic),
-                confirm: true
-            },
-        }, undefined, { timeout: 180000 });
-
-        res.json({ status: 'success', message: 'Audio generation started', response });
-    } catch (error) {
-        console.error('Audio creation error:', error);
-        res.status(500).json({ error: error.message || 'Internal Bridge Error' });
-    }
-});
-
-// POST Create Quiz
-app.post('/api/studio/quiz', async (req, res) => {
-    const { topic } = req.body;
-    try {
-        if (!mcpClient) {
-            return res.status(503).json({ error: 'MCP Client not initialized' });
-        }
-
-        console.log(`Triggering Quiz Generation for topic: ${topic}`);
-        const response = await mcpClient.callTool({
-            name: "quiz_create",
-            arguments: {
-                notebook_id: notebookId,
-                question_count: 5,
-                difficulty: "medium",
-                confirm: true
-            },
-        }, undefined, { timeout: 180000 });
-
-        res.json({ status: 'success', message: 'Quiz generation started', response });
-    } catch (error) {
-        console.error('Quiz creation error:', error);
-        res.status(500).json({ error: error.message || 'Internal Bridge Error' });
-    }
-});
-
-// POST Create Flashcards
-app.post('/api/studio/flashcards', async (req, res) => {
-    const { topic } = req.body;
-    try {
-        if (!mcpClient) {
-            return res.status(503).json({ error: 'MCP Client not initialized' });
-        }
-
-        console.log(`Triggering Flashcards Generation for topic: ${topic}`);
-        const response = await mcpClient.callTool({
-            name: "flashcards_create",
-            arguments: {
-                notebook_id: notebookId,
-                difficulty: "medium",
-                confirm: true
-            },
-        }, undefined, { timeout: 180000 });
-
-        res.json({ status: 'success', message: 'Flashcards generation started', response });
-    } catch (error) {
-        console.error('Flashcards creation error:', error);
-        res.status(500).json({ error: error.message || 'Internal Bridge Error' });
-    }
-});
-
 // ==========================================
-// DYNAMIC GENERATION ENDPOINTS (via notebook_query)
+// DYNAMIC GENERATION ENDPOINTS (via Groq JSON-mode)
 // ==========================================
 
 // POST Generate Dynamic Flashcards
@@ -436,91 +193,34 @@ app.post('/api/generate/flashcards', async (req, res) => {
     }
 
     try {
-        if (!mcpClient) {
-            console.warn('[Generate] MCP Client offline, using static flashcards fallback.');
+        console.log(`[Generate] Flashcards for topic: "${topic}" via Groq`);
+        const prompt = getDynamicFlashcardsPrompt(topic);
+        const localContext = getLocalContext(topic) || '';
+
+        const completion = await groq.chat.completions.create({
+            messages: [
+                { role: 'system', content: `Você é um gerador de flashcards focado no livro de cálculo de Guidorizzi. Retorne EXATAMENTE um objeto JSON encapsulado na raiz com a propriedade "flashcards" cujo valor é um array. Cada item deve ser um objeto com as chaves: "front" (a pergunta) e "back" (a resposta, formatada com LaTeX $...$ se houver fórmulas). Baseie-se fortemente no rigor matemático e no seguinte contexto para extrair o material: ${localContext}` },
+                { role: 'user', content: prompt }
+            ],
+            model: GROQ_MODEL,
+            response_format: { type: 'json_object' }
+        });
+
+        const rawText = completion.choices[0]?.message?.content;
+        const parsed = JSON.parse(rawText);
+
+        if (parsed && parsed.flashcards && Array.isArray(parsed.flashcards)) {
+            console.log(`[Generate] ✅ ${parsed.flashcards.length} flashcards generated`);
             return res.json({
                 status: 'success',
-                flashcards: [
-                    { front: `O que é a derivada de uma função constante? (${topic})`, back: 'É sempre zero. A taxa de variação de uma constante é nula.' },
-                    { front: `Qual o valor de lim(x->0) sen(x)/x? (${topic})`, back: 'Este é o limite trigonométrico fundamental e seu valor é 1.' },
-                    { front: `O que diz o Teorema Fundamental do Cálculo? (${topic})`, back: 'Estabelece a conexão entre derivadas e integrais, indicando que são operações inversas.' }
-                ],
-                source: 'NotebookLM (Static Fallback)'
+                flashcards: parsed.flashcards,
+                source: 'Groq (Llama 3)'
             });
         }
-
-        console.log(`[Generate] Flashcards for topic: "${topic}"`);
-
-        const prompt = getDynamicFlashcardsPrompt(topic);
-
-        const mcpPromise = mcpClient.callTool({
-            name: "notebook_query",
-            arguments: {
-                notebook_id: notebookId,
-                query: prompt
-            },
-        }, undefined, { timeout: 180000 });
-
-        const timeoutPromise = new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('Timeout ao gerar flashcards')), 180000)
-        );
-
-        const response = await Promise.race([mcpPromise, timeoutPromise]);
-
-        if (response && response.content && Array.isArray(response.content)) {
-            const textContent = response.content.find(c => c.type === 'text');
-            if (textContent && textContent.text) {
-                // Try to parse nested JSON from MCP response
-                let rawText = textContent.text;
-                try {
-                    const outerParsed = JSON.parse(rawText);
-                    rawText = outerParsed.answer || outerParsed.content || outerParsed.text || rawText;
-                } catch (e) { /* use rawText as-is */ }
-
-                const parsed = extractJSON(rawText);
-
-                if (parsed && parsed.flashcards && Array.isArray(parsed.flashcards)) {
-                    console.log(`[Generate] ✅ ${parsed.flashcards.length} flashcards generated`);
-                    return res.json({
-                        status: 'success',
-                        flashcards: parsed.flashcards,
-                        source: 'NotebookLM (LIVE AI)'
-                    });
-                }
-
-                // Fallback: try to build flashcards from raw text
-                console.warn('[Generate] Could not parse JSON, attempting text extraction...');
-                const lines = rawText.split('\n').filter(l => l.trim());
-                const flashcards = [];
-                for (let i = 0; i < lines.length - 1; i += 2) {
-                    const front = lines[i].replace(/^\d+[\.\)]\s*/, '').replace(/^\*\*/, '').replace(/\*\*$/, '').trim();
-                    const back = lines[i + 1].replace(/^[-–]\s*/, '').trim();
-                    if (front && back) {
-                        flashcards.push({ front, back });
-                    }
-                }
-
-                if (flashcards.length > 0) {
-                    return res.json({
-                        status: 'success',
-                        flashcards,
-                        source: 'NotebookLM (parsed from text)'
-                    });
-                }
-
-                // Last resort: return raw text as single card
-                return res.json({
-                    status: 'success',
-                    flashcards: [{ front: `Resumo: ${topic}`, back: rawText.substring(0, 500) }],
-                    source: 'NotebookLM (raw fallback)'
-                });
-            }
-        }
-
-        res.status(500).json({ error: 'Resposta vazia do NotebookLM' });
+        res.status(500).json({ error: 'Formato inválido retornado pelo Groq' });
     } catch (error) {
         console.error('[Generate] Flashcards error:', error.message);
-        res.status(500).json({ error: error.message || 'Erro ao gerar flashcards' });
+        res.status(500).json({ error: error.message || 'Erro ao gerar flashcards via Groq' });
     }
 });
 
@@ -533,83 +233,44 @@ app.post('/api/generate/quiz', async (req, res) => {
     }
 
     try {
-        if (!mcpClient) {
-            console.warn('[Generate] MCP Client offline, using static quiz fallback.');
-            return res.json({
-                status: 'success',
-                questions: [
-                    { text: `O que é a derivada de $f(x) = x^2$ em relação a x? (${topic})`, options: ['$2x$', '$x^2$', '$2$', '$x$'], correct: 0, explanation: 'Regra do tombo: d/dx x^n = n*x^(n-1).' },
-                    { text: 'A integral de $x$ é:', options: ['$x$', '$\\frac{x^2}{2} + C$', '$2x + C$', '$x^2 + C$'], correct: 1, explanation: 'Regra da potência para integrais.' },
-                    { text: 'Qual o valor de $\\lim_{x \\to 0} \\frac{\\sin x}{x}$?', options: ['0', '1', '$\\infty$', 'Não existe'], correct: 1, explanation: 'Este é um limite fundamental.' },
-                    { text: 'A derivada de $\\sin(x)$ é:', options: ['$-\\cos(x)$', '$\\cos(x)$', '$\\sin(x)$', '$-\\sin(x)$'], correct: 1, explanation: 'Resultado fundamental decorrente do limite trigonométrico fundamental.' },
-                    { text: 'Se $f(x)$ é contínua em $a$, então $\\lim_{x \\to a} f(x)$ é:', options: ['$f(a)$', '0', '$\\infty$', 'Indefinido'], correct: 0, explanation: 'A continuidade garante que o valor do limite coincide com o valor da função no ponto.' }
-                ],
-                source: 'NotebookLM (Static Fallback)'
-            });
-        }
-
-        console.log(`[Generate] Quiz (${count} questions) for topic: "${topic}"`);
-
+        console.log(`[Generate] Quiz (${count} questions) for topic: "${topic}" via Groq`);
         const prompt = getDynamicQuizPrompt(topic, count);
+        const localContext = getLocalContext(topic) || '';
 
-        const mcpPromise = mcpClient.callTool({
-            name: "notebook_query",
-            arguments: {
-                notebook_id: notebookId,
-                query: prompt
-            },
-        }, undefined, { timeout: 180000 });
+        const completion = await groq.chat.completions.create({
+            messages: [
+                { role: 'system', content: `Você é um gerador de quizzes inspirado nos problemas do livro Guidorizzi. Retorne EXATAMENTE um objeto JSON com a propriedade "questions" contendo um array de questões. Cada objeto do array deve ter: "text" (o enunciado), "options" (array de 4 strings de respostas usando $...$ para equações), "correct" (um inteiro com o índice 0-3 da resposta correta), "explanation" (explicação do raciocínio passo a passo no estilo Guidorizzi). Restrição estrita de saída APENAS para JSON, sem conversas extras. Contexto de base: ${localContext}` },
+                { role: 'user', content: prompt }
+            ],
+            model: GROQ_MODEL,
+            response_format: { type: 'json_object' }
+        });
 
-        const timeoutPromise = new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('Timeout ao gerar quiz')), 180000)
-        );
+        const rawText = completion.choices[0]?.message?.content;
+        const parsed = JSON.parse(rawText);
 
-        const response = await Promise.race([mcpPromise, timeoutPromise]);
-
-        if (response && response.content && Array.isArray(response.content)) {
-            const textContent = response.content.find(c => c.type === 'text');
-            if (textContent && textContent.text) {
-                let rawText = textContent.text;
-                // Unwrap potential nested JSON from MCP response
-                try {
-                    const outerParsed = JSON.parse(rawText);
-                    rawText = outerParsed.answer || outerParsed.content || outerParsed.text || rawText;
-                } catch (e) { /* use rawText as-is */ }
-
-                const parsed = extractJSON(rawText);
-
-                if (parsed && parsed.questions && Array.isArray(parsed.questions)) {
-                    // Validate structure
-                    const validQuestions = parsed.questions.filter(q =>
-                        q.text && q.options && Array.isArray(q.options) &&
-                        q.options.length >= 2 && typeof q.correct === 'number'
-                    );
-
-                    if (validQuestions.length > 0) {
-                        console.log(`[Generate] ✅ ${validQuestions.length} quiz questions generated`);
-                        return res.json({
-                            status: 'success',
-                            questions: validQuestions,
-                            source: 'NotebookLM (LIVE AI)'
-                        });
-                    }
-                }
-
-                console.warn('[Generate] Could not parse quiz JSON from response');
-                return res.status(500).json({
-                    error: 'Não foi possível extrair questões da resposta da IA. Tente novamente.',
-                    raw_preview: rawText.substring(0, 200)
+        if (parsed && parsed.questions && Array.isArray(parsed.questions)) {
+            const validQuestions = parsed.questions.filter(q =>
+                q.text && q.options && Array.isArray(q.options) &&
+                q.options.length >= 2 && typeof q.correct === 'number'
+            );
+            if (validQuestions.length > 0) {
+                console.log(`[Generate] ✅ ${validQuestions.length} quiz questions generated`);
+                return res.json({
+                    status: 'success',
+                    questions: validQuestions,
+                    source: 'Groq (Llama 3)'
                 });
             }
         }
-
-        res.status(500).json({ error: 'Resposta vazia do NotebookLM' });
+        res.status(500).json({ error: 'Formato inválido retornado pelo Groq' });
     } catch (error) {
         console.error('[Generate] Quiz error:', error.message);
-        res.status(500).json({ error: error.message || 'Erro ao gerar quiz' });
+        res.status(500).json({ error: error.message || 'Erro ao gerar quiz via Groq' });
     }
 });
-// POST Generate Dynamic Slides (9:16 vertical format)
+
+// POST Generate Dynamic Slides
 app.post('/api/generate/slides', async (req, res) => {
     const { topic, count = 6 } = req.body;
 
@@ -618,97 +279,34 @@ app.post('/api/generate/slides', async (req, res) => {
     }
 
     try {
-        if (!mcpClient) {
-            console.warn('[Generate] MCP Client offline, using static slides fallback.');
+        console.log(`[Generate] Slides (${count}) for topic: "${topic}" via Groq`);
+        const prompt = getDynamicSlidesPrompt(topic, count);
+        const localContext = getLocalContext(topic) || '';
+
+        const completion = await groq.chat.completions.create({
+            messages: [
+                { role: 'system', content: `Você é um gerador de slides educacionais de Cálculo baseado no livro Guidorizzi. Retorne EXATAMENTE um objeto JSON raiz com a chave "slides" contendo um array de slides. Cada slide é um objeto contendo: "title" (string), "subtitle" (string), "blocks" (array de objetos onde cada block tem "type": "text" e "content": string com texto mesclado com notação LaTeX). Mantenha as explicações formais mas legíveis em uma tela 9:16 de celular. Use o conteúdo como guia: ${localContext}` },
+                { role: 'user', content: prompt }
+            ],
+            model: GROQ_MODEL,
+            response_format: { type: 'json_object' }
+        });
+
+        const rawText = completion.choices[0]?.message?.content;
+        const parsed = JSON.parse(rawText);
+
+        if (parsed && parsed.slides && Array.isArray(parsed.slides)) {
+            console.log(`[Generate] ✅ ${parsed.slides.length} slides generated`);
             return res.json({
                 status: 'success',
-                slides: [
-                    { title: `Introdução a ${topic}`, subtitle: 'Conceitos Fundamentais', blocks: [{ type: 'text', content: 'Visão geral baseada no método Guidorizzi, focando em rigor matemático e compreensão geométrica.' }] },
-                    { title: 'Aplicações Teóricas', subtitle: 'Exemplos Clássicos', blocks: [{ type: 'text', content: 'Aplicação direta dos teoremas na formulação de limites e derivadas.' }] },
-                    { title: 'Conclusão e Próximos Passos', subtitle: 'Exercícios Práticos', blocks: [{ type: 'text', content: 'Revisitar a seção de exercícios de fixação para garantir a internalização do conceito.' }] }
-                ],
-                source: 'NotebookLM (Static Fallback)'
+                slides: parsed.slides,
+                source: 'Groq (Llama 3)'
             });
         }
-
-        console.log(`[Generate] Slides (${count}) for topic: "${topic}"`);
-
-        const prompt = getDynamicSlidesPrompt(topic, count);
-
-        const mcpPromise = mcpClient.callTool({
-            name: "notebook_query",
-            arguments: {
-                notebook_id: notebookId,
-                query: prompt
-            },
-        }, undefined, { timeout: 180000 });
-
-        const timeoutPromise = new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('Timeout ao gerar slides')), 180000)
-        );
-
-        const response = await Promise.race([mcpPromise, timeoutPromise]);
-
-        if (response && response.content && Array.isArray(response.content)) {
-            const textContent = response.content.find(c => c.type === 'text');
-            if (textContent && textContent.text) {
-                let rawText = textContent.text;
-                try {
-                    const outerParsed = JSON.parse(rawText);
-                    rawText = outerParsed.answer || outerParsed.content || outerParsed.text || rawText;
-                } catch (e) { /* use rawText as-is */ }
-
-                console.log('[Generate] Raw response received (first 100 chars):', rawText.substring(0, 100));
-
-                const parsed = extractJSON(rawText);
-
-                if (parsed && parsed.slides && Array.isArray(parsed.slides)) {
-                    // Validate and normalize slides
-                    const validSlides = parsed.slides.filter(s => s.title).map(s => ({
-                        title: s.title,
-                        subtitle: s.subtitle || '',
-                        blocks: Array.isArray(s.blocks) ? s.blocks : [{ type: 'text', content: s.content || '' }]
-                    }));
-
-                    if (validSlides.length > 0) {
-                        console.log(`[Generate] ✅ ${validSlides.length} slides generated`);
-                        return res.json({
-                            status: 'success',
-                            slides: validSlides,
-                            source: 'NotebookLM (LIVE AI)'
-                        });
-                    }
-                }
-
-                // Fallback: parse from markdown-style text
-                console.warn('[Generate] Could not parse slides JSON, trying text fallback...');
-                const slideBlocks = rawText.split(/(?=# )/g).filter(s => s.trim().length > 10);
-                if (slideBlocks.length > 0) {
-                    const fallbackSlides = slideBlocks.map(block => {
-                        const lines = block.split('\n');
-                        const title = lines[0].replace(/^#+\s*/, '').trim();
-                        const content = lines.slice(1).join('\n').trim();
-                        return {
-                            title,
-                            subtitle: '',
-                            blocks: [{ type: 'text', content }]
-                        };
-                    });
-                    return res.json({
-                        status: 'success',
-                        slides: fallbackSlides,
-                        source: 'NotebookLM (parsed from text)'
-                    });
-                }
-
-                return res.status(500).json({ error: 'Não foi possível extrair slides da resposta.' });
-            }
-        }
-
-        res.status(500).json({ error: 'Resposta vazia do NotebookLM' });
+        res.status(500).json({ error: 'Formato inválido retornado pelo Groq' });
     } catch (error) {
         console.error('[Generate] Slides error:', error.message);
-        res.status(500).json({ error: error.message || 'Erro ao gerar slides' });
+        res.status(500).json({ error: error.message || 'Erro ao gerar slides via Groq' });
     }
 });
 

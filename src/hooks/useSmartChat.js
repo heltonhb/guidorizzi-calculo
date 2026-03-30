@@ -42,7 +42,7 @@ export const useSmartChat = (currentTopic) => {
   }, [chatContext]);
 
   // Query inteligente - registra dúvida e enriquece query
-  const queryWithContext = useCallback(async (userQuery, notebookId) => {
+  const queryWithContext = useCallback(async (userQuery) => {
     try {
       // Registra a dúvida
       recordDoubts(currentTopic, userQuery);
@@ -51,7 +51,7 @@ export const useSmartChat = (currentTopic) => {
       const enrichedQuery = buildEnrichedQuery(userQuery, true);
 
       // Consulta IA
-      const response = await queryNotebook(notebookId, enrichedQuery);
+      const response = await queryNotebook(enrichedQuery);
 
       return {
         answer: response.answer || response.content,
@@ -64,7 +64,7 @@ export const useSmartChat = (currentTopic) => {
   }, [currentTopic, recordDoubts, buildEnrichedQuery, chatContext]);
 
   // Gera sugestões automáticas baseadas no contexto
-  const generateSuggestions = useCallback(async (notebookId) => {
+  const generateSuggestions = useCallback(async () => {
     setIsGeneratingSuggestions(true);
     try {
       const { score, quizAttempts } = chatContext.performance || {};
@@ -87,7 +87,7 @@ export const useSmartChat = (currentTopic) => {
         Sugira 3 caminhos para aprofundar.`;
       }
 
-      const response = await queryNotebook(notebookId, suggestionPrompt);
+      const response = await queryNotebook(suggestionPrompt);
       const suggestions = parseAISuggestions(response.answer || response.content);
       setSuggestions(suggestions);
 

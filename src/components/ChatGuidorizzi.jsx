@@ -7,8 +7,6 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import useSmartChat from '../hooks/useSmartChat';
 import IntelligentSuggestions from './IntelligentSuggestions';
-import NotebookDataViewer from './NotebookDataViewer';
-import useNotebookResponseCapture from '../hooks/useNotebookResponseCapture';
 import 'katex/dist/katex.min.css';
 
 const ChatGuidorizzi = ({ onBack, currentTopic = 'Cálculo Geral' }) => {
@@ -19,12 +17,10 @@ const ChatGuidorizzi = ({ onBack, currentTopic = 'Cálculo Geral' }) => {
     const [loading, setLoading] = useState(false);
     const [lastQuery, setLastQuery] = useState(null);
     const [showSuggestions, setShowSuggestions] = useState(false);
-    const [showDataViewer, setShowDataViewer] = useState(false);
     const scrollRef = useRef(null);
 
     // Hooks inteligentes
     const { queryWithContext, chatContext, suggestions, generateSuggestions, isGeneratingSuggestions } = useSmartChat(currentTopic);
-    const { captureResponse } = useNotebookResponseCapture();
 
     useEffect(() => {
         if (scrollRef.current) {
@@ -36,8 +32,7 @@ const ChatGuidorizzi = ({ onBack, currentTopic = 'Cálculo Geral' }) => {
     useEffect(() => {
         if (!showSuggestions && suggestions.length === 0) {
             const timer = setTimeout(() => {
-                const notebookId = 'b7988097-f2a3-4a68-a71d-b2d424d96b9a';
-                generateSuggestions(notebookId);
+                generateSuggestions();
                 setShowSuggestions(true);
             }, 500);
             return () => clearTimeout(timer);
@@ -59,23 +54,8 @@ const ChatGuidorizzi = ({ onBack, currentTopic = 'Cálculo Geral' }) => {
         setLastQuery(textToSend);
 
         try {
-            const notebookId = 'b7988097-f2a3-4a68-a71d-b2d424d96b9a';
-
             // Usa chat inteligente com contexto
-            const response = await queryWithContext(textToSend, notebookId);
-
-            // 🔥 Capturar resposta para visualização
-            captureResponse({
-                type: 'chat',
-                query: textToSend,
-                content: response.answer,
-                isError: false,
-                metadata: {
-                    topic: currentTopic,
-                    context: chatContext,
-                    timestamp: new Date().toISOString()
-                }
-            });
+            const response = await queryWithContext(textToSend);
 
             const assistantMessage = {
                 id: (Date.now() + 1).toString(),
@@ -90,19 +70,10 @@ const ChatGuidorizzi = ({ onBack, currentTopic = 'Cálculo Geral' }) => {
             const errorMessage_safe = error instanceof Error ? error.message : String(error);
             console.error('❌ Chat error:', errorMessage_safe);
 
-            // 🔥 Capturar erro
-            captureResponse({
-                type: 'chat',
-                query: textToSend,
-                isError: true,
-                error: errorMessage_safe,
-                metadata: { topic: currentTopic }
-            });
-
             // Extrair mensagem de erro
             let errorMessage = 'Houve um erro ao processar sua pergunta.';
             if (errorMessage_safe?.includes('expirou')) {
-                errorMessage = '⏳ A requisição expirou (timeout). O servidor do MCP pode estar lento ou indisponível. Estamos re-tentando automaticamente (até 3 tentativas).';
+                errorMessage = '⏳ A requisição expirou (timeout). O servidor pode estar lento ou indisponível. Estamos re-tentando automaticamente (até 3 tentativas).';
             } else if (errorMessage_safe?.includes('localhost:3001')) {
                 errorMessage = '🔌 Não foi possível conectar com o servidor da API. Certifique-se de que ele está rodando:\n\n```bash\nnpm run bridge\n```';
             } else {
@@ -137,43 +108,35 @@ const ChatGuidorizzi = ({ onBack, currentTopic = 'Cálculo Geral' }) => {
             animate={{ opacity: 1, y: 0 }}
             className="flex flex-col h-[85vh] gap-6 md:flex-row md:gap-4"
         >
-            <header className="md:hidden flex items-center justify-between">
+            <header className="md:hidden flex items-center justify-between p-4 border-b-4 border-white/20 bg-zinc-950">
                 <motion.button
-                    whileTap={{ scale: 0.9 }}
+                    whileTap={{ scale: 0.9, x: 2, y: 2, boxShadow: "0px 0px 0px transparent" }}
                     onClick={onBack}
-                    className="w-12 h-12 flex items-center justify-center bg-white/5 rounded-2xl border border-white/10"
+                    className="w-12 h-12 flex items-center justify-center bg-zinc-950 border-2 border-white/20 hover:bg-white hover:text-zinc-950 transition-colors shadow-[2px_2px_0_rgba(255,255,255,0.2)]"
                 >
-                    <ChevronLeft className="w-6 h-6 text-zinc-400" />
+                    <ChevronLeft className="w-6 h-6" />
                 </motion.button>
                 <div className="flex-1 text-center">
-                    <h2 className="text-xl font-bold tracking-tight">Guidorizzi IA</h2>
-                    <p className="text-zinc-500 text-[10px] uppercase font-black tracking-widest">Inteligente</p>
+                    <h2 className="text-xl font-black tracking-tighter uppercase text-white">Guidorizzi IA</h2>
+                    <p className="text-signal text-[10px] uppercase font-black tracking-widest leading-none mt-1">Chat Inteligente</p>
                 </div>
                 <div className="w-12" />
             </header>
 
             {/* Main Chat Area */}
-            <div className="flex-1 flex flex-col md:rounded-3xl md:border md:border-white/10 md:bg-white/5 md:backdrop-blur-xl md:p-6">
-                <div className="hidden md:flex items-center justify-between mb-6 pb-6 border-b border-white/10">
-                    <div className="space-y-1">
-                        <h2 className="text-lg font-bold tracking-tight">Pergunte ao Guidorizzi</h2>
-                        <p className="text-xs text-zinc-500">Contexto inteligente + recomendações</p>
+            <div className="flex-1 flex flex-col md:border-4 md:border-white/20 md:bg-zinc-950 md:p-6 shadow-[8px_8px_0_rgba(255,255,255,0.1)]">
+                <div className="hidden md:flex items-center justify-between mb-6 pb-6 border-b-4 border-white/20">
+                    <div className="space-y-1 pl-4 border-l-4 border-signal">
+                        <h2 className="text-2xl font-black tracking-tighter uppercase text-white">Ask Guidorizzi</h2>
+                        <p className="text-xs text-zinc-400 font-bold tracking-widest uppercase">Contexto Inteligente</p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-4">
                         <motion.button
-                            whileTap={{ scale: 0.9 }}
-                            onClick={() => setShowDataViewer(!showDataViewer)}
-                            className="w-10 h-10 flex items-center justify-center bg-purple-500/10 border border-purple-500/30 rounded-lg hover:bg-purple-500/20 transition-all group"
-                            title="Ver dados NotebookLM"
-                        >
-                            <Database className="w-5 h-5 text-purple-400 group-hover:text-purple-300" />
-                        </motion.button>
-                        <motion.button
-                            whileTap={{ scale: 0.9 }}
+                            whileTap={{ scale: 0.9, x: 2, y: 2, boxShadow: "0px 0px 0px transparent" }}
                             onClick={onBack}
-                            className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-all"
+                            className="px-4 py-2 h-12 flex items-center justify-center bg-zinc-950 border-2 border-white/20 shadow-[4px_4px_0_rgba(255,255,255,0.2)] uppercase font-black tracking-widest text-xs hover:bg-white hover:text-zinc-950 transition-colors"
                         >
-                            <ChevronLeft className="w-5 h-5 text-zinc-400" />
+                            Voltar ✕
                         </motion.button>
                     </div>
                 </div>
@@ -189,41 +152,41 @@ const ChatGuidorizzi = ({ onBack, currentTopic = 'Cálculo Geral' }) => {
                                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 className={cn(
-                                    "relative flex gap-4 p-6 rounded-[28px] border backdrop-blur-xl transition-all duration-500 shadow-lg",
+                                    "relative flex gap-4 p-6 border-2 transition-all duration-300",
                                     message.role === 'user'
-                                        ? "bg-purple-500/10 border-purple-500/20 ml-12"
+                                        ? "bg-zinc-900 border-signal ml-12 shadow-[4px_4px_0_theme(colors.signal)]"
                                         : message.isError
-                                            ? "bg-red-500/10 border-red-500/20 mr-12"
-                                            : "bg-white/5 border-white/10 mr-12"
+                                            ? "bg-zinc-900 border-red-500 mr-12 shadow-[4px_4px_0_theme(colors.red.500)]"
+                                            : "bg-white text-zinc-950 border-white mr-12 shadow-[4px_4px_0_theme(colors.zinc.700)]"
                                 )}
                             >
                                 {message.role === 'assistant' && !message.isError && (
-                                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center shadow-lg">
-                                        {message.hasContext ? <Zap className="w-3 h-3 text-white" /> : <Sparkles className="w-3 h-3 text-white" />}
+                                    <div className="absolute -top-3 -right-3 w-8 h-8 bg-zinc-950 border-2 border-zinc-950 rounded-none flex items-center justify-center shadow-[2px_2px_0_#fff]">
+                                        {message.hasContext ? <Zap className="w-4 h-4 text-signal" /> : <Sparkles className="w-4 h-4 text-signal" />}
                                     </div>
                                 )}
                                 {message.isError && (
-                                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center shadow-lg">
-                                        <AlertCircle className="w-3 h-3 text-white" />
+                                    <div className="absolute -top-3 -right-3 w-8 h-8 bg-zinc-950 border-2 border-red-500 flex items-center justify-center shadow-[2px_2px_0_theme(colors.red.500)]">
+                                        <AlertCircle className="w-4 h-4 text-red-500" />
                                     </div>
                                 )}
                                 <div className={cn(
-                                    "w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 border border-white/10 shadow-inner",
+                                    "w-12 h-12 flex items-center justify-center flex-shrink-0 border-2 shadow-[2px_2px_0_rgba(0,0,0,1)]",
                                     message.role === 'user'
-                                        ? "bg-purple-500/20"
+                                        ? "bg-signal border-zinc-950 text-zinc-950"
                                         : message.isError
-                                            ? "bg-red-500/20"
-                                            : "bg-blue-500/20"
+                                            ? "bg-red-500 border-zinc-950 text-zinc-950"
+                                            : "bg-zinc-950 border-zinc-900 text-white"
                                 )}>
                                     {message.isError
-                                        ? <AlertCircle className="w-5 h-5 text-red-400" />
+                                        ? <AlertCircle className="w-6 h-6" />
                                         : message.role === 'user'
-                                            ? <User className="w-5 h-5 text-purple-400" />
-                                            : <Bot className="w-5 h-5 text-blue-400" />
+                                            ? <User className="w-6 h-6" />
+                                            : <Bot className="w-6 h-6" />
                                     }
                                 </div>
                                 <div className="flex-1 pt-1">
-                                    <div className="prose prose-invert prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-black/30 prose-pre:border prose-pre:border-white/5 prose-code:text-purple-300 prose-strong:text-purple-400">
+                                    <div className={cn("prose prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-zinc-900 prose-pre:border-2 prose-pre:border-zinc-800 prose-pre:-mx-4 prose-pre:px-4 prose-pre:py-3 prose-pre:rounded-none", message.role === 'user' ? "prose-invert" : "prose-zinc prose-strong:text-zinc-900 prose-code:text-zinc-800 prose-code:bg-zinc-100 prose-code:px-1 prose-code:py-0.5 prose-code:border prose-code:border-zinc-300 text-zinc-800")}>
                                         <ReactMarkdown
                                             remarkPlugins={[remarkMath]}
                                             rehypePlugins={[rehypeKatex]}
@@ -236,7 +199,7 @@ const ChatGuidorizzi = ({ onBack, currentTopic = 'Cálculo Geral' }) => {
                                             whileHover={{ scale: 1.05 }}
                                             whileTap={{ scale: 0.95 }}
                                             onClick={handleRetry}
-                                            className="mt-4 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-lg text-sm font-semibold text-red-300 flex items-center gap-2 transition-all"
+                                            className="mt-4 px-6 py-3 bg-red-500 border-2 border-zinc-950 text-xs font-black uppercase tracking-widest text-zinc-950 hover:bg-red-600 flex items-center gap-2 transition-colors shadow-[2px_2px_0_#000]"
                                         >
                                             <RotateCcw className="w-4 h-4" />
                                             Tentar Novamente
@@ -249,10 +212,10 @@ const ChatGuidorizzi = ({ onBack, currentTopic = 'Cálculo Geral' }) => {
                             <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
-                                className="bg-zinc-900/50 border border-white/5 p-5 rounded-3xl mr-8 flex items-center gap-4"
+                                className="bg-zinc-900 border-2 border-signal p-6 mr-12 flex items-center gap-4 shadow-[4px_4px_0_theme(colors.signal)]"
                             >
-                                <Loader2 className="w-4 h-4 text-blue-400 animate-spin" />
-                                <span className="text-xs font-medium text-zinc-500 italic">Consultando inteligência Guidorizzi... (pode levar até 2 minutos)</span>
+                                <Loader2 className="w-6 h-6 text-signal animate-spin" />
+                                <span className="text-sm font-bold text-white uppercase tracking-widest">Consultando inteligência Guidorizzi...</span>
                             </motion.div>
                         )}
                     </AnimatePresence>
@@ -261,45 +224,45 @@ const ChatGuidorizzi = ({ onBack, currentTopic = 'Cálculo Geral' }) => {
                 <div className="space-y-4">
                     {/* Sugestões no Mobile */}
                     {suggestions.length > 0 && (
-                        <div className="md:hidden overflow-x-auto pb-2 -mx-2 px-2">
-                            <div className="flex gap-2 w-max">
+                        <div className="md:hidden overflow-x-auto pb-2 -mx-2 px-2 custom-scrollbar">
+                            <div className="flex gap-4 w-max">
                                 {suggestions.slice(0, 5).map((sug, i) => (
                                     <motion.button
                                         key={i}
                                         whileTap={{ scale: 0.95 }}
                                         onClick={() => handleSuggestionClick(sug)}
-                                        className="flex-shrink-0 px-4 py-2.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-xs font-semibold text-purple-300 hover:bg-purple-500/20 transition-all whitespace-nowrap"
+                                        className="flex-shrink-0 px-5 py-3 bg-zinc-950 border-2 border-white/20 text-xs font-black uppercase tracking-widest text-white hover:bg-white hover:text-zinc-950 hover:border-white transition-all shadow-[2px_2px_0_rgba(255,255,255,0.2)] whitespace-nowrap"
                                     >
-                                        <Sparkles className="w-3 h-3 inline mr-1.5 text-purple-400" />
+                                        <Sparkles className="w-3 h-3 inline mr-2" />
                                         {typeof sug === 'string' ? (sug.length > 35 ? sug.substring(0, 35) + '...' : sug) : sug}
                                     </motion.button>
                                 ))}
                             </div>
                         </div>
                     )}
-                    <div className="relative">
+                    <div className="relative flex gap-4">
                         <input
                             type="text"
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             onKeyPress={(e) => e.key === 'Enter' && handleSend()}
                             placeholder="Tire sua dúvida de Cálculo..."
-                            className="w-full bg-white/5 border border-white/10 rounded-[28px] px-6 py-5 focus:outline-none focus:border-purple-500/50 focus:ring-4 focus:ring-purple-500/10 transition-all placeholder:text-zinc-600 font-medium pr-16"
+                            className="flex-1 bg-zinc-950 border-4 border-white/20 px-6 py-5 focus:outline-none focus:border-signal text-white placeholder:text-zinc-500 font-bold tracking-wide transition-colors rounded-none"
                         />
                         <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
+                            whileHover={{ x: -2, y: -2, boxShadow: "4px 4px 0px 0px theme(colors.signal)" }}
+                            whileTap={{ scale: 0.95, x: 0, y: 0, boxShadow: "0px 0px 0px transparent" }}
                             onClick={handleSend}
                             disabled={!input.trim() || loading}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center shadow-lg shadow-purple-500/20 disabled:opacity-50 disabled:grayscale transition-all"
+                            className="w-16 h-auto bg-signal border-2 border-signal flex items-center justify-center disabled:opacity-50 disabled:grayscale transition-all text-zinc-950"
                         >
-                            <Send className="w-5 h-5 text-white ml-0.5" />
+                            <Send className="w-6 h-6 ml-1" />
                         </motion.button>
                     </div>
 
                     <div className="flex items-center justify-center gap-2 text-xs">
-                        <Sparkles className="w-3 h-3 text-emerald-500" />
-                        <span className="text-zinc-600 uppercase tracking-widest">Guidorizzi 4 volumes</span>
+                        <Zap className="w-4 h-4 text-signal" />
+                        <span className="text-zinc-500 font-black uppercase tracking-widest">Guidorizzi 4 volumes</span>
                     </div>
                 </div>
             </div>
@@ -318,11 +281,6 @@ const ChatGuidorizzi = ({ onBack, currentTopic = 'Cálculo Geral' }) => {
                 />
             </motion.div>
 
-            {/* NotebookLM Data Viewer */}
-            <NotebookDataViewer
-                isOpen={showDataViewer}
-                onClose={() => setShowDataViewer(false)}
-            />
         </motion.div>
     );
 };

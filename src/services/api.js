@@ -72,10 +72,10 @@ const fetchWithTimeout = (url, options = {}, timeout = config.timeout, retryCoun
     });
 };
 
-export const queryNotebook = async (notebookId, query) => {
+export const queryNotebook = async (query) => {
     try {
-        if (!notebookId || !query) {
-            throw new Error('notebookId e query são obrigatórios');
+        if (!query) {
+            throw new Error('query é obrigatória');
         }
 
         const response = await fetchWithTimeout(`${API_URL}/query`, {
@@ -83,7 +83,7 @@ export const queryNotebook = async (notebookId, query) => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ notebookId, query }),
+            body: JSON.stringify({ query }),
         }, config.timeoutQuery); // Use timeout maior para queries
 
         if (!response.ok) {
