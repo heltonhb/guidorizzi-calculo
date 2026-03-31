@@ -46,9 +46,9 @@ const Dashboard = ({ onNavigate }) => {
             initial="hidden"
             animate="visible"
             variants={containerVariants}
-            className="flex flex-col gap-8 pb-10 overflow-x-clip"
+            className="flex flex-col gap-6 sm:gap-8 pb-10 px-2 sm:px-0"
         >
-            <header className="space-y-6">
+            <header className="space-y-4 sm:space-y-6">
                 <div className="flex flex-col items-start gap-3">
                     <div className="flex items-center gap-2 px-3 py-1 bg-zinc-900 border-2 border-white/20 text-white text-[10px] uppercase font-black tracking-widest shadow-[2px_2px_0_rgba(255,255,255,0.2)]">
                         <div className="flex h-2 w-2 relative">
@@ -60,10 +60,10 @@ const Dashboard = ({ onNavigate }) => {
                     <motion.h1
                         initial={{ x: -20, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
-                        className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter text-white uppercase"
+                        className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-white uppercase px-2 sm:px-0"
                     >
                         Guidorizzi
-                        <span className="block text-signal text-2xl sm:text-3xl md:text-4xl mt-1 tracking-tight">Cálculo Precision</span>
+                        <span className="block text-signal text-xl sm:text-2xl md:text-3xl lg:text-4xl mt-1 tracking-tight">Cálculo Precision</span>
                     </motion.h1>
                 </div>
             </header>
@@ -231,25 +231,25 @@ const Card = ({ title, description, icon, color, onClick, variants }) => {
             whileTap={{ x: 2, y: 2, boxShadow: "0px 0px 0px transparent" }}
             onClick={onClick}
             className={cn(
-                "group relative w-full p-6 text-left transition-all bg-zinc-950",
+                "group relative w-full p-4 sm:p-6 text-left transition-all bg-zinc-950 overflow-hidden",
                 "border-2 rounded-none outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-950 focus:ring-white",
                 borderColors[color],
                 shadowColors[color]
             )}
         >
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3 sm:gap-6">
                 <div className={cn(
-                    "flex-shrink-0 w-16 h-16 flex items-center justify-center border-2 bg-zinc-900 transition-transform duration-300 group-hover:rotate-3",
+                    "flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center border-2 bg-zinc-900 transition-transform duration-300 group-hover:rotate-3",
                     borderColors[color]
                 )}>
                     {icon}
                 </div>
-                <div className="flex-1 space-y-1">
-                    <h3 className="font-black text-xl tracking-tight uppercase">{title}</h3>
-                    <p className="text-zinc-400 text-sm font-bold uppercase tracking-wider">{description}</p>
+                <div className="flex-1 min-w-0">
+                    <h3 className="font-black text-base sm:text-xl tracking-tight uppercase truncate">{title}</h3>
+                    <p className="text-zinc-400 text-xs sm:text-sm font-bold uppercase tracking-wider truncate">{description}</p>
                 </div>
-                <div className="w-10 h-10 border-2 border-transparent group-hover:border-zinc-700 flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:translate-x-0 -translate-x-4 transition-all duration-300">
-                    <ChevronRight className="w-5 h-5 text-white" />
+                <div className="w-8 h-8 sm:w-10 sm:h-10 border-2 border-transparent group-hover:border-zinc-700 flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:translate-x-0 -translate-x-4 transition-all duration-300 flex-shrink-0">
+                    <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </div>
             </div>
         </motion.button>
