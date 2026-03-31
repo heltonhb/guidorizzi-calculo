@@ -22,7 +22,7 @@ const InteractiveGraph = ({ equation = "x^2", range = [-5, 5] }) => {
     const fn = getFn(equation);
 
     return (
-        <div className="w-full h-full bg-zinc-950/50 rounded-[40px] overflow-hidden border border-white/5 relative group">
+        <div className="w-full h-full bg-zinc-950 overflow-hidden border-4 border-white/20 relative group shadow-inner">
             <Mafs
                 pan={true}
                 zoom={true}
@@ -30,21 +30,21 @@ const InteractiveGraph = ({ equation = "x^2", range = [-5, 5] }) => {
                 viewBox={{ x: range, y: range }}
             >
                 <Coordinates.Cartesian />
-                <Plot.OfX y={fn} color={Theme.indigo} />
+                <Plot.OfX y={fn} color="#FFFFFF" />
                 <MovablePoint
                     constrain={(p) => [p[0], fn(p[0])]}
                     point={point}
                     onMove={setPoint}
-                    color={Theme.purple}
+                    color="#FF4500"
                 />
             </Mafs>
 
             <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between pointer-events-none">
-                <div className="px-4 py-2 bg-black/60 backdrop-blur-md rounded-full border border-white/10">
-                    <span className="text-[10px] font-black uppercase text-purple-400 tracking-tighter">f(x) = {equation}</span>
+                <div className="px-4 py-2 bg-zinc-950 border-2 border-signal shadow-[2px_2px_0_theme(colors.signal)]">
+                    <span className="text-[10px] font-black uppercase text-white tracking-widest">f(x) = {equation}</span>
                 </div>
-                <div className="px-4 py-2 bg-black/60 backdrop-blur-md rounded-full border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <span className="text-[10px] font-black uppercase text-zinc-500 tracking-tighter">Arraste o ponto para explorar</span>
+                <div className="px-4 py-2 bg-zinc-900 border-2 border-white/20 opacity-0 group-hover:opacity-100 transition-opacity shadow-[2px_2px_0_rgba(255,255,255,0.1)]">
+                    <span className="text-[10px] font-black uppercase text-zinc-400 tracking-widest">Arraste o ponto para explorar</span>
                 </div>
             </div>
         </div>

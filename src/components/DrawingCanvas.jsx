@@ -140,12 +140,12 @@ const DrawingCanvas = ({ visible, width = 1200, height = 700, onClose }) => {
       className="fixed inset-0 z-[100] flex flex-col bg-black"
     >
       {/* Header Controls */}
-      <div className="bg-white/5 border-b border-white/10 p-4 flex items-center justify-between">
-        <h3 className="text-white font-black text-lg">Markup nos Slides</h3>
+      <div className="bg-zinc-950 border-b-4 border-white/20 p-4 flex items-center justify-between">
+        <h3 className="text-white font-black text-xl tracking-tighter uppercase pl-2 border-l-4 border-signal">Markup nos Slides</h3>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           {/* Modo de Desenho */}
-          <div className="flex gap-2 bg-white/5 p-2 rounded-xl border border-white/10">
+          <div className="flex gap-2 bg-zinc-900 p-2 border-2 border-white/10 shadow-[2px_2px_0_rgba(255,255,255,0.1)]">
             {[
               { type: 'pen', icon: '✏️', label: 'Caneta' },
               { type: 'marker', icon: '🖍️', label: 'Marcador' },
@@ -156,10 +156,10 @@ const DrawingCanvas = ({ visible, width = 1200, height = 700, onClose }) => {
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setMode(btn.type)}
                 className={cn(
-                  'px-3 py-2 rounded-lg text-xs font-bold uppercase transition-all',
+                  'px-4 py-2 text-xs font-black uppercase tracking-widest transition-all border-2',
                   mode === btn.type
-                    ? 'bg-purple-500 text-white'
-                    : 'bg-white/10 text-zinc-400 hover:text-white'
+                    ? 'bg-signal border-signal text-zinc-950 shadow-[2px_2px_0_theme(colors.signal)] translate-x-[-2px] translate-y-[-2px]'
+                    : 'bg-zinc-950 border-white/20 text-zinc-400 hover:border-white hover:text-white'
                 )}
                 title={btn.label}
               >
@@ -170,17 +170,17 @@ const DrawingCanvas = ({ visible, width = 1200, height = 700, onClose }) => {
 
           {/* Cores */}
           {mode !== 'eraser' && (
-            <div className="flex gap-2">
+            <div className="flex gap-3 bg-zinc-900 p-2 border-2 border-white/10 shadow-[2px_2px_0_rgba(255,255,255,0.1)]">
               {colors.map(c => (
                 <motion.button
                   key={c.value}
                   whileTap={{ scale: 0.9 }}
                   onClick={() => setColor(c.value)}
                   className={cn(
-                    'w-8 h-8 rounded-lg border-2 transition-all',
+                    'w-8 h-8 border-2 transition-all',
                     color === c.value
-                      ? 'border-white scale-110'
-                      : 'border-white/20'
+                      ? 'border-white scale-110 shadow-[2px_2px_0_rgba(255,255,255,1)]'
+                      : 'border-white/20 hover:border-white/50'
                   )}
                   style={{ backgroundColor: c.value }}
                   title={c.name}
@@ -195,17 +195,17 @@ const DrawingCanvas = ({ visible, width = 1200, height = 700, onClose }) => {
               whileTap={{ scale: 0.9 }}
               onClick={undo}
               disabled={history.length <= 1}
-              className="p-2 bg-white/10 rounded-lg hover:bg-white/20 disabled:opacity-50"
+              className="p-3 border-2 border-white/20 bg-zinc-950 hover:bg-white hover:text-zinc-950 text-white disabled:opacity-50 disabled:hover:bg-zinc-950 disabled:hover:text-white transition-colors"
             >
-              <Undo2 size={18} />
+              <Undo2 size={20} />
             </motion.button>
 
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={clear}
-              className="p-2 bg-red-500/20 rounded-lg hover:bg-red-500/30 text-red-400"
+              className="p-3 border-2 border-signal bg-zinc-950 hover:bg-signal text-signal hover:text-zinc-950 transition-colors shadow-[2px_2px_0_theme(colors.signal)] active:shadow-none active:translate-x-0.5 active:translate-y-0.5"
             >
-              <RotateCcw size={18} />
+              <RotateCcw size={20} />
             </motion.button>
           </div>
 
@@ -213,39 +213,40 @@ const DrawingCanvas = ({ visible, width = 1200, height = 700, onClose }) => {
           <motion.button
             whileTap={{ scale: 0.95 }}
             onClick={onClose}
-            className="px-4 py-2 bg-white/10 rounded-lg hover:bg-white/20 font-bold text-sm"
+            className="px-6 py-3 ml-2 border-2 border-white/20 bg-zinc-950 hover:border-white hover:bg-white hover:text-zinc-950 font-black text-sm tracking-widest uppercase transition-colors"
           >
-            Fechar ✕
+            Sair ✕
           </motion.button>
         </div>
       </div>
 
       {/* Canvas */}
-      <div className="flex-1 flex items-center justify-center overflow-hidden bg-black">
+      <div className="flex-1 flex items-center justify-center overflow-hidden bg-zinc-900 p-8">
         <canvas
           ref={canvasRef}
           onMouseDown={startDrawing}
           onMouseMove={draw}
           onMouseUp={stopDrawing}
           onMouseLeave={stopDrawing}
-          className="cursor-crosshair"
+          className="cursor-crosshair bg-zinc-950 shadow-[16px_16px_0_rgba(0,0,0,1)]"
           style={{
-            maxWidth: '95%',
-            maxHeight: '95%',
-            border: '2px solid #ffffff20',
-            borderRadius: '16px',
+            maxWidth: '100%',
+            maxHeight: '100%',
+            border: '4px solid #ffffff40',
+            borderRadius: '0px',
           }}
         />
       </div>
 
       {/* Footer */}
-      <div className="bg-white/5 border-t border-white/10 p-4 flex justify-end gap-2">
+      <div className="bg-zinc-950 border-t-4 border-white/20 p-6 flex justify-end gap-2">
         <motion.button
-          whileTap={{ scale: 0.95 }}
+          whileHover={{ x: -2, y: -2, boxShadow: "4px 4px 0px 0px rgba(16,185,129,1)" }}
+          whileTap={{ scale: 0.95, x: 0, y: 0, boxShadow: "0px 0px 0px transparent" }}
           onClick={downloadDrawing}
-          className="px-6 py-3 bg-emerald-500 text-black font-black rounded-lg hover:bg-emerald-600 transition-colors"
+          className="px-8 py-4 bg-emerald-500 border-2 border-emerald-500 text-zinc-950 font-black uppercase tracking-widest text-sm transition-all flex items-center gap-3"
         >
-          ⬇️ Baixar Markup
+          ⬇️ BAIXAR IMAGEM
         </motion.button>
       </div>
     </motion.div>

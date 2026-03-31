@@ -13,6 +13,20 @@
     --color-electric-orange: #ff4400;
 }
 
+/* Mobile overflow prevention */
+html,
+body {
+    overflow-x: hidden;
+    width: 100%;
+    -webkit-text-size-adjust: 100%;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
 /* Brutalist utilities */
 @layer utilities {
     .brutalist-shadow {
@@ -70,11 +84,27 @@ textarea:focus {
 
 /* Brutalist Animations */
 @keyframes glitch {
-    0%, 100% { transform: translate(0); }
-    20% { transform: translate(-2px, 2px); }
-    40% { transform: translate(-2px, -2px); }
-    60% { transform: translate(2px, 2px); }
-    80% { transform: translate(2px, -2px); }
+
+    0%,
+    100% {
+        transform: translate(0);
+    }
+
+    20% {
+        transform: translate(-2px, 2px);
+    }
+
+    40% {
+        transform: translate(-2px, -2px);
+    }
+
+    60% {
+        transform: translate(2px, 2px);
+    }
+
+    80% {
+        transform: translate(2px, -2px);
+    }
 }
 
 .animate-glitch {
@@ -82,8 +112,15 @@ textarea:focus {
 }
 
 @keyframes pulse-border-cyber {
-    0%, 100% { border-color: theme('colors.cyber'); }
-    50% { border-color: theme('colors.signal'); }
+
+    0%,
+    100% {
+        border-color: theme('colors.cyber');
+    }
+
+    50% {
+        border-color: theme('colors.signal');
+    }
 }
 
 .animate-pulse-border-cyber {

@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:all": "concurrently \"npm run bridge\" \"npm run dev\"",
     "bridge": "node server.js",
-    "start": "concurrently \"npm run bridge\" \"npm run dev\"",
+    "start": "node server.js",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
