@@ -39,6 +39,46 @@
             }
         ]
     },
+    "Teorema do Confronto": {
+        "material": "O **Teorema do Confronto** (ou Teorema do Sanduíche) é um resultado fundamental no estudo de limites. Ele estabelece que se uma função $f$ está 'comprimida' entre duas outras funções $g$ e $h$ que tendem ao mesmo limite $L$ próximo a um ponto $p$, então $f$ também tende a $L$.\n\n**Enunciado Formal (Guidorizzi Vol. 1, Cap. 3):**\nSejam $f$, $g$ e $h$ funções definidas em um intervalo $I$ contendo $p$, exceto possivelmente em $p$. Se:\n- $\\lim_{x \\to p} g(x) = \\lim_{x \\to p} h(x) = L$\n- $g(x) \\leq f(x) \\leq h(x)$ para todo $x \\neq p$ em uma vizinhança de $p$\n\nEntão: $\\lim_{x \\to p} f(x) = L$.\n\n**Exemplo Clássico:**\nProve que $\\lim_{x \\to 0} x \\cdot \\sin(1/x) = 0$.\nComo $-|x| \\leq x \\sin(1/x) \\leq |x|$, e ambos os limites de $-|x|$ e $|x|$ são 0, pelo Teorema do Confronto, o limite é 0.\n\n**Aplicação Fundamental:**\nO Teorema do Confronto é usado para demonstrar o limite trigonométrico fundamental:\n$$\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1$$\n\nPara isso, usa-se a desigualdade $\\cos x < \\frac{\\sin x}{x} < 1$ para $0 < x < \\frac{\\pi}{2}$.",
+        "exercises": [
+            {
+                "id": "tc1",
+                "title": "Nível Fácil",
+                "content": "Use o Teorema do Confronto para calcular: $$ \\lim_{x \\to 0} x^2 \\cos(1/x) $$",
+                "difficulty": "Fácil"
+            },
+            {
+                "id": "tc2",
+                "title": "Nível Médio",
+                "content": "Prove que $\\lim_{x \\to 0} \\frac{\\sin(2x)}{x} = 2$ usando o Teorema do Confronto e o limite fundamental.",
+                "difficulty": "Médio"
+            },
+            {
+                "id": "tc3",
+                "title": "Nível Difícil",
+                "content": "Se $f(x)$ é tal que $x^2 \\leq f(x) \\leq x^2 + 2x + 1$ para $x > -1$, calcule $\\lim_{x \\to 0} f(x)$.",
+                "difficulty": "Difícil"
+            }
+        ],
+        "presentation": [
+            {
+                "title": "O que é o Teorema do Confronto?",
+                "content": "Também conhecido como Teorema do Sanduíche, ele 'comprime' uma função entre duas outras de limite conhecido.",
+                "formula": "Se g(x) ≤ f(x) ≤ h(x) e lim g = lim h = L → lim f = L"
+            },
+            {
+                "title": "Exemplo Visual",
+                "content": "Para x→0, x²sen(1/x) fica entre -x² e x², ambas tends a 0 → o limite é 0.",
+                "formula": "-x² ≤ x²sen(1/x) ≤ x²"
+            },
+            {
+                "title": "Aplicação: Limite Trigonométrico",
+                "content": "O teorema é usado para demonstrar que sen(x)/x → 1 quando x → 0.",
+                "formula": "lim_{x→0} sen(x)/x = 1"
+            }
+        ]
+    },
     "Derivadas": {
         "material": "O conceito de derivada surge de modo natural tanto na geometria quanto na física. Geometricamente, o problema está centrado na definição da reta tangente ao gráfico de uma função em um ponto.\n\nA **derivada** de uma função $f$ em um ponto $p$ é definida pelo limite:\n$$f'(p) = \\lim_{h \\to 0} \\frac{f(p+h) - f(p)}{h}$$\n\n**Regras de Derivação:**\n- Regra da Soma: $(f + g)' = f' + g'$\n- Regra do Produto: $(f \\cdot g)' = f'g + fg'$\n- Regra da Cadeia: $[f(g(x))]' = f'(g(x)) \\cdot g'(x)$",
         "exercises": [
@@ -105,6 +145,86 @@
                 "title": "Teste da Reta Vertical",
                 "content": "Uma curva no plano é o gráfico de uma função se nenhuma reta vertical a intercepta mais de uma vez.",
                 "formula": "x \\mapsto y"
+            }
+        ]
+    },
+    "Regra de L'Hôpital": {
+        "material": "A **Regra de L'Hôpital** é um método para calcular limites indeterminados do tipo $\\frac{0}{0}$ ou $\\frac{\\infty}{\\infty}$. \n\n**Enunciado (Guidorizzi Vol. 1, Cap. 4):**\nSejam $f$ e $g$ funções deriváveis em um intervalo $(a, b)$, com $g'(x) \\neq 0$ neste intervalo. Se $\\lim_{x \\to p} f(x) = \\lim_{x \\to p} g(x) = 0$ (ou $\\infty$), e existe $\\lim_{x \\to p} \\frac{f'(x)}{g'(x)}$, então:\n$$\\lim_{x \\to p} \\frac{f(x)}{g(x)} = \\lim_{x \\to p} \\frac{f'(x)}{g'(x)}$$\n\n**Condições de aplicabilidade:**\n- A regra só pode ser aplicada quando temos formas indeterminadas $\\frac{0}{0}$ ou $\\frac{\\infty}{\\infty}$\n- Pode ser aplicada repetidamente enquanto as condições forem satisfeitas\n- outras formas indeterminadas ($\\infty - \\infty$, $0 \\cdot \\infty$, $0^0$, $\\infty^0$, $1^\\infty$) devem ser transformadas primeiro\n\n**Exemplo:**\nCalcule $\\lim_{x \\to 0} \\frac{\\sin x}{x}$.\nComo é uma forma $\\frac{0}{0}$, aplicamos L'Hôpital:\n$$= \\lim_{x \\to 0} \\frac{\\cos x}{1} = 1$$",
+        "exercises": [
+            {
+                "id": "lh1",
+                "title": "Nível Fácil",
+                "content": "Calcule: $$ \\lim_{x \\to 2} \\frac{x^2 - 4}{x - 2} $$",
+                "difficulty": "Fácil"
+            },
+            {
+                "id": "lh2",
+                "title": "Nível Médio",
+                "content": "Calcule: $$ \\lim_{x \\to 0} \\frac{e^x - 1}{x} $$",
+                "difficulty": "Médio"
+            },
+            {
+                "id": "lh3",
+                "title": "Nível Difícil",
+                "content": "Calcule: $$ \\lim_{x \\to 0} \\frac{\\sin x - \\tan x}{x^3} $$",
+                "difficulty": "Difícil"
+            }
+        ],
+        "presentation": [
+            {
+                "title": "O que é L'Hôpital?",
+                "content": "Regra para resolver limites de formas indeterminadas 0/0 ou ∞/∞.",
+                "formula": "lim f(x)/g(x) = lim f'(x)/g'(x)"
+            },
+            {
+                "title": "Quando usar?",
+                "content": "Apenas quando o limite resulta em 0/0 ou ∞/∞. Outras formas precisam de manipulação.",
+                "formula": "0/0 ou ∞/∞"
+            },
+            {
+                "title": "Exemplo",
+                "content": "lim(x→0) (e^x - 1)/x = lim(x→0) e^x/1 = 1",
+                "formula": "= 1"
+            }
+        ]
+    },
+    "Derivadas por Regra da Cadeia": {
+        "material": "A **Regra da Cadeia** é utilizada para derivar funções compostas. Se $y = f(g(x))$, então a derivada de $y$ em relação a $x$ é o produto das derivadas.\n\n**Enunciado Formal (Guidorizzi Vol. 1, Cap. 4):**\nSe $g$ é derivável em $x$ e $f$ é derivável em $g(x)$, então $h = f \\circ g$ é derivável em $x$ e:\n$$h'(x) = f'(g(x)) \\cdot g'(x)$$\n\n**Notação de Leibniz:**\n$$\\frac{dy}{dx} = \\frac{dy}{du} \\cdot \\frac{du}{dx}$$\n\n**Exemplo:**\nDerive $f(x) = \\sin(x^2)$.\n$f(x) = \\sin(u)$ onde $u = x^2$\n$f'(x) = \\cos(u) \\cdot 2x = 2x \\cos(x^2)$\n\n**Casos especiais:**\n- Derivada de $[g(x)]^n$: $n[g(x)]^{n-1} \\cdot g'(x)$\n- Derivada de $\\sin(g(x))$: $\\cos(g(x)) \\cdot g'(x)$\n- Derivada de $e^{g(x)}$: $e^{g(x)} \\cdot g'(x)$",
+        "exercises": [
+            {
+                "id": "rc1",
+                "title": "Nível Fácil",
+                "content": "Calcule a derivada de $f(x) = (2x + 1)^3$.",
+                "difficulty": "Fácil"
+            },
+            {
+                "id": "rc2",
+                "title": "Nível Médio",
+                "content": "Calcule a derivada de $f(x) = e^{\\sin(x^2)}$.",
+                "difficulty": "Médio"
+            },
+            {
+                "id": "rc3",
+                "title": "Nível Difícil",
+                "content": "Calcule a derivada de $f(x) = \\sqrt{\\tan(x^3 + 1)}$.",
+                "difficulty": "Difícil"
+            }
+        ],
+        "presentation": [
+            {
+                "title": "Regra da Cadeia",
+                "content": "Deriva funções compostas: derivada de fora vezes derivada de dentro.",
+                "formula": "(f(g(x)))' = f'(g(x)) · g'(x)"
+            },
+            {
+                "title": "Notação Leibniz",
+                "content": "dy/dx = (dy/du) · (du/dx)",
+                "formula": "dy/du · du/dx"
+            },
+            {
+                "title": "Exemplo",
+                "content": "f(x) = sin(x²) → f'(x) = cos(x²) · 2x",
+                "formula": "= 2x·cos(x²)"
             }
         ]
     }

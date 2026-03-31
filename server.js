@@ -114,8 +114,29 @@ const getLocalContext = (query) => {
         const content = JSON.parse(fs.readFileSync(contentPath, 'utf8'));
         const queryLower = query.toLowerCase();
 
-        // Encontra o tópico pela chave ou se o termo pesquisado aparece no conteúdo
+        // Mapeamento de sinônimos para tópicos
+        const synonyms = {
+            'teorema do confronto': 'Teorema do Confronto',
+            'teorema do sanduíche': 'Teorema do Confronto',
+            'squeeze theorem': 'Teorema do Confronto',
+            'squeeze': 'Teorema do Confronto',
+            'sandwich': 'Teorema do Confronto',
+            'confronto': 'Teorema do Confronto',
+            'limite trigonométrico': 'Teorema do Confronto', // O limite trigonométrico usa o teorema do confronto
+            'sen x sobre x': 'Teorema do Confronto',
+            'sin x over x': 'Teorema do Confronto',
+            'limite fundamental': 'Teorema do Confronto'
+        };
+
+        // Normalizar a query para verificar sinônimos
+        const normalizedQuery = synonyms[queryLower] || query;
+
+        // Encontra o tópico pela chave exata ou sinônimo
         const topicMatch = Object.keys(content).find(t =>
+            normalizedQuery.toLowerCase().includes(t.toLowerCase()) ||
+            t.toLowerCase().includes(normalizedQuery.toLowerCase()) ||
+            (synonyms[queryLower] && t.toLowerCase() === 'teorema do confronto')
+        ) || Object.keys(content).find(t =>
             queryLower.includes(t.toLowerCase()) ||
             content[t].material.toLowerCase().includes(queryLower) ||
             JSON.stringify(content[t].presentation).toLowerCase().includes(queryLower)
@@ -123,7 +144,7 @@ const getLocalContext = (query) => {
 
         if (topicMatch) {
             const t = content[topicMatch];
-            let contextParts = [`MATERIAL TEÓRICO:\n${t.material}`];
+            let contextParts = [`TÓPICO: ${topicMatch}\n\nMATERIAL TEÓRICO:\n${t.material}`];
 
             if (t.presentation && t.presentation.length > 0) {
                 const presContent = t.presentation.map(s => `- ${s.title}: ${s.content} (Fórmula: ${s.formula})`).join('\n');
@@ -135,10 +156,10 @@ const getLocalContext = (query) => {
                 contextParts.push(`EXERCÍCIOS DE EXEMPLO:\n${exContent}`);
             }
 
-            return contextParts.join('\n\n--- \n\n');
+            return contextParts.join('\n\n---\n\n');
         } else {
             // Fallback: retorna um resumo de tudo se não achar termo específico
-            return Object.keys(content).map(t => `Tópico ${t}: ${content[t].material}`).join('\n\n');
+            return Object.keys(content).map(t => `Tópico ${t}: ${content[t].material.substring(0, 200)}...`).join('\n\n');
         }
     } catch (e) {
         console.error('Erro ao ler content.json para contexto RAG:', e);
