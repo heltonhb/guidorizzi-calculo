@@ -6,12 +6,20 @@
  * - Seleciona prompts dinâmicos
  * - Integra com métricas de estudo
  * - Registra dúvidas
+ * - Valida respostas contra conteúdo local
+ * - Usa cache e fallback automático
  */
 
 import { useCallback, useMemo, useState } from 'react';
 import { queryNotebook } from '../services/api';
 import { buildChatContext, createContextMessage } from '../services/chatContext';
 import { selectTemplate } from '../services/promptTemplates';
+import { 
+  queryWithValidation, 
+  getCachedAnswer, 
+  cacheAnswer,
+  getLocalContent 
+} from '../services/answerValidator';
 import useStudyMetrics from './useStudyMetrics';
 
 export const useSmartChat = (currentTopic) => {
@@ -42,24 +50,60 @@ export const useSmartChat = (currentTopic) => {
   }, [chatContext]);
 
   // Query inteligente - registra dúvida e enriquece query
+  // Agora com validação, cache e fallback automático
   const queryWithContext = useCallback(async (userQuery) => {
-    try {
-      // Registra a dúvida
-      recordDoubts(currentTopic, userQuery);
-
-      // Enriquece a query com contexto e prompts
-      const enrichedQuery = buildEnrichedQuery(userQuery, true);
-
-      // Consulta IA
-      const response = await queryNotebook(enrichedQuery);
-
+    // 1. Verifica cache primeiro
+    const cachedAnswer = getCachedAnswer(userQuery, currentTopic);
+    if (cachedAnswer) {
       return {
-        answer: response.answer || response.content,
+        answer: cachedAnswer,
         success: true,
         context: chatContext,
+        source: 'cache'
+      };
+    }
+
+    try {
+      // 2. Registra a dúvida
+      recordDoubts(currentTopic, userQuery);
+
+      // 3. Enriquece a query com contexto e prompts
+      const enrichedQuery = buildEnrichedQuery(userQuery, true);
+
+      // 4. Consulta IA com validação
+      const result = await queryWithValidation(
+        enrichedQuery, 
+        currentTopic, 
+        (q) => queryNotebook(q)
+      );
+
+      // 5. Se não teve erro, armazena em cache
+      if (!result.fallbackUsed && result.answer) {
+        cacheAnswer(userQuery, currentTopic, result.answer);
+      }
+
+      return {
+        answer: result.answer,
+        success: result.source !== 'local-fallback' || !!result.answer,
+        context: chatContext,
+        source: result.source,
+        validation: result.validation,
+        fallbackUsed: result.fallbackUsed
       };
     } catch (error) {
-      throw error;
+      // 6. Fallback em caso de erro na consulta
+      console.warn('Erro na consulta, usando fallback local:', error.message);
+      
+      const localContent = getLocalContent(currentTopic);
+      
+      return {
+        answer: localContent.answer,
+        success: localContent.success,
+        context: chatContext,
+        source: 'local-fallback',
+        error: error.message,
+        fallbackUsed: true
+      };
     }
   }, [currentTopic, recordDoubts, buildEnrichedQuery, chatContext]);
 

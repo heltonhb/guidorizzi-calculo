@@ -1,17 +1,38 @@
 /**
  * Centralized Prompt Management
  * Contains all prompts used by the Guidorizzi Bridge API to communicate with NotebookLM.
+ * 
+ * Estratégias para acurácia:
+ * 1. Few-shot learning com exemplos de respostas ideais
+ * 2. Chain-of-thought (3 etapas obrigatórias)
+ * 3. Restrições Anti-Alucinação
  */
+
+// ==========================================
+// RESTRIÇÕES ANTI-ALUCINAÇÃO (sempre incluir)
+// ==========================================
+
+const ANTI_HALLUCINATION = `
+RESTRIÇÕES ANTI-ALUCINAÇÃO:
+- Use APENAS conceitos e fórmulas do livro do Guidorizzi
+- NÃO invente teoremas ou propriedades que não existam
+- Se não souber a resposta, diga "Não tenho certeza sobre isso"
+- Cite o nome do teorema/propriedade usada quando aplicável
+- Para fórmulas, use apenas as padrão do Cálculo I`;
 
 // ==========================================
 // STUDIO ARTIFACT PROMPTS
 // ==========================================
 
 export const getStudioSlidePrompt = (topic) =>
-  `Crie um deck de slides focado em: ${topic}. Utilize os exemplos e a teoria do Guidorizzi.`;
+  `Crie um deck de slides focado em: ${topic}. Utilize os exemplos e a teoria do Guidorizzi.
+
+${ANTI_HALLUCINATION}`;
 
 export const getStudioAudioPrompt = (topic) =>
-  `Explique detalhadamente o tema ${topic} seguindo a didática do Guidorizzi.`;
+  `Explique detalhadamente o tema ${topic} seguindo a didática do Guidorizzi.
+
+${ANTI_HALLUCINATION}`;
 
 // ==========================================
 // DYNAMIC GENERATION PROMPTS
@@ -19,6 +40,8 @@ export const getStudioAudioPrompt = (topic) =>
 
 export const getDynamicFlashcardsPrompt = (topic) =>
   `Com base no conteúdo do Guidorizzi sobre "${topic}", gere exatamente 8 flashcards de estudo.
+
+${ANTI_HALLUCINATION}
 
 IMPORTANTE: Responda SOMENTE com JSON válido, sem texto adicional. Use este formato exato:
 
@@ -28,10 +51,19 @@ IMPORTANTE: Responda SOMENTE com JSON válido, sem texto adicional. Use este for
   ]
 }
 
+EXEMPLO DE RESPOSTA IDEAL (para o tema "Derivadas"):
+{
+  "flashcards": [
+    { "front": "O que é derivada de uma função?", "back": "A derivada representa a taxa de variação instantânea de f(x) em relação a x. Geometricamente, é o coeficiente angular da reta tangente ao gráfico no ponto. Notação: f'(x) = dy/dx" },
+    { "front": "Qual a derivada de x^n?", "back": "Para n constante: d/dx(x^n) = nx^(n-1). Exemplo: d/dx(x^3) = 3x^2" },
+    { "front": "O que é a regra da cadeia?", "back": "Para funções compostas: d/dx[f(g(x))] = f'(g(x)) · g'(x). Exemplo: d/dx(sen(x^2)) = cos(x^2) · 2x" }
+  ]
+}
+
 Os flashcards devem cobrir:
 - Definições fundamentais
-- Fórmulas importantes
-- Teoremas-chave
+- Fórmulas importantes (com exemplos numéricos)
+- Teoremas-chave (citando o nome)
 - Propriedades e regras
 - Aplicações práticas
 
@@ -39,6 +71,8 @@ Use notação LaTeX para fórmulas matemáticas (ex: $\\frac{d}{dx}x^n = nx^{n-1
 
 export const getDynamicQuizPrompt = (topic, count = 5) =>
   `Com base no conteúdo do Guidorizzi sobre "${topic}", gere exatamente ${count} questões de múltipla escolha.
+
+${ANTI_HALLUCINATION}
 
 IMPORTANTE: Responda SOMENTE com JSON válido, sem texto adicional. Use este formato exato:
 
@@ -53,15 +87,30 @@ IMPORTANTE: Responda SOMENTE com JSON válido, sem texto adicional. Use este for
   ]
 }
 
+EXEMPLO DE RESPOSTA IDEAL (para o tema "Limites"):
+{
+  "questions": [
+    {
+      "text": "Calcule $\\lim_{x \\to 2} \\frac{x^2 - 4}{x - 2}$",
+      "options": ["4", "2", "0", "1"],
+      "correct": 0,
+      "explanation": "Factoramos x² - 4 = (x-2)(x+2), simplificando: lim(x→2)(x+2) = 4. Pelo Teorema do Fator Linear do Guidorizzi, quando o denominador zera, fatoramos."
+    }
+  ]
+}
+
 Regras:
 - "correct" é o índice (0-3) da alternativa correta
 - Cada questão deve ter exatamente 4 opções
 - Varie a dificuldade: 2 fáceis, 2 médias, 1 difícil
 - Use notação LaTeX para fórmulas (ex: $\\lim_{x \\to 0} \\frac{\\sin x}{x}$)
-- As explicações devem mencionar conceitos do Guidorizzi`;
+- As explicações devem mencionar conceitos do Guidorizzi
+- Inclua o passo a passo na explicação`;
 
 export const getDynamicSlidesPrompt = (topic, count = 6) =>
   `Com base no conteúdo do Guidorizzi sobre "${topic}", gere exatamente ${count} slides para uma aula no formato VERTICAL (9:16, estilo mobile).
+
+${ANTI_HALLUCINATION}
 
 IMPORTANTE: Responda SOMENTE com JSON válido, sem texto adicional. Use este formato exato:
 
@@ -76,6 +125,22 @@ IMPORTANTE: Responda SOMENTE com JSON válido, sem texto adicional. Use este for
         { "type": "graph", "equation": "x^2" },
         { "type": "example", "content": "Exemplo: Se $f(x) = x^3$, então $f'(x) = 3x^2$" },
         { "type": "highlight", "content": "Ponto-chave a memorizar" }
+      ]
+    }
+  ]
+}
+
+EXEMPLO DE RESPOSTA IDEAL (para o tema "Integrais"):
+{
+  "slides": [
+    {
+      "title": "O que é Integral?",
+      "subtitle": "Área sob a curva",
+      "blocks": [
+        { "type": "text", "content": "A integral é a operação inversa da derivada. Se derivar uma função e obter f'(x), integrar f'(x) recuperamos f(x) + C." },
+        { "type": "formula", "content": "$$\\\\int f(x) dx = F(x) + C$$" },
+        { "type": "highlight", "content": "C é a constante de integração" },
+        { "type": "example", "content": "$$\\\\int 2x dx = x^2 + C$$" }
       ]
     }
   ]
