@@ -247,9 +247,8 @@ app.post('/api/generate/flashcards', async (req, res) => {
 
         let rawText = completion.choices[0]?.message?.content;
 
-        // Fix single backslashes in LaTeX commands that Llama 3 might have missed
-        // Converts \frac to \\frac, but respects already double-escaped \\frac
-        rawText = rawText.replace(/(?<!\\)\\(?![\\n"'])/g, "\\\\");
+        // Fix single backslashes - only known LaTeX commands (not regular words)
+        rawText = rawText.replace(/([^\\]|^)\\(?!(frac|lim|sqrt|int|sum|prod|sin|cos|tan|log|alpha|beta|gamma|delta|theta|lambda|pi|infty|to|from|left|right|begin|end)[a-zA-Z])/g, "$1\\");
 
         const parsed = JSON.parse(rawText);
 
@@ -292,8 +291,8 @@ app.post('/api/generate/quiz', async (req, res) => {
 
         let rawText = completion.choices[0]?.message?.content;
 
-        // Fix single backslashes in LaTeX commands that Llama 3 might have missed
-        rawText = rawText.replace(/(?<!\\)\\(?![\\n"'])/g, "\\\\");
+        // Fix single backslashes - only known LaTeX commands (not regular words)
+        rawText = rawText.replace(/([^\\]|^)\\(?!(frac|lim|sqrt|int|sum|prod|sin|cos|tan|log|alpha|beta|gamma|delta|theta|lambda|pi|infty|to|from|left|right|begin|end)[a-zA-Z])/g, "$1\\");
 
         const parsed = JSON.parse(rawText);
 
@@ -342,8 +341,8 @@ app.post('/api/generate/slides', async (req, res) => {
 
         let rawText = completion.choices[0]?.message?.content;
 
-        // Fix single backslashes in LaTeX commands that Llama 3 might have missed
-        rawText = rawText.replace(/(?<!\\)\\(?![\\n"'])/g, "\\\\");
+        // Fix single backslashes - only known LaTeX commands (not regular words)
+        rawText = rawText.replace(/([^\\]|^)\\(?!(frac|lim|sqrt|int|sum|prod|sin|cos|tan|log|alpha|beta|gamma|delta|theta|lambda|pi|infty|to|from|left|right|begin|end)[a-zA-Z])/g, "$1\\");
 
         const parsed = JSON.parse(rawText);
 
