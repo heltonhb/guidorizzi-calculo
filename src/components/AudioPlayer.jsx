@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Headphones, Loader2, Sparkles, Volume2, AlertCircle } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Play, Pause, SkipBack, SkipForward, Headphones, Loader2, Sparkles, AlertCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { queryNotebook } from '../services/api';
-import { useToast } from './Toast';
 
 const AudioPlayer = ({ topic, onBack }) => {
     const [isPlaying, setIsPlaying] = useState(false);
@@ -12,69 +11,103 @@ const AudioPlayer = ({ topic, onBack }) => {
     const [isGenerating, setIsGenerating] = useState(false);
     const [speechSupported, setSpeechSupported] = useState(true);
     const [error, setError] = useState(null);
-    const audioRef = useRef(null);
+    const [status, setStatus] = useState('');
     const utteranceRef = useRef(null);
-    const toast = useToast();
+    const isMountedRef = useRef(true);
 
     useEffect(() => {
+        isMountedRef.current = true;
+        
         // Check if speech synthesis is supported
         if (!window.speechSynthesis) {
             setSpeechSupported(false);
         }
+        
         setLoading(false);
+        return () => {
+            isMountedRef.current = false;
+            // Cancel speech on unmount
+            if (window.speechSynthesis) {
+                window.speechSynthesis.cancel();
+            }
+        };
     }, []);
 
     const handleGenerateAudio = async () => {
         setIsGenerating(true);
         setError(null);
+        setStatus('Gerando conteúdo...');
+        
         try {
-            // Query the AI to get audio content
-            const response = await queryNotebook(`Gere um texto explicativo detalhado sobre "${topic}" baseado no livro do Guidorizzi. O texto deve ser claro, didático e adequado para ser transformado em áudio. Inclua exemplos numéricos quando possível.`);
+            const response = await queryNotebook(`Explique o conceito de "${topic}" de forma simples e didática. Máximo 2 parágrafos.`);
             
-            const text = response.answer || response.content || '';
+            if (!isMountedRef.current) return;
+            
+            const text = response?.answer || response?.content || '';
+            if (!text) {
+                throw new Error('Sem resposta da IA');
+            }
             setAudioText(text);
-            toast.success('Áudio gerado! Use o botão play para ouvir.');
+            setStatus('Áudio pronto! Clique em Play.');
         } catch (err) {
+            if (!isMountedRef.current) return;
             console.error('Error generating audio text:', err);
-            setError('Não foi possível gerar o conteúdo do áudio. Tente novamente.');
-            toast.error('Erro ao gerar áudio');
+            setError('Não foi possível gerar o conteúdo do áudio.');
+            setStatus('');
         } finally {
-            setIsGenerating(false);
+            if (isMountedRef.current) {
+                setIsGenerating(false);
+            }
         }
     };
 
     const speak = () => {
         if (!audioText || !speechSupported) return;
 
-        // Cancel any ongoing speech
-        window.speechSynthesis.cancel();
+        try {
+            // Cancel any ongoing speech
+            window.speechSynthesis.cancel();
 
-        const utterance = new SpeechSynthesisUtterance(audioText);
-        utterance.lang = 'pt-BR';
-        utterance.rate = 0.9;
-        utterance.pitch = 1;
-        
-        // Try to find a Portuguese voice
-        const voices = window.speechSynthesis.getVoices();
-        const ptVoice = voices.find(v => v.lang.includes('pt') || v.lang.includes('br'));
-        if (ptVoice) {
-            utterance.voice = ptVoice;
+            const utterance = new SpeechSynthesisUtterance(audioText);
+            utterance.lang = 'pt-BR';
+            utterance.rate = 0.9;
+            utterance.pitch = 1;
+            
+            // Try to find a Portuguese or English voice
+            const voices = window.speechSynthesis.getVoices() || [];
+            const ptVoice = voices.find(v => v.lang.includes('pt') || v.lang.includes('BR'));
+            const enVoice = voices.find(v => v.lang.includes('en'));
+            
+            utterance.voice = ptVoice || enVoice || voices[0];
+
+            utterance.onend = () => {
+                if (isMountedRef.current) {
+                    setIsPlaying(false);
+                    setProgress(0);
+                }
+            };
+
+            utterance.onerror = (e) => {
+                console.error('Speech error:', e);
+                if (isMountedRef.current) {
+                    setIsPlaying(false);
+                    setError('Erro na reprodução de áudio');
+                }
+            };
+
+            utteranceRef.current = utterance;
+            window.speechSynthesis.speak(utterance);
+            
+            if (isMountedRef.current) {
+                setIsPlaying(true);
+                setStatus('Reproduzindo...');
+            }
+        } catch (e) {
+            console.error('Speak error:', e);
+            if (isMountedRef.current) {
+                setError('Erro ao iniciar reprodução');
+            }
         }
-
-        utterance.onend = () => {
-            setIsPlaying(false);
-            setProgress(0);
-        };
-
-        utterance.onerror = (e) => {
-            console.error('Speech error:', e);
-            setIsPlaying(false);
-            setError('Erro na reprodução de áudio');
-        };
-
-        utteranceRef.current = utterance;
-        window.speechSynthesis.speak(utterance);
-        setIsPlaying(true);
     };
 
     const togglePlay = () => {
@@ -86,15 +119,19 @@ const AudioPlayer = ({ topic, onBack }) => {
         if (isPlaying) {
             window.speechSynthesis.cancel();
             setIsPlaying(false);
+            setStatus('Pausado');
         } else {
             speak();
         }
     };
 
     const handleStop = () => {
-        window.speechSynthesis.cancel();
+        if (window.speechSynthesis) {
+            window.speechSynthesis.cancel();
+        }
         setIsPlaying(false);
         setProgress(0);
+        setStatus('');
     };
 
     if (!speechSupported) return (
@@ -159,6 +196,12 @@ const AudioPlayer = ({ topic, onBack }) => {
                 <h2 className="text-xl sm:text-3xl font-black tracking-tighter uppercase text-white bg-[#00f0ff] text-zinc-950 px-3 sm:px-4 py-1 sm:py-2 border-2 border-white inline-block">{topic}</h2>
                 <p className="text-zinc-400 text-xs font-bold uppercase tracking-widest">Audio Overview • Síntese de Voz</p>
             </div>
+
+            {status && (
+                <div className="p-3 bg-zinc-900 border-2 border-[#00f0ff] text-[#00f0ff] text-xs font-bold uppercase tracking-widest">
+                    {status}
+                </div>
+            )}
 
             {error && (
                 <div className="p-3 bg-red-950/50 border-2 border-red-500 text-red-400 text-xs font-bold uppercase tracking-widest">
