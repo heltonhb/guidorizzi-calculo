@@ -24,7 +24,7 @@ function AppContent() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#050505] text-zinc-100 font-sans selection:bg-cyber selection:text-zinc-950 overflow-x-hidden relative">
+    <div className="min-h-screen bg-[#050505] text-zinc-100 font-sans selection:bg-cyber selection:text-zinc-950 relative max-w-[100vw]" style={{ overflowX: 'clip' }}>
       {/* Brutalist Vibrant Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         {/* Laranja Vibrante */}

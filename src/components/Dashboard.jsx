@@ -46,7 +46,7 @@ const Dashboard = ({ onNavigate }) => {
             initial="hidden"
             animate="visible"
             variants={containerVariants}
-            className="flex flex-col gap-8 pb-10"
+            className="flex flex-col gap-8 pb-10 overflow-x-clip"
         >
             <header className="space-y-6">
                 <div className="flex flex-col items-start gap-3">
@@ -161,7 +161,7 @@ const Dashboard = ({ onNavigate }) => {
                 </motion.div>
             )}
 
-            <div className="grid gap-5">
+            <div className="grid gap-5 pr-2">
                 <Card
                     variants={itemVariants}
                     title="Audio Overview"
@@ -209,11 +209,11 @@ const Dashboard = ({ onNavigate }) => {
 
 const Card = ({ title, description, icon, color, onClick, variants }) => {
     const shadowColors = {
-        cyan: "shadow-[4px_4px_0_#00f0ff] hover:shadow-[8px_8px_0_#00f0ff]",
-        signal: "shadow-[4px_4px_0_#ff5500] hover:shadow-[8px_8px_0_#ff5500]",
-        lime: "shadow-[4px_4px_0_#ccff00] hover:shadow-[8px_8px_0_#ccff00]",
-        orange: "shadow-[4px_4px_0_#ff5500] hover:shadow-[8px_8px_0_#ff5500]",
-        emerald: "shadow-[4px_4px_0_#22c55e] hover:shadow-[8px_8px_0_#22c55e]"
+        cyan: "shadow-[3px_3px_0_#00f0ff] md:shadow-[4px_4px_0_#00f0ff] hover:shadow-[3px_3px_0_#00f0ff] md:hover:shadow-[8px_8px_0_#00f0ff]",
+        signal: "shadow-[3px_3px_0_#ff5500] md:shadow-[4px_4px_0_#ff5500] hover:shadow-[3px_3px_0_#ff5500] md:hover:shadow-[8px_8px_0_#ff5500]",
+        lime: "shadow-[3px_3px_0_#ccff00] md:shadow-[4px_4px_0_#ccff00] hover:shadow-[3px_3px_0_#ccff00] md:hover:shadow-[8px_8px_0_#ccff00]",
+        orange: "shadow-[3px_3px_0_#ff5500] md:shadow-[4px_4px_0_#ff5500] hover:shadow-[3px_3px_0_#ff5500] md:hover:shadow-[8px_8px_0_#ff5500]",
+        emerald: "shadow-[3px_3px_0_#22c55e] md:shadow-[4px_4px_0_#22c55e] hover:shadow-[3px_3px_0_#22c55e] md:hover:shadow-[8px_8px_0_#22c55e]"
     };
 
     const borderColors = {
