@@ -10,7 +10,6 @@ import StudyMaterial from './components/StudyMaterial';
 import ExerciseList from './components/ExerciseList';
 import PresentationMode from './components/PresentationMode';
 import ChatGuidorizzi from './components/ChatGuidorizzi';
-import AudioPlayer from './components/AudioPlayer';
 import QuizMode from './components/QuizMode';
 import Flashcards from './components/Flashcards';
 import { installConsoleCommands } from './lib/notebookConsole';
@@ -110,16 +109,6 @@ function AppContent() {
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
               <ChatGuidorizzi onBack={() => setView('dashboard')} />
-            </motion.div>
-          )}
-          {view === 'audio' && (
-            <motion.div
-              key="audio"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.2 }}
-            >
-              <AudioPlayer topic={currentTopic} onBack={() => setView('dashboard')} />
             </motion.div>
           )}
           {view === 'quiz' && (

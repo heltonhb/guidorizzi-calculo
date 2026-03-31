@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BookOpen, ListTodo, Presentation, Search, Zap, ChevronRight, Sparkles, MessageSquare, Wand2, Headphones, Trophy, BookCheck } from 'lucide-react';
+import { BookOpen, ListTodo, Presentation, Search, Zap, ChevronRight, Sparkles, MessageSquare, Wand2, Trophy, BookCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
 import contentData from '../data/content.json';
@@ -162,14 +162,6 @@ const Dashboard = ({ onNavigate }) => {
             )}
 
             <div className="grid gap-5 pr-2">
-                <Card
-                    variants={itemVariants}
-                    title="Audio Overview"
-                    description="Ouça a explicação baseada no livro"
-                    icon={<Headphones className="w-6 h-6 text-[#00f0ff]" />}
-                    color="cyan"
-                    onClick={() => onNavigate('audio', currentTopic)}
-                />
                 <Card
                     variants={itemVariants}
                     title="Desafio Guidorizzi"
