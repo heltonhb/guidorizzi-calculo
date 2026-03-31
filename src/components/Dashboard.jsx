@@ -60,10 +60,10 @@ const Dashboard = ({ onNavigate }) => {
                     <motion.h1
                         initial={{ x: -20, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
-                        className="text-5xl md:text-6xl font-black tracking-tighter text-white uppercase"
+                        className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter text-white uppercase"
                     >
                         Guidorizzi
-                        <span className="block text-signal text-3xl md:text-4xl mt-1 tracking-tight">Cálculo Precision</span>
+                        <span className="block text-signal text-2xl sm:text-3xl md:text-4xl mt-1 tracking-tight">Cálculo Precision</span>
                     </motion.h1>
                 </div>
             </header>
@@ -84,7 +84,7 @@ const Dashboard = ({ onNavigate }) => {
                         onFocus={() => setIsFocused(true)}
                         onBlur={() => setTimeout(() => setIsFocused(false), 200)}
                         placeholder="O QUE VAMOS ESTUDAR HOJE?"
-                        className="w-full bg-transparent px-4 py-5 focus:outline-none placeholder:text-zinc-600 text-white font-bold uppercase tracking-wider"
+                        className="w-full min-w-0 bg-transparent px-4 py-5 focus:outline-none placeholder:text-zinc-600 text-white font-bold uppercase tracking-wider text-sm sm:text-base"
                     />
                 </div>
 

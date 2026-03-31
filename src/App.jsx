@@ -55,7 +55,7 @@ function AppContent() {
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none"></div>
       </div>
 
-      <main className="relative z-10 max-w-lg mx-auto px-4 md:px-6 pt-10 pb-24 min-h-screen overflow-x-hidden">
+      <main className="relative z-10 w-full max-w-lg mx-auto px-4 md:px-6 pt-10 pb-24 min-h-screen" style={{ overflowX: 'clip' }}>
         <AnimatePresence mode="wait">
           {view === 'dashboard' && (
             <motion.div
