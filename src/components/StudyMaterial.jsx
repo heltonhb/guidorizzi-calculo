@@ -7,6 +7,7 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
 import { useToast } from './Toast';
+import { preprocessMathContent } from '../utils/mathPreprocessor';
 
 const StudyMaterial = ({ topic, onBack }) => {
     const [loading, setLoading] = useState(true);
@@ -164,7 +165,7 @@ const StudyMaterial = ({ topic, onBack }) => {
                                     remarkPlugins={[remarkMath]}
                                     rehypePlugins={[rehypeKatex]}
                                 >
-                                    {content}
+                                    {preprocessMathContent(content)}
                                 </ReactMarkdown>
                             </div>
 

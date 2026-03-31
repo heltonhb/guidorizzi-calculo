@@ -7,6 +7,7 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import useSmartChat from '../hooks/useSmartChat';
 import IntelligentSuggestions from './IntelligentSuggestions';
+import { preprocessMathContent } from '../utils/mathPreprocessor';
 import 'katex/dist/katex.min.css';
 
 const ChatGuidorizzi = ({ onBack, currentTopic = 'Cálculo Geral' }) => {
@@ -191,7 +192,7 @@ const ChatGuidorizzi = ({ onBack, currentTopic = 'Cálculo Geral' }) => {
                                             remarkPlugins={[remarkMath]}
                                             rehypePlugins={[rehypeKatex]}
                                         >
-                                            {message.content}
+                                            {preprocessMathContent(message.content)}
                                         </ReactMarkdown>
                                     </div>
                                     {message.isError && (

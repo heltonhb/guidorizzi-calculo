@@ -9,6 +9,7 @@ import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
 import { useToast } from './Toast';
 import InteractiveGraph from './InteractiveGraph';
+import { preprocessMathContent } from '../utils/mathPreprocessor';
 
 /**
  * Block type renderer for structured vertical slides
@@ -16,10 +17,13 @@ import InteractiveGraph from './InteractiveGraph';
 const SlideBlock = ({ block }) => {
   const { type, content } = block;
 
+  // Pré-processa conteúdo matemático
+  const processedContent = preprocessMathContent(content || '');
+
   const mdProps = {
     remarkPlugins: [remarkMath],
     rehypePlugins: [rehypeKatex],
-    children: content || '',
+    children: processedContent,
   };
 
   switch (type) {

@@ -8,6 +8,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
+import { preprocessMathContent } from '../utils/mathPreprocessor';
 
 // Fallback local questions (used when API is unavailable)
 const LOCAL_QUESTIONS = {
@@ -243,7 +244,7 @@ const QuizMode = ({ topic, onBack }) => {
                                             remarkPlugins={[remarkMath]}
                                             rehypePlugins={[rehypeKatex]}
                                         >
-                                            {questions[currentQuestionIndex].text}
+                                            {preprocessMathContent(questions[currentQuestionIndex].text)}
                                         </ReactMarkdown>
                                     </div>
                                 </div>
@@ -297,7 +298,7 @@ const QuizMode = ({ topic, onBack }) => {
                                                         remarkPlugins={[remarkMath]}
                                                         rehypePlugins={[rehypeKatex]}
                                                     >
-                                                        {opt}
+                                                        {preprocessMathContent(opt)}
                                                     </ReactMarkdown>
                                                 </div>
                                             </motion.button>
@@ -329,7 +330,7 @@ const QuizMode = ({ topic, onBack }) => {
                                                 </div>
                                                 <div className="prose prose-invert prose-sm max-w-none text-white font-medium">
                                                     <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-                                                        {questions[currentQuestionIndex].explanation}
+                                                        {preprocessMathContent(questions[currentQuestionIndex].explanation)}
                                                     </ReactMarkdown>
                                                 </div>
                                             </div>

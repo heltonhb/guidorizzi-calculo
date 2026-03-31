@@ -6,6 +6,7 @@ import rehypeKatex from 'rehype-katex';
 import { Trash2, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
 import 'katex/dist/katex.min.css';
+import { preprocessMathContent } from '../utils/mathPreprocessor';
 
 const SlideAnnotations = memo(({
   annotations,
@@ -58,7 +59,7 @@ const SlideAnnotations = memo(({
               remarkPlugins={[remarkMath]}
               rehypePlugins={[rehypeKatex]}
             >
-              {annotations}
+              {preprocessMathContent(annotations)}
             </ReactMarkdown>
           </div>
         </div>

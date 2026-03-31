@@ -8,6 +8,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
+import { preprocessMathContent } from '../utils/mathPreprocessor';
 
 const Flashcards = ({ topic, onBack }) => {
     const [loading, setLoading] = useState(true);
@@ -192,7 +193,7 @@ const Flashcards = ({ topic, onBack }) => {
                                         remarkPlugins={[remarkMath]}
                                         rehypePlugins={[rehypeKatex]}
                                     >
-                                        {flashcards[currentIndex]?.front || ''}
+                                        {preprocessMathContent(flashcards[currentIndex]?.front || '')}
                                     </ReactMarkdown>
                                 </div>
                                 <p className="absolute bottom-6 text-[10px] text-zinc-500 font-black uppercase tracking-[0.2em] flex items-center gap-2 border-2 border-zinc-800 bg-zinc-950 px-3 py-1">
@@ -207,7 +208,7 @@ const Flashcards = ({ topic, onBack }) => {
                                         remarkPlugins={[remarkMath]}
                                         rehypePlugins={[rehypeKatex]}
                                     >
-                                        {flashcards[currentIndex]?.back || ''}
+                                        {preprocessMathContent(flashcards[currentIndex]?.back || '')}
                                     </ReactMarkdown>
                                 </div>
                             </div>
