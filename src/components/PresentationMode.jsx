@@ -58,6 +58,17 @@ const SlideBlock = ({ block }) => {
           </div>
         </div>
       );
+    case 'warning':
+      return (
+        <div className="py-4 px-5 my-4 bg-red-950/50 border-4 border-red-500 shadow-[4px_4px_0_theme(colors.red.600)]">
+          <p className="text-[10px] font-black text-red-500 uppercase tracking-widest mb-2 border-b-2 border-red-500/30 pb-2 flex items-center gap-2">
+            <span className="text-lg">⚠️</span> Erro Comum
+          </p>
+          <div className="prose prose-invert prose-sm max-w-none text-red-200 leading-relaxed">
+            <ReactMarkdown {...mdProps} />
+          </div>
+        </div>
+      );
     default: // 'text'
       return (
         <div className="py-2">

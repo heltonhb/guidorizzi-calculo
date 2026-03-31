@@ -112,6 +112,28 @@ export const getDynamicSlidesPrompt = (topic, count = 6) =>
 
 ${ANTI_HALLUCINATION}
 
+ESTRUTURA PEDAGÓGICA OBRIGATÓRIA:
+Cada slide deve seguir esta progressão:
+
+**Slide 1 - ABERTURA:**
+- Título motivador sobre "${topic}"
+- Uma Pergunta provocativa ou problema do dia-a-dia
+- Por que isso é importante (aplicações reais)
+
+**Slides 2 a ${count - 1} - DESENVOLVIMENTO:**
+- Definição clara (o que é, geometricamente)
+- Uma fórmula com nome do teorema (ex: "Regra de L'Hôpital")
+- EXEMPLO NUMÉRICO CONCRETO (não genérico! Use números reais)
+- Visualização (bloco graph para funções simples)
+- Um erro comum a evitar (警示)
+
+**Slide ${count} - ENCERRAMENTO:**
+- Resumo dos 3 pontos-chave
+- Conexão com o próximo tópico
+- Uma questão para auto-avaliação
+
+${ANTI_HALLUCINATION}
+
 IMPORTANTE: Responda SOMENTE com JSON válido, sem texto adicional. Use este formato exato:
 
 {
@@ -147,13 +169,14 @@ EXEMPLO DE RESPOSTA IDEAL (para o tema "Integrais"):
 }
 
 Regras para os slides:
-- Slide 1: Título do tema + introdução/motivação
-- Slides 2-${count - 1}: Conteúdo teórico progressivo com fórmulas LaTeX
-- Último slide: Resumo ou exercício de fixação
-- Cada slide deve ter 2-4 blocos (não muitos, é formato vertical mobile)
+- Slide 1: Título motivador + pergunta provocativa + importância/aplicações
+- Slides 2-${count - 1}: Definição → Fórmula → Exemplo numérico → Gráfico → Erro comum
+- Último slide: Resumo 3 pontos + conexão próximo tópico + auto-avaliação
+- Cada slide deve ter 3-5 blocos (não muitos, é formato vertical mobile)
 - Sempre que explicar uma função simples interativa (ex: parábolas, exponenciais, senos), inclua um bloco "type": "graph" definindo a equação de uma variável no campo "equation" (ex: "x^2", "x^3", "sin(x)", "cos(x)", "exp(x)", "2*x").
 - Use "type": "formula" para fórmulas centralizadas ($$...$$)
-- Use "type": "highlight" para conceitos-chave
-- Use "type": "example" para exemplos práticos
+- Use "type": "highlight" para conceitos-chave a memorizar
+- Use "type": "example" para exemplos práticos com números REAIS
 - Use "type": "text" para explicações
+- Use "type": "warning" para erros comuns a evitar
 - Use LaTeX com $...$ ou $$...$$ para matemática`;
