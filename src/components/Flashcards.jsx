@@ -35,7 +35,7 @@ const Flashcards = ({ topic, onBack }) => {
             const data = await generateFlashcards(topic);
             if (data?.flashcards && data.flashcards.length > 0) {
                 setFlashcards(data.flashcards);
-                setSource(data.source || 'NotebookLM');
+                setSource(data.source || 'Guidorizzi API');
                 toast.success(`${data.flashcards.length} flashcards gerados para "${topic}"!`);
             } else {
                 setFlashcards([]);

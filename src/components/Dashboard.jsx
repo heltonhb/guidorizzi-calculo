@@ -55,7 +55,7 @@ const Dashboard = ({ onNavigate }) => {
                             <span className="animate-ping absolute inline-flex h-full w-full bg-emerald-400 opacity-75"></span>
                             <span className="relative inline-flex h-2 w-2 bg-emerald-500"></span>
                         </div>
-                        {isTopicFromAI ? 'IA Generativa Ativa' : 'NotebookLM Online'}
+                        {isTopicFromAI ? 'IA Generativa Ativa' : 'API Online'}
                     </div>
                     <motion.h1
                         initial={{ x: -20, opacity: 0 }}

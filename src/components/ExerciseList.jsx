@@ -16,7 +16,7 @@ const ExerciseList = ({ topic, onBack }) => {
                 const response = await queryNotebook(notebookId, `Gere uma lista de 3 exercícios práticos sobre ${topic} baseados no Guidorizzi. Retorne como uma lista simples.`);
 
                 // Simulating parsing of the text response into an array
-                // In a real app, you'd want structured JSON from NotebookLM
+                // In a real app, you'd want structured JSON from the API
                 const lines = (response.answer || response.content || '').split('\n').filter(l => l.trim().length > 10).slice(0, 3);
                 setExercises(lines.map((line, i) => ({
                     id: i,

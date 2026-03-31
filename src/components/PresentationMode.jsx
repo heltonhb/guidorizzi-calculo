@@ -142,14 +142,14 @@ const PresentationMode = ({ topic, onBack }) => {
       const data = await generateSlides(topic, count);
       if (data?.slides && data.slides.length > 0) {
         setSlides(data.slides);
-        setSource(data.source || 'NotebookLM');
+        setSource(data.source || 'Guidorizzi API');
         toast.success(`${data.slides.length} slides verticais gerados!`);
       } else {
-        throw new Error('NotebookLM não retornou conteúdo. Tente novamente.');
+        throw new Error('API não retornou conteúdo. Tente novamente.');
       }
     } catch (err) {
       console.error('Error loading slides:', err);
-      setError(err.message || 'Falha na conexão com NotebookLM');
+      setError(err.message || 'Falha na conexão com a API');
       setSlides([]);
     } finally {
       setLoading(false);
@@ -160,7 +160,7 @@ const PresentationMode = ({ topic, onBack }) => {
     setIsGeneratingStudio(true);
     try {
       await createStudioSlides(topic);
-      toast.success('Geração de deck oficial iniciada no NotebookLM Studio!');
+      toast.success('Geração de deck oficial iniciada!');
     } catch (err) {
       toast.error('Erro ao solicitar deck no Studio: ' + err.message);
     } finally {
@@ -287,7 +287,7 @@ const PresentationMode = ({ topic, onBack }) => {
             onClick={handleCreateInStudio}
             disabled={isGeneratingStudio}
             className="w-12 h-12 flex items-center justify-center bg-zinc-950 border-2 border-emerald-500 shadow-[2px_2px_0_theme(colors.emerald.500)] text-emerald-500 hover:bg-emerald-500 hover:text-zinc-950 transition-colors"
-            title="Gerar no NotebookLM Studio"
+            title="Gerar deck oficial"
           >
             {isGeneratingStudio ? <Loader2 className="w-5 h-5 animate-spin" /> : <ExternalLink className="w-5 h-5" />}
           </motion.button>

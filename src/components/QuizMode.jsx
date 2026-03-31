@@ -58,7 +58,7 @@ const QuizMode = ({ topic, onBack }) => {
             const data = await generateQuizQuestions(topic, 5);
             if (data?.questions && data.questions.length > 0) {
                 setQuestions(data.questions);
-                setSource(data.source || 'NotebookLM');
+                setSource(data.source || 'Guidorizzi API');
                 toast.success(`${data.questions.length} questões geradas sobre "${topic}"!`);
             } else {
                 throw new Error('Nenhuma questão retornada');

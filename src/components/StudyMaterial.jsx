@@ -76,7 +76,7 @@ const StudyMaterial = ({ topic, onBack }) => {
                 setCache(result);
             } catch (error) {
                 console.error('Fetch error:', error);
-                setContent('Erro ao conectar com o NotebookLM. Verifique se o servidor bridge está rodando.');
+                setContent('Erro ao conectar com a API. Verifique se o servidor está rodando.');
                 toast.error('Falha ao carregar material. Servidor pode estar offline.');
             } finally {
                 setLoading(false);

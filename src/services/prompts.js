@@ -1,6 +1,6 @@
 /**
  * Centralized Prompt Management
- * Contains all prompts used by the Guidorizzi Bridge API to communicate with NotebookLM.
+ * Contains all prompts used by the Guidorizzi Bridge API.
  * 
  * Estratégias para acurácia:
  * 1. Few-shot learning com exemplos de respostas ideais
