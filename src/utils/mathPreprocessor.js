@@ -5,51 +5,98 @@
  * Converte formatos comuns de matemática para sintaxe LaTeX válida
  */
 
+// Comandos LaTeX que indicam fórmula matemática
+const LATEX_COMMANDS = [
+    '\\lim', '\\liminf', '\\limsup', '\\max', '\\min', '\\sup', '\\inf',
+    '\\int', '\\iint', '\\iiint', '\\oint', '\\oiint',
+    '\\sum', '\\prod', '\\coprod',
+    '\\frac', '\\sqrt', '\\cbrt', '\\nthroot',
+    '\\sin', '\\cos', '\\tan', '\\cot', '\\sec', '\\csc',
+    '\\arcsin', '\\arccos', '\\arctan',
+    '\\log', '\\ln', '\\exp',
+    '\\alpha', '\\beta', '\\gamma', '\\delta', '\\epsilon', '\\zeta', '\\eta',
+    '\\theta', '\\iota', '\\kappa', '\\lambda', '\\mu', '\\nu', '\\xi',
+    '\\pi', '\\rho', '\\sigma', '\\tau', '\\upsilon', '\\phi', '\\chi', '\\psi', '\\omega',
+    '\\Gamma', '\\Delta', '\\Theta', '\\Lambda', '\\Xi', '\\Pi', '\\Sigma', '\\Phi', '\\Psi', '\\Omega',
+    '\\to', '\\rightarrow', '\\leftarrow', '\\Rightarrow', '\\Leftarrow', '\\leftrightarrow',
+    '\\infty', '\\partial', '\\nabla', '\\pm', '\\mp', '\\times', '\\div',
+    '\\leq', '\\geq', '\\neq', '\\approx', '\\equiv', '\\sim', '\\propto',
+    '\\forall', '\\exists', '\\in', '\\notin', '\\subset', '\\supset', '\\cup', '\\cap',
+    '\\cdot', '\\dots', '\\ldots', '\\cdots', '\\vdots', '\\ddots',
+    '\\left', '\\right', '\\mathbf', '\\mathrm', '\\text', '\\mathbb'
+];
+
+/**
+ * Detecta se uma string contém comandos LaTeX
+ */
+const hasLatexCommands = (text) => {
+    return LATEX_COMMANDS.some(cmd => text.includes(cmd));
+};
+
+/**
+ * Detecta se uma string contém símbolos matemáticos
+ */
+const hasMathSymbols = (text) => {
+    return /[=+\-*/<>≤≥≈≠±∫∑∮π∞√∂∇]/.test(text);
+};
+
 /**
  * Pré-processa o conteúdo antes de renderizar
- * Versão simplificada que preserva o que já está correto
+ * Versão melhorada que trata mais casos de LaTeX
  */
 export const preprocessMathContent = (content) => {
-    if (!content) return '';
+    if (!content || typeof content !== 'string') return '';
     
-    // Se já tem blocos KaTeX ($ ou $$), apenas limpa sintaxe inválida
-    if (content.includes('$') || content.includes('\\[')) {
-        // Remove barras invertidas duplicadas que causam problemas
-        let result = content;
+    let result = content;
+    
+    // 1. Se já tem blocos KaTeX ($ ou $$), apenas limpa sintaxe inválida
+    if (result.includes('$') || result.includes('\\[') || result.includes('\\(')) {
+        // Remove barras invertidas duplicadas
+        result = result.replace(/\\\\+/g, '\\');
         
-        // Limpa sequências inválidas de $ (mantém $ e $$)
-        result = result.replace(/\$([^\$]*)\$\$/g, '$$$1$$'); // $$ -> $$$$
+        // Limpa sequências inválidas de $ 
+        result = result.replace(/(\$+)\1+/g, '$$'); // $$$$ -> $$
+        
+        // Garante que $$ não tenha espaços extras
+        result = result.replace(/\$\s+/g, '$');
+        result = result.replace(/\s+\$/g, '$');
         
         return result;
     }
     
-    // Para conteúdo sem $, verifica se tem comandos LaTeX
-    const hasLatex = /\\(lim|frac|sqrt|int|sum|prod|sin|cos|tan|log|alpha|beta|gamma|delta|theta)/.test(content);
-    
-    if (hasLatex) {
-        // Wrap em $ se parece com matemática
-        const lines = content.split('\n');
+    // 2. Se tem comandos LaTeX, faz wrap em $
+    if (hasLatexCommands(result) || hasMathSymbols(result)) {
+        const lines = result.split('\n');
         const processedLines = lines.map(line => {
-            // Se tem muitos comandos LaTeX, wrap em $$
-            const latexCount = (line.match(/\\(lim|frac|sqrt|int|sum|prod|sin|cos|tan|log)/g) || []).length;
-            const hasEquals = line.includes('=');
+            const trimmed = line.trim();
+            if (!trimmed) return line;
             
-            if (latexCount >= 2 || (hasEquals && latexCount >= 1)) {
-                return `$${line.trim()}$`;
+            // Se já tem $, mantém como está
+            if (trimmed.includes('$')) return line;
+            
+            // Se tem comandos LaTeX ou símbolos matemáticos, wrap em $
+            if (hasLatexCommands(trimmed) || hasMathSymbols(trimmed)) {
+                // Se parece ser uma fórmula em bloco (linha curta)
+                if (trimmed.length < 80 && /[=+\-*/]/.test(trimmed)) {
+                    return `$${trimmed}$`;
+                }
+                // Para fórmulas em linha
+                return `$${trimmed}$`;
             }
             return line;
         });
         return processedLines.join('\n');
     }
     
-    return content;
+    // 3. Para texto sem LaTeX, retorna original
+    return result;
 };
 
 /**
  * Versão simples - só garante que fórmulas conhecidas tenham $
  */
 export const simplePreprocess = (content) => {
-    if (!content) return content;
+    if (!content || typeof content !== 'string') return content;
     
     // Não modificar se já tem sintaxe KaTeX
     if (content.includes('$$') || content.includes('\\[')) {
