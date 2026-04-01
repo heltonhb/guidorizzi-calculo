@@ -19,7 +19,6 @@ html {
     width: 100%;
     max-width: 100vw;
     -webkit-text-size-adjust: 100%;
-    overflow: hidden;
 }
 
 body {
@@ -27,7 +26,31 @@ body {
     width: 100%;
     max-width: 100vw;
     position: relative;
-    overscroll-behavior: none;
+    /* Allow vertical scroll on mobile - removed aggressive overscroll-behavior */
+    overscroll-behavior-y: contain;
+}
+
+/* Touch action utilities for mobile */
+@layer utilities {
+    /* Allow vertical scroll/pan only */
+    .touch-pan-y {
+        touch-action: pan-y;
+    }
+    
+    /* Allow horizontal scroll/pan only */
+    .touch-pan-x {
+        touch-action: pan-x;
+    }
+    
+    /* Allow both directions */
+    .touch-pan-xy {
+        touch-action: pan-x pan-y;
+    }
+    
+    /* Prevent scroll/pan - for fixed elements */
+    .touch-none {
+        touch-action: none;
+    }
 }
 
 /* Samsung Internet Browser specific fixes */

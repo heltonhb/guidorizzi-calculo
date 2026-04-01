@@ -119,17 +119,39 @@ const PresentationMode = ({ topic, onBack }) => {
     return () => window.removeEventListener('keydown', handler);
   }, [slides.length, currentSlide]);
 
-  // Swipe support
+  // Swipe support - detect vertical swipe for slide navigation
   const [touchStart, setTouchStart] = useState(null);
-  const handleTouchStart = (e) => setTouchStart(e.touches[0].clientY);
+  const [touchDirection, setTouchDirection] = useState(null);
+  
+  const handleTouchStart = (e) => {
+    setTouchStart(e.touches[0].clientY);
+    setTouchDirection(null);
+  };
+  
+  const handleTouchMove = (e) => {
+    if (touchStart === null) return;
+    const diff = touchStart - e.touches[0].clientY;
+    // Show visual feedback when swiping
+    if (Math.abs(diff) > 30) {
+      setTouchDirection(diff > 0 ? 'up' : 'down');
+    }
+  };
+  
   const handleTouchEnd = (e) => {
     if (touchStart === null) return;
     const diff = touchStart - e.changedTouches[0].clientY;
+    // Threshold for swipe detection
     if (Math.abs(diff) > 50) {
-      if (diff > 0) nextSlide();
-      else prevSlide();
+      if (diff > 0) {
+        // Swipe UP = next slide (natural mobile behavior)
+        nextSlide();
+      } else {
+        // Swipe DOWN = previous slide
+        prevSlide();
+      }
     }
     setTouchStart(null);
+    setTouchDirection(null);
   };
 
   const loadSlides = async (count = slideCount) => {
@@ -247,8 +269,9 @@ const PresentationMode = ({ topic, onBack }) => {
 
   return (
     <div
-      className="flex flex-col items-center gap-6 pb-8"
+      className="flex flex-col items-center gap-6 pb-8 touch-pan-y"
       onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
       {/* Header */}

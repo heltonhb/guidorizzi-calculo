@@ -22,12 +22,16 @@ const InteractiveGraph = ({ equation = "x^2", range = [-5, 5] }) => {
     const fn = getFn(equation);
 
     return (
-        <div className="w-full h-full bg-zinc-950 overflow-hidden border-4 border-white/20 relative group shadow-inner">
+        <div className="w-full h-full bg-zinc-950 overflow-hidden border-4 border-white/20 relative group shadow-inner touch-pan-y">
             <Mafs
                 pan={true}
                 zoom={true}
                 height={400}
                 viewBox={{ x: range, y: range }}
+                preventInteraction={(e) => {
+                    // Allow touch on mobile but prevent conflict with parent scroll
+                    return false;
+                }}
             >
                 <Coordinates.Cartesian />
                 <Plot.OfX y={fn} color="#FFFFFF" />
