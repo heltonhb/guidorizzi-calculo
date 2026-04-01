@@ -94,13 +94,31 @@ export const useSmartChat = (currentTopic) => {
       // 6. Fallback em caso de erro na consulta
       console.warn('Erro na consulta, usando fallback local:', error.message);
       
+      // Tenta obter conteúdo local diretamente
       const localContent = getLocalContent(currentTopic);
       
+      // Se temos conteúdo local, cria uma resposta智能 berbasis no material
+      if (localContent.success && localContent.answer) {
+        // Resume o conteúdo local para caber no contexto
+        const answer = localContent.answer.substring(0, 2000) + 
+          (localContent.answer.length > 2000 ? '...' : '');
+        
+        return {
+          answer: `Com base no conteúdo do Guidorizzi sobre "${currentTopic}":\n\n${answer}\n\n*Nota: Resposta baseada no material local. A API de IA não está disponível no momento.*`,
+          success: true,
+          context: chatContext,
+          source: 'local-fallback',
+          error: error.message,
+          fallbackUsed: true
+        };
+      }
+      
+      // Se não tem conteúdo local, retorna erro amigável
       return {
-        answer: localContent.answer,
-        success: localContent.success,
+        answer: `Desculpe, não consegui acessar o conteúdo sobre "${currentTopic}" no momento. Tente novamente mais tarde ou verifique sua conexão.`,
+        success: false,
         context: chatContext,
-        source: 'local-fallback',
+        source: 'error',
         error: error.message,
         fallbackUsed: true
       };
@@ -138,7 +156,14 @@ export const useSmartChat = (currentTopic) => {
       return suggestions;
     } catch (error) {
       console.error('Error generating suggestions:', error);
-      return [];
+      // Fallback com sugestões fixas
+      const fallbackSuggestions = [
+        'O que é um limite em cálculo?',
+        'Como calcular derivadas?',
+        'Explique o teorema fundamental do cálculo'
+      ];
+      setSuggestions(fallbackSuggestions);
+      return fallbackSuggestions;
     } finally {
       setIsGeneratingSuggestions(false);
     }
