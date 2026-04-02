@@ -90,8 +90,26 @@ export const getLocalContext = (query) => {
  */
 export const sanitizeLatexJson = (rawText) => {
     if (!rawText) return rawText;
-    return rawText.replace(
-        /([^\\]|^)\\(?!(frac|lim|sqrt|int|sum|prod|sin|cos|tan|log|alpha|beta|gamma|delta|theta|lambda|pi|infty|to|from|left|right|begin|end)[a-zA-Z])/g,
-        '$1\\\\'
-    );
+    
+    try {
+        // Primeiro tenta parsar para verificar se é válido
+        JSON.parse(rawText);
+        // Se já é válido, retorna como está
+        return rawText;
+    } catch (e) {
+        // Se não é válido, tenta corrigir escapes de aspas
+        // Substitui \" por " (aspasescapadasvsaspas reais)
+        let fixed = rawText.replace(/\\"/g, '"');
+        
+        // Corrige barras invertidas isoladas antes de comandos conhecidos
+        const latexCommands = ['frac', 'lim', 'sqrt', 'int', 'sum', 'prod', 'sin', 'cos', 'tan', 'log', 'alpha', 'beta', 'gamma', 'delta', 'theta', 'lambda', 'pi', 'infty', 'to', 'from', 'left', 'right'];
+        
+        latexCommands.forEach(cmd => {
+            // Substitui \cmd por \\cmd (exceto se já tem \\
+            const regex = new RegExp(`\\\\${cmd}(?![a-zA-Z])`, 'g');
+            fixed = fixed.replace(regex, `\\\\${cmd}`);
+        });
+        
+        return fixed;
+    }
 };

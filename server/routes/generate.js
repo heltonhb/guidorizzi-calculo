@@ -17,16 +17,48 @@ export const createGenerateRouter = (groq, model) => {
 
     // Helper: chama Groq com JSON mode e sanitiza LaTeX
     const callGroqJson = async (systemPrompt, userPrompt) => {
-        const completion = await groq.chat.completions.create({
-            messages: [
-                { role: 'system', content: systemPrompt },
-                { role: 'user', content: userPrompt }
-            ],
-            model,
-            response_format: { type: 'json_object' },
-        });
-        const raw = sanitizeLatexJson(completion.choices[0]?.message?.content);
-        return JSON.parse(raw);
+        try {
+            const completion = await groq.chat.completions.create({
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: userPrompt }
+                ],
+                model,
+                response_format: { type: 'json_object' },
+            });
+            const raw = completion.choices[0]?.message?.content;
+            
+            // Tentar sanitizar e parsear
+            const sanitized = sanitizeLatexJson(raw);
+            return JSON.parse(sanitized);
+        } catch (parseError) {
+            console.error('[callGroqJson] Erro ao parsear JSON:', parseError.message);
+            // Tentar uma abordagem mais agressiva de reparo
+            const repaired = repairJson(raw);
+            if (repaired) {
+                return JSON.parse(repaired);
+            }
+            throw new Error(`Falha ao processar resposta da IA: ${parseError.message}`);
+        }
+    };
+    
+    // Tentativa de reparo de JSON quebrado
+    const repairJson = (raw) => {
+        if (!raw) return null;
+        try {
+            // Remove caracteres de controle problemáticos
+            let fixed = raw.replace(/[\x00-\x1F\x7F]/g, '');
+            
+            // Tenta encontrar JSON válido dentro da resposta
+            const jsonMatch = fixed.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                return jsonMatch[0];
+            }
+            
+            return null;
+        } catch (e) {
+            return null;
+        }
     };
 
     // POST /api/generate/flashcards
