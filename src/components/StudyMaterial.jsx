@@ -8,6 +8,8 @@ import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
 import { useToast } from './Toast';
 import { preprocessMathContent } from '../utils/mathPreprocessor';
+import LearningObjectives from './LearningObjectives';
+import contentData from '../data/content.json';
 
 const StudyMaterial = ({ topic, onBack }) => {
     const [loading, setLoading] = useState(true);
@@ -127,6 +129,17 @@ const StudyMaterial = ({ topic, onBack }) => {
                 </div>
                 <div className="w-12" />
             </header>
+
+            {/* Learning Objectives - Show before content */}
+            {contentData[topic]?.learningObjectives && (
+                <div className="max-w-4xl mx-auto w-full">
+                    <LearningObjectives 
+                        objectives={contentData[topic].learningObjectives}
+                        topic={topic}
+                        showInitially={true}
+                    />
+                </div>
+            )}
 
             <AnimatePresence mode="wait">
                 {loading ? (

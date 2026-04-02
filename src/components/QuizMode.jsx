@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, Loader2, Sparkles, CheckCircle2, XCircle, Trophy, RefreshCw, Zap } from 'lucide-react';
+import { ChevronLeft, Loader2, Sparkles, CheckCircle2, XCircle, Trophy, RefreshCw, Zap, Lightbulb } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { generateQuizQuestions } from '../services/api';
 import { useToast } from './Toast';
@@ -9,6 +9,8 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
 import { preprocessMathContent } from '../utils/mathPreprocessor';
+import LearningObjectives from './LearningObjectives';
+import { useLearningPath } from '../hooks/useLearningPath';
 
 // Fallback local questions (used when API is unavailable)
 const LOCAL_QUESTIONS = {
@@ -39,7 +41,12 @@ const QuizMode = ({ topic, onBack }) => {
     const [selectedAnswer, setSelectedAnswer] = useState(null);
     const [showFeedback, setShowFeedback] = useState(false);
     const [quizStarted, setQuizStarted] = useState(false);
+    const [currentHintLevel, setCurrentHintLevel] = useState(0);
+    const [showLearningPath, setShowLearningPath] = useState(false);
     const toast = useToast();
+    
+    // Hook de trilha de aprendizado
+    const { getNextStudySuggestion, handleQuizCompletion, generateLearningPath } = useLearningPath(topic);
 
     useEffect(() => {
         loadQuiz();
@@ -88,8 +95,72 @@ const QuizMode = ({ topic, onBack }) => {
         if (showFeedback) return;
         setSelectedAnswer(index);
         setShowFeedback(true);
+        setCurrentHintLevel(0); // Reset hints após resposta
         if (index === questions[currentQuestionIndex].correct) {
             setScore(s => s + 1);
+        }
+    };
+
+    // Sistema de hints progressivos
+    const getHint = (question, hintLevel) => {
+        const questionText = question.text.toLowerCase();
+        
+        // Hints genéricos baseados no conteúdo da questão
+        const hintsByTopic = {
+            'limite': [
+                'Dica: Pense em como a função se comporta conforme x se aproxima do ponto.',
+                'Lembre-se: Para limites, podemos fatorar ou racionalizar expressões.',
+                'Atenção: Verifique se é uma forma indeterminada 0/0 ou ∞/∞.'
+            ],
+            'derivada': [
+                'Dica: Lembre-se da definição de derivada como limite do quociente de diferenças.',
+                'Pense: Use as regras de derivação: soma, produto, quociente e cadeia.',
+                'Atenção: Não esqueça de aplicar a regra da cadeia em funções compostas.'
+            ],
+            'integral': [
+                'Dica: A integral indefinida é a operação inversa da derivação.',
+                'Pense: Tente identificar qual técnica aplicar: substituição ou por partes.',
+                'Atenção: Não esqueça da constante de integração C!'
+            ],
+            'continu': [
+                'Dica: Uma função é contínua se o gráfico não apresenta saltos.',
+                'Pense: Verifique as três condições: função definida, limite existe e são iguais.',
+                'Atenção: Use o Teorema do Valor Intermediário para verificar existência de raízes.'
+            ],
+            'l\'hôpital': [
+                'Dica: A regra só se aplica a formas 0/0 ou ∞/∞.',
+                'Pense: Derive o numerador e denominador separadamente.',
+                'Atenção: Verifique se as hipóteses da regra são satisfeitas antes de aplicar.'
+            ],
+            'teorema do confronto': [
+                'Dica: O teorema "comprime" a função entre duas outras de limite conhecido.',
+                'Pense: Procure funções que limitam a função dada superior e inferiormente.',
+                'Atenção: As funções que limitam devem tender ao mesmo limite.'
+            ],
+            'default': [
+                'Dica: Releia o enunciado com atenção e identifique os dados importantes.',
+                'Pense: Que conceitos do Guidorizzi são necessários para resolver?',
+                'Atenção: Verifique se a resposta faz sentido no contexto do problema.'
+            ]
+        };
+
+        // Identificar o tópico da questão
+        let relevantHints = hintsByTopic['default'];
+        for (const [key, hints] of Object.entries(hintsByTopic)) {
+            if (questionText.includes(key)) {
+                relevantHints = hints;
+                break;
+            }
+        }
+
+        // Retorn o hint do nível apropriado (0-indexed, então hintLevel - 1)
+        const hintIndex = Math.min(hintLevel - 1, relevantHints.length - 1);
+        return relevantHints[hintIndex];
+    };
+
+    const handleShowHint = () => {
+        if (currentHintLevel < 3) {
+            setCurrentHintLevel(prev => prev + 1);
         }
     };
 
@@ -249,6 +320,35 @@ const QuizMode = ({ topic, onBack }) => {
                                     </div>
                                 </div>
 
+                                {/* Hint System - antes das opções */}
+                                {!showFeedback && currentHintLevel > 0 && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="p-4 bg-amber-950/30 border-2 border-amber-500/50"
+                                    >
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <Lightbulb className="w-4 h-4 text-amber-400" />
+                                            <span className="text-amber-400 text-xs font-black uppercase tracking-widest">
+                                                Dica {currentHintLevel}/3
+                                            </span>
+                                        </div>
+                                        <p className="text-amber-200 text-sm font-medium">
+                                            {getHint(questions[currentQuestionIndex], currentHintLevel)}
+                                        </p>
+                                    </motion.div>
+                                )}
+
+                                {!showFeedback && currentHintLevel < 3 && (
+                                    <button
+                                        onClick={handleShowHint}
+                                        className="w-full py-3 bg-zinc-900 border-2 border-amber-500/50 text-amber-400 hover:bg-amber-950/30 font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-2 transition-colors"
+                                    >
+                                        <Lightbulb className="w-4 h-4" />
+                                        Preciso de uma dica ({currentHintLevel}/3)
+                                    </button>
+                                )}
+
                                 <div className="grid gap-4">
                                     {questions[currentQuestionIndex].options.map((opt, i) => {
                                         const isCorrect = i === questions[currentQuestionIndex].correct;
@@ -380,14 +480,81 @@ const QuizMode = ({ topic, onBack }) => {
                                     >
                                         DASHBOARD
                                     </button>
+                                <button
+                                    onClick={loadQuiz}
+                                    className="flex-1 py-4 bg-zinc-950 border-2 border-[#00f0ff] text-[#00f0ff] font-black uppercase tracking-widest text-[10px] shadow-[4px_4px_0_#00f0ff] hover:bg-[#00f0ff] hover:text-zinc-950 hover:shadow-[0px_0px_0_transparent] transition-all flex items-center justify-center gap-2 active:translate-x-1 active:translate-y-1"
+                                >
+                                    <RefreshCw className="w-4 h-4" />
+                                    NOVAS
+                                </button>
+                            </div>
+                            
+                            {/* Botão para ver trilha personalizada */}
+                            {(() => {
+                                const pct = Math.round((score / questions.length) * 100);
+                                return pct < 70 ? (
                                     <button
-                                        onClick={loadQuiz}
-                                        className="flex-1 py-4 bg-zinc-950 border-2 border-[#00f0ff] text-[#00f0ff] font-black uppercase tracking-widest text-[10px] shadow-[4px_4px_0_#00f0ff] hover:bg-[#00f0ff] hover:text-zinc-950 hover:shadow-[0px_0px_0_transparent] transition-all flex items-center justify-center gap-2 active:translate-x-1 active:translate-y-1"
+                                        onClick={() => {
+                                            handleQuizCompletion(topic, score, questions.length);
+                                            setShowLearningPath(true);
+                                        }}
+                                        className="w-full py-4 bg-amber-500 border-2 border-amber-500 text-zinc-950 font-black uppercase tracking-widest text-[10px] shadow-[4px_4px-0_theme(colors.amber.500)] hover:bg-zinc-950 hover:text-amber-500 transition-all flex items-center justify-center gap-2 mt-2"
                                     >
-                                        <RefreshCw className="w-4 h-4" />
-                                        NOVAS
+                                        <Sparkles className="w-4 h-4" />
+                                        VER TRILHA PERSONALIZADA
                                     </button>
-                                </div>
+                                ) : null;
+                            })()}
+                            
+                            {/* Trilha de Aprendizado Personalizada */}
+                            {showLearningPath && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="w-full bg-zinc-900 border-2 border-amber-500 p-6 mt-4"
+                                >
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <Sparkles className="w-5 h-5 text-amber-500" />
+                                        <h4 className="text-white font-black uppercase tracking-wider">
+                                            Sua Trilha de Estudo
+                                        </h4>
+                                    </div>
+                                    
+                                    <div className="space-y-3">
+                                        {generateLearningPath().slice(0, 3).map((item, index) => (
+                                            <div 
+                                                key={index}
+                                                className="flex items-center gap-3 p-3 bg-zinc-950 border border-white/10"
+                                            >
+                                                <div className={cn(
+                                                    "w-8 h-8 flex items-center justify-center font-black text-xs",
+                                                    item.priority === 'high' ? "bg-signal text-zinc-950" :
+                                                    item.priority === 'medium' ? "bg-amber-500 text-zinc-950" :
+                                                    "bg-zinc-700 text-white"
+                                                )}>
+                                                    {index + 1}
+                                                </div>
+                                                <div className="flex-1">
+                                                    <p className="text-white font-bold text-sm">{item.topic}</p>
+                                                    <p className="text-zinc-500 text-xs">{item.reason}</p>
+                                                </div>
+                                                {item.type === 'prerequisite' && (
+                                                    <span className="text-[8px] font-black uppercase text-orange-400 border border-orange-400 px-2 py-1">
+                                                        PRÉ-REQ
+                                                    </span>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                    
+                                    <button
+                                        onClick={() => setShowLearningPath(false)}
+                                        className="w-full mt-4 py-2 text-zinc-500 text-xs font-black uppercase tracking-widest hover:text-white"
+                                    >
+                                        FECHAR
+                                    </button>
+                                </motion.div>
+                            )}
                                 <button
                                     onClick={startQuiz}
                                     className="w-full py-5 bg-emerald-500 border-2 border-emerald-500 text-zinc-950 hover:bg-zinc-950 hover:text-emerald-500 font-black uppercase tracking-widest text-[11px] shadow-[4px_4px_0_theme(colors.emerald.500)] hover:shadow-[0px_0px_0_transparent] transition-all active:translate-x-1 active:translate-y-1 mt-2"

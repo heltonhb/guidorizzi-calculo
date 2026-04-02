@@ -1,5 +1,12 @@
 {
     "Limites": {
+        "learningObjectives": [
+            "Compreender intuitivamente o conceito de limite como comportamento de f(x) quando x se aproxima de um ponto",
+            "Aplicar propriedades operatórias de limites (soma, produto, quociente, potência)",
+            "Interpretar geometricamente a definição ε-δ de limite",
+            "Calcular limites de funções racionais, trigonométricas e com raízes",
+            "Determinar se uma função é contínua em um ponto usando a definição"
+        ],
         "material": "O conceito de limite surge de forma natural para entender o comportamento de uma função próximo a um ponto $p$, ajudando a formalizar a ideia de continuidade. Intuitivamente, uma função $f$ é contínua em um ponto $p$ se o seu gráfico não apresenta 'saltos' em $p$.\n\nDizer que o limite de $f(x)$, quando $x$ tende a $p$, é igual a $L$, significa que, à medida que $x$ se aproxima de $p$, os valores de $f(x)$ se aproximam de $L$.\n\n**Exemplo:**\nPara calcular $\\lim_{x \\to 1} \\frac{x^2 - 1}{x - 1}$, notamos que a função não está definida em $x = 1$. No entanto, para $x \\neq 1$, podemos simplificar:\n$$ f(x) = \\frac{(x-1)(x+1)}{x-1} = x + 1 $$\nPortanto, $\\lim_{x \\to 1} \\frac{x^2 - 1}{x - 1} = \\lim_{x \\to 1} (x + 1) = 2$.\n\n**Definição Formal (\\epsilon-\\delta):**\nDizemos que $f$ tem limite $L$ em $p$ se, para todo $\\epsilon > 0$ dado, existir um $\\delta > 0$ tal que:\n$$ 0 < |x - p| < \\delta \\Rightarrow |f(x) - L| < \\epsilon $$",
         "exercises": [
             {
@@ -46,6 +53,12 @@
         ]
     },
     "Teorema do Confronto": {
+        "learningObjectives": [
+            "Compreender o enunciado do Teorema do Confronto (Sanduíche) e suas hipóteses",
+            "Aplicar o teorema para calcular limites de funções limitadas por outras de limite conhecido",
+            "Demonstrar o limite fundamental trigonométrico usando o Teorema do Confronto",
+            "Identificar quando o Teorema do Confronto é aplicável vs outras técnicas"
+        ],
         "material": "O **Teorema do Confronto** (ou Teorema do Sanduíche) é um resultado fundamental no estudo de limites. Ele estabelece que se uma função $f$ está 'comprimida' entre duas outras funções $g$ e $h$ que tendem ao mesmo limite $L$ próximo a um ponto $p$, então $f$ também tende a $L$.\n\n**Enunciado Formal (Guidorizzi Vol. 1, Cap. 3):**\nSejam $f$, $g$ e $h$ funções definidas em um intervalo $I$ contendo $p$, exceto possivelmente em $p$. Se:\n- $\\lim_{x \\to p} g(x) = \\lim_{x \\to p} h(x) = L$\n- $g(x) \\leq f(x) \\leq h(x)$ para todo $x \\neq p$ em uma vizinhança de $p$\n\nEntão: $\\lim_{x \\to p} f(x) = L$.\n\n**Exemplo Clássico:**\nProve que $\\lim_{x \\to 0} x \\cdot \\sin(1/x) = 0$.\nComo $-|x| \\leq x \\sin(1/x) \\leq |x|$, e ambos os limites de $-|x|$ e $|x|$ são 0, pelo Teorema do Confronto, o limite é 0.\n\n**Aplicação Fundamental:**\nO Teorema do Confronto é usado para demonstrar o limite trigonométrico fundamental:\n$$\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1$$\n\nPara isso, usa-se a desigualdade $\\cos x < \\frac{\\sin x}{x} < 1$ para $0 < x < \\frac{\\pi}{2}$.",
         "exercises": [
             {
@@ -89,6 +102,13 @@
         ]
     },
     "Derivadas": {
+        "learningObjectives": [
+            "Compreender a definição de derivada como limite do quociente de diferenças",
+            "Interpretar geometricamente a derivada como coeficiente angular da reta tangente",
+            "Aplicar as regras de derivação: soma, produto, quociente e cadeia",
+            "Calcular derivadas de funções polinomiais, trigonométricas, exponenciais e logarítmicas",
+            "Resolver problemas envolvendo taxa de variação e movimento retilíneo"
+        ],
         "material": "O conceito de derivada surge de modo natural tanto na geometria quanto na física. Geometricamente, o problema está centrado na definição da reta tangente ao gráfico de uma função em um ponto.\n\nA **derivada** de uma função $f$ em um ponto $p$ é definida pelo limite:\n$$f'(p) = \\lim_{h \\to 0} \\frac{f(p+h) - f(p)}{h}$$\n\n**Regras de Derivação:**\n- Regra da Soma: $(f + g)' = f' + g'$\n- Regra do Produto: $(f \\cdot g)' = f'g + fg'$\n- Regra da Cadeia: $[f(g(x))]' = f'(g(x)) \\cdot g'(x)$",
         "exercises": [
             {
@@ -135,6 +155,13 @@
         ]
     },
     "Funções": {
+        "learningObjectives": [
+            "Compreender a definição de função como relação entre dois conjuntos",
+            "Determinar o domínio e imagem de funções de variável real",
+            "Identificar tipos de funções: polinomiais, racionais, trigonométricas, exponenciais",
+            "Compor funções e determinar o domínio da composição",
+            "Representar funções graficamente e interpretar seu comportamento"
+        ],
         "material": "Uma função $f: A \\to B$ é uma regra que associa a cada elemento $x \\in A$ um único elemento $y = f(x) \\in B$. No livro do Guidorizzi, funções de uma variável real a valores reais são o foco principal, onde tanto o domínio quanto o contradomínio são subconjuntos de $\\mathbb{R}$.\n\n**Conceitos Principais:**\n- **Domínio ($D_f$):** O conjunto de todos os valores de $x$ para os quais $f(x)$ está definida.\n- **Gráfico:** O conjunto de pares $(x, f(x))$ representados no plano cartesiano.\n- **Tipos:** Funções constantes, lineares, polinomiais, racionais e trigonométricas.\n- **Composição:** $(g \\circ f)(x) = g(f(x))$, exigindo que a imagem de $f$ esteja contida no domínio de $g$.",
         "exercises": [
             {
@@ -165,6 +192,12 @@
         "prerequisites": []
     },
     "Regra de L'Hôpital": {
+        "learningObjectives": [
+            "Identificar as formas indeterminadas 0/0 e ∞/∞ que permitem aplicação de L'Hôpital",
+            "Aplicar a Regra de L'Hôpital corretamente, verificando suas hipóteses",
+            "Transformar outras formas indeterminadas (∞-∞, 0·∞, 0⁰, etc) em tipos aplicáveis",
+            "Reconhecer quando L'Hôpital não é aplicável e usar métodos alternativos"
+        ],
         "material": "A **Regra de L'Hôpital** é um método para calcular limites indeterminados do tipo $\\frac{0}{0}$ ou $\\frac{\\infty}{\\infty}$. \n\n**Enunciado (Guidorizzi Vol. 1, Cap. 4):**\nSejam $f$ e $g$ funções deriváveis em um intervalo $(a, b)$, com $g'(x) \\neq 0$ neste intervalo. Se $\\lim_{x \\to p} f(x) = \\lim_{x \\to p} g(x) = 0$ (ou $\\infty$), e existe $\\lim_{x \\to p} \\frac{f'(x)}{g'(x)}$, então:\n$$\\lim_{x \\to p} \\frac{f(x)}{g(x)} = \\lim_{x \\to p} \\frac{f'(x)}{g'(x)}$$\n\n**Condições de aplicabilidade:**\n- A regra só pode ser aplicada quando temos formas indeterminadas $\\frac{0}{0}$ ou $\\frac{\\infty}{\\infty}$\n- Pode ser aplicada repetidamente enquanto as condições forem satisfeitas\n- outras formas indeterminadas ($\\infty - \\infty$, $0 \\cdot \\infty$, $0^0$, $\\infty^0$, $1^\\infty$) devem ser transformadas primeiro\n\n**Exemplo:**\nCalcule $\\lim_{x \\to 0} \\frac{\\sin x}{x}$.\nComo é uma forma $\\frac{0}{0}$, aplicamos L'Hôpital:\n$$= \\lim_{x \\to 0} \\frac{\\cos x}{1} = 1$$",
         "exercises": [
             {
@@ -209,6 +242,12 @@
         ]
     },
     "Derivadas por Regra da Cadeia": {
+        "learningObjectives": [
+            "Compreender o enunciado da Regra da Cadeia para funções compostas",
+            "Aplicar a regra da cadeia em derivadas de funções compostas polinomiais, trigonométricas e exponenciais",
+            "Usar a notação de Leibniz (dy/dx = dy/du · du/dx) como ferramenta de compreensão",
+            "Identificar a função externa e interna em composições"
+        ],
         "material": "A **Regra da Cadeia** é utilizada para derivar funções compostas. Se $y = f(g(x))$, então a derivada de $y$ em relação a $x$ é o produto das derivadas.\n\n**Enunciado Formal (Guidorizzi Vol. 1, Cap. 4):**\nSe $g$ é derivável em $x$ e $f$ é derivável em $g(x)$, então $h = f \\circ g$ é derivável em $x$ e:\n$$h'(x) = f'(g(x)) \\cdot g'(x)$$\n\n**Notação de Leibniz:**\n$$\\frac{dy}{dx} = \\frac{dy}{du} \\cdot \\frac{du}{dx}$$\n\n**Exemplo:**\nDerive $f(x) = \\sin(x^2)$.\n$f(x) = \\sin(u)$ onde $u = x^2$\n$f'(x) = \\cos(u) \\cdot 2x = 2x \\cos(x^2)$\n\n**Casos especiais:**\n- Derivada de $[g(x)]^n$: $n[g(x)]^{n-1} \\cdot g'(x)$\n- Derivada de $\\sin(g(x))$: $\\cos(g(x)) \\cdot g'(x)$\n- Derivada de $e^{g(x)}$: $e^{g(x)} \\cdot g'(x)$",
         "exercises": [
             {
@@ -309,6 +348,13 @@
                 "content": "Se f é contínua em [a,b], ela assume todos os valores entre f(a) e f(b).",
                 "formula": "\\\\exists c: f(c) = d"
             }
+        ],
+        "learningObjectives": [
+            "Compreender e aplicar a definicao epsilon-delta de continuidade",
+            "Verificar as tres condicoes para continuidade em um ponto",
+            "Classificar descontinuidades: removivel, de salto, essencial",
+            "Aplicar o Teorema do Valor Intermediario (TVI) para garantir existencia de raizes",
+            "Utilizar propriedades de funcoes continuas"
         ]
     },
     "Teorema do Valor Médio": {
@@ -492,6 +538,12 @@
                 "content": "Técnica que simplifica integrais compostas identificando u = g(x).",
                 "formula": "\\\\int f(g(x))g'(x)dx = \\\\int f(u)du"
             }
+        ],
+        "learningObjectives": [
+            "Compreender a integral indefinida como operacao inversa da derivacao",
+            "Calcular integrais de funcoes polinomiais, trigonometricas e exponenciais",
+            "Aplicar a tecnica de substituicao (u-substitution)",
+            "Aplicar integracao por partes"
         ]
     },
     "Integrais Definidas": {
@@ -553,6 +605,12 @@
                 "content": "Área = integral da diferença |f(x) - g(x)| no intervalo.",
                 "formula": "A = \\\\int_a^b |f(x) - g(x)|\\,dx"
             }
+        ],
+        "learningObjectives": [
+            "Compreender a integral definida como area com sinal",
+            "Aplicar o Teorema Fundamental do Calculo (TFC)",
+            "Calcular areas entre curvas e sob o eixo x",
+            "Compreender a parte 2 do TFC: derivacao sob o sinal de integral"
         ]
     }
 }
