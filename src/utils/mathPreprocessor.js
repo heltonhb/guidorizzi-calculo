@@ -53,17 +53,40 @@ const hasKatexDelimiters = (text) => {
 };
 
 /**
+ * Converte barras invertidas duplas (\\\\) para simples (\)
+ * Isso corrige o problema de a IA retornar \\frac ao invés de \frac
+ */
+const fixDoubleBackslashes = (text) => {
+    // Substitui \\ por \ APENAS fora de delimitadores LaTeX ($)
+    // Primeiro, separa o texto em blocos
+    const parts = text.split(/(\$[^$]*\$)/);
+    return parts.map(part => {
+        // Se é um bloco $...$, não modifica
+        if (part.startsWith('$') && part.endsWith('$')) {
+            return part;
+        }
+        // Caso contrário, converte \\ para \
+        return part.replace(/\\\\/g, '\\');
+    }).join('');
+};
+
+/**
  * Pré-processa o conteúdo antes de renderizar.
  * 
  * Corrigido (v2): 
  * - NÃO colapsa \\\\ em \\ (são delimitadores de quebra de linha LaTeX válidos)
  * - NÃO remove espaços ao redor de $ (pode quebrar contexto)
  * - Trata corretamente linhas mistas (texto + fórmula)
+ * - Corrige barras invertidas duplas (\\\\) para simples (\)
  */
 export const preprocessMathContent = (content) => {
     if (!content || typeof content !== 'string') return '';
 
     let result = content;
+
+    // 0. Corrige barras invertidas duplas (\\\\) para simples (\)
+    // Isso corrige o problema de a IA retornar \\frac ao invés de \frac
+    result = fixDoubleBackslashes(result);
 
     // 1. Se já tem delimitadores KaTeX, limpa apenas artefatos de encoding
     if (hasKatexDelimiters(result)) {
