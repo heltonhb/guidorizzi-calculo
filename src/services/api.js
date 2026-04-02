@@ -48,11 +48,11 @@ const handleApiError = (error, endpoint) => {
  * Wrapper para timeout de requisições com retry
  */
 const fetchWithTimeout = (url, options = {}, timeout = config.timeout, retryCount = 0) => {
-    const apiKey = import.meta.env?.VITE_API_KEY || 'guidorizzi_dev_key_2024';
+    const apiKey = import.meta.env?.VITE_API_KEY;
 
     options.headers = {
         ...(options.headers || {}),
-        'X-API-Key': apiKey
+        ...(apiKey ? { 'X-API-Key': apiKey } : {})
     };
 
     return Promise.race([
@@ -97,95 +97,8 @@ export const queryNotebook = async (query) => {
     }
 };
 
-export const fetchStudioArtifacts = async () => {
-    try {
-        const response = await fetchWithTimeout(`${API_URL}/studio`, {}, 5000); // Timeout mais curto
-        if (!response.ok) {
-            throw new Error(`Erro HTTP ${response.status}`);
-        }
-        const data = await response.json();
-        return data || { status: 'ready', artifacts: [] };
-    } catch (error) {
-        // Fallback: retornar dados vazios em vez de erro
-        console.warn('Studio artifacts not available, using mock:', error.message);
-        return {
-            status: 'ready',
-            artifacts: [],
-            message: 'Studio (offline mode)'
-        };
-    }
-};
 
-export const createStudioSlides = async (topic) => {
-    try {
-        if (!topic) throw new Error('Topic é obrigatório');
-
-        const response = await fetchWithTimeout(`${API_URL}/studio/create-slides`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ topic }),
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({ error: 'Erro desconhecido' }));
-            throw new Error(errorData.error || `Erro HTTP ${response.status}`);
-        }
-        return await response.json();
-    } catch (error) {
-        handleApiError(error, 'createStudioSlides');
-    }
-};
-
-export const createStudioAudio = async (topic) => {
-    try {
-        if (!topic) throw new Error('Topic é obrigatório');
-
-        const response = await fetchWithTimeout(`${API_URL}/studio/audio`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ topic }),
-        });
-
-        if (!response.ok) throw new Error(`Erro HTTP ${response.status}`);
-        return await response.json();
-    } catch (error) {
-        handleApiError(error, 'createStudioAudio');
-    }
-};
-
-export const createStudioQuiz = async (topic) => {
-    try {
-        if (!topic) throw new Error('Topic é obrigatório');
-
-        const response = await fetchWithTimeout(`${API_URL}/studio/quiz`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ topic }),
-        });
-
-        if (!response.ok) throw new Error(`Erro HTTP ${response.status}`);
-        return await response.json();
-    } catch (error) {
-        handleApiError(error, 'createStudioQuiz');
-    }
-};
-
-export const createStudioFlashcards = async (topic) => {
-    try {
-        if (!topic) throw new Error('Topic é obrigatório');
-
-        const response = await fetchWithTimeout(`${API_URL}/studio/flashcards`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ topic }),
-        });
-
-        if (!response.ok) throw new Error(`Erro HTTP ${response.status}`);
-        return await response.json();
-    } catch (error) {
-        handleApiError(error, 'createStudioFlashcards');
-    }
-};
+// Studio functions removed — endpoints não existem no backend atual.
 
 /**
  * Gera flashcards dinâmicos via notebook_query

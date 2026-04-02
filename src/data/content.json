@@ -1,42 +1,48 @@
 {
     "Limites": {
-        "material": "O conceito de limite surge de forma natural para entender o comportamento de uma função próximo a um ponto $p$, ajudando a formalizar a ideia de continuidade. Intuitivamente, uma função $f$ é contínua em um ponto $p$ se o seu gráfico não apresenta 'saltos' em $p$.\n\nDizer que o limite de $f(x)$, quando $x$ tende a $p$, é igual a $L$, sgnifica que, à medida que $x$ se aproxima de $p$, os valores de $f(x)$ se aproximam de $L$.\n\n**Exemplo:**\nPara calcular $\\lim_{x \\to 1} \\frac{x^2 - 1}{x - 1}$, notamos que a função não está definida em $x = 1$. No entanto, para $x \\neq 1$, podemos simplificar:\n$$ f(x) = \\frac{(x-1)(x+1)}{x-1} = x + 1 $$\nPortanto, $\\lim_{x \\to 1} \\frac{x^2 - 1}{x - 1} = \\lim_{x \\to 1} (x + 1) = 2$.\n\n**Definição Formal (\\epsilon-\\delta):**\nDizemos que $f$ tem limite $L$ em $p$ se, para todo $\\epsilon > 0$ dado, existir um $\\delta > 0$ tal que:\n$$ 0 < |x - p| < \\delta \\Rightarrow |f(x) - L| < \\epsilon $$",
+        "material": "O conceito de limite surge de forma natural para entender o comportamento de uma função próximo a um ponto $p$, ajudando a formalizar a ideia de continuidade. Intuitivamente, uma função $f$ é contínua em um ponto $p$ se o seu gráfico não apresenta 'saltos' em $p$.\n\nDizer que o limite de $f(x)$, quando $x$ tende a $p$, é igual a $L$, significa que, à medida que $x$ se aproxima de $p$, os valores de $f(x)$ se aproximam de $L$.\n\n**Exemplo:**\nPara calcular $\\lim_{x \\to 1} \\frac{x^2 - 1}{x - 1}$, notamos que a função não está definida em $x = 1$. No entanto, para $x \\neq 1$, podemos simplificar:\n$$ f(x) = \\frac{(x-1)(x+1)}{x-1} = x + 1 $$\nPortanto, $\\lim_{x \\to 1} \\frac{x^2 - 1}{x - 1} = \\lim_{x \\to 1} (x + 1) = 2$.\n\n**Definição Formal (\\epsilon-\\delta):**\nDizemos que $f$ tem limite $L$ em $p$ se, para todo $\\epsilon > 0$ dado, existir um $\\delta > 0$ tal que:\n$$ 0 < |x - p| < \\delta \\Rightarrow |f(x) - L| < \\epsilon $$",
         "exercises": [
             {
                 "id": "e1",
                 "title": "Nível Fácil",
                 "content": "Calcule e justifique: $$ \\lim_{x \\to 3} \\frac{x^2 - 9}{x - 3} $$",
-                "difficulty": "Fácil"
+                "difficulty": "Fácil",
+                "solution": "Fatorando: (x²-9)/(x-3) = (x-3)(x+3)/(x-3) = x+3. Logo lim(x→3) = 3+3 = 6."
             },
             {
                 "id": "e2",
                 "title": "Nível Médio",
                 "content": "Calcule e justifique: $$ \\lim_{x \\to 1} \\frac{\\sqrt{x} - 1}{\\sqrt{2x + 3} - \\sqrt{5}} $$",
-                "difficulty": "Médio"
+                "difficulty": "Médio",
+                "solution": "Racionalizando numerador e denominador. Multiplicando por conjugados, obtém-se √5/2."
             },
             {
                 "id": "e3",
                 "title": "Nível Difícil",
                 "content": "Sejam $f$ e $g$ tais que $[g(x)]^4 + [f(x)]^4 = 4$. Calcule: $$ \\lim_{x \\to 0} x^3 g(x) $$",
-                "difficulty": "Difícil"
+                "difficulty": "Difícil",
+                "solution": "Como [g(x)]⁴ ≤ 4, temos |g(x)| ≤ √2. Logo |x³g(x)| ≤ √2·|x³| → 0. Pelo Confronto, o limite é 0."
             }
         ],
         "presentation": [
             {
                 "title": "Definição de Limite",
                 "content": "A ideia intuitiva descreve o comportamento de f(x) próximo a p. Formalmente, aproximamos f(x) de L com erro ε.",
-                "formula": "lim_{x -> p} f(x) = L"
+                "formula": "\\\\lim_{x \\\\to p} f(x) = L"
             },
             {
                 "title": "Limites Laterais",
                 "content": "O limite existe se, e somente se, os limites laterais pela direita e esquerda forem iguais.",
-                "formula": "lim_{x->p+} f(x) = lim_{x->p-} f(x)"
+                "formula": "\\\\lim_{x \\\\to p^+} f(x) = \\\\lim_{x \\\\to p^-} f(x)"
             },
             {
                 "title": "Limite Trigonométrico",
                 "content": "Utilizando o Teorema do Confronto, demonstra-se o limite fundamental para análise circular.",
-                "formula": "lim_{x->0} (sen x / x) = 1"
+                "formula": "\\\\lim_{x \\\\to 0} \\\\frac{\\\\sin x}{x} = 1"
             }
+        ],
+        "prerequisites": [
+            "Funções"
         ]
     },
     "Teorema do Confronto": {
@@ -77,6 +83,9 @@
                 "content": "O teorema é usado para demonstrar que sen(x)/x → 1 quando x → 0.",
                 "formula": "lim_{x→0} sen(x)/x = 1"
             }
+        ],
+        "prerequisites": [
+            "Limites"
         ]
     },
     "Derivadas": {
@@ -86,19 +95,22 @@
                 "id": "d1",
                 "title": "Nível Fácil",
                 "content": "Seja $f(x) = x^2 + 1$. Calcule $f'(1)$ e $f'(0)$.",
-                "difficulty": "Fácil"
+                "difficulty": "Fácil",
+                "solution": "f'(x) = 2x. Logo f'(1) = 2 e f'(0) = 0."
             },
             {
                 "id": "d2",
                 "title": "Nível Médio",
                 "content": "Expresse dy/dx em termos de x e y para a equação implicitada: $y^3 + sen(xy) = 1$",
-                "difficulty": "Médio"
+                "difficulty": "Médio",
+                "solution": "Derivando implicitamente: 3y²y' + cos(xy)(y + xy') = 0. Isolando y' = -y·cos(xy)/(3y² + x·cos(xy))."
             },
             {
                 "id": "d3",
                 "title": "Nível Difícil",
                 "content": "Seja $f'(x) = x + [f(x)]^3$ com $f(1)=1$. Calcule $f''(1)$ e a reta tangente em x=1.",
-                "difficulty": "Difícil"
+                "difficulty": "Difícil",
+                "solution": "f'(1) = 1 + 1³ = 2. Derivando a EDO: f''(x) = 1 + 3[f(x)]²f'(x). Logo f''(1) = 1 + 3·1·2 = 7. Reta: y - 1 = 2(x - 1)."
             }
         ],
         "presentation": [
@@ -117,6 +129,9 @@
                 "content": "Utilizada para derivar funções compostas, multiplicando a derivada externa pela interna.",
                 "formula": "dy/dx = (dy/du) * (du/dx)"
             }
+        ],
+        "prerequisites": [
+            "Limites"
         ]
     },
     "Funções": {
@@ -146,7 +161,8 @@
                 "content": "Uma curva no plano é o gráfico de uma função se nenhuma reta vertical a intercepta mais de uma vez.",
                 "formula": "x \\mapsto y"
             }
-        ]
+        ],
+        "prerequisites": []
     },
     "Regra de L'Hôpital": {
         "material": "A **Regra de L'Hôpital** é um método para calcular limites indeterminados do tipo $\\frac{0}{0}$ ou $\\frac{\\infty}{\\infty}$. \n\n**Enunciado (Guidorizzi Vol. 1, Cap. 4):**\nSejam $f$ e $g$ funções deriváveis em um intervalo $(a, b)$, com $g'(x) \\neq 0$ neste intervalo. Se $\\lim_{x \\to p} f(x) = \\lim_{x \\to p} g(x) = 0$ (ou $\\infty$), e existe $\\lim_{x \\to p} \\frac{f'(x)}{g'(x)}$, então:\n$$\\lim_{x \\to p} \\frac{f(x)}{g(x)} = \\lim_{x \\to p} \\frac{f'(x)}{g'(x)}$$\n\n**Condições de aplicabilidade:**\n- A regra só pode ser aplicada quando temos formas indeterminadas $\\frac{0}{0}$ ou $\\frac{\\infty}{\\infty}$\n- Pode ser aplicada repetidamente enquanto as condições forem satisfeitas\n- outras formas indeterminadas ($\\infty - \\infty$, $0 \\cdot \\infty$, $0^0$, $\\infty^0$, $1^\\infty$) devem ser transformadas primeiro\n\n**Exemplo:**\nCalcule $\\lim_{x \\to 0} \\frac{\\sin x}{x}$.\nComo é uma forma $\\frac{0}{0}$, aplicamos L'Hôpital:\n$$= \\lim_{x \\to 0} \\frac{\\cos x}{1} = 1$$",
@@ -186,6 +202,10 @@
                 "content": "lim(x→0) (e^x - 1)/x = lim(x→0) e^x/1 = 1",
                 "formula": "= 1"
             }
+        ],
+        "prerequisites": [
+            "Derivadas",
+            "Limites"
         ]
     },
     "Derivadas por Regra da Cadeia": {
@@ -225,6 +245,313 @@
                 "title": "Exemplo",
                 "content": "f(x) = sin(x²) → f'(x) = cos(x²) · 2x",
                 "formula": "= 2x·cos(x²)"
+            }
+        ],
+        "prerequisites": [
+            "Derivadas"
+        ]
+    },
+    "Continuidade": {
+        "prerequisites": [
+            "Limites"
+        ],
+        "material": "Uma função $f$ é **contínua** em um ponto $p$ se três condições são satisfeitas simultaneamente (Guidorizzi Vol. 1, Cap. 3):\n1. $f(p)$ está definida\n2. $\\\\lim_{x \\\\to p} f(x)$ existe\n3. $\\\\lim_{x \\\\to p} f(x) = f(p)$\n\nIntuitivamente, $f$ é contínua em $p$ se o gráfico não apresenta 'saltos' nesse ponto.\n\n**Teorema do Valor Intermediário (TVI):**\nSe $f$ é contínua em $[a, b]$ e $d$ é um valor entre $f(a)$ e $f(b)$, então existe $c \\\\in (a, b)$ tal que $f(c) = d$.\n\n**Aplicação do TVI:** O TVI garante que toda equação polinomial de grau ímpar tem pelo menos uma raiz real. Por exemplo, $x^3 - x - 1 = 0$ tem raiz em $(1, 2)$ pois $f(1) = -1 < 0$ e $f(2) = 5 > 0$.\n\n**Tipos de descontinuidade:**\n- **Removível:** $\\\\lim_{x \\\\to p} f(x)$ existe mas $\\\\neq f(p)$ (ou $f(p)$ não definida)\n- **De salto:** Os limites laterais existem mas são diferentes\n- **Essencial:** Pelo menos um limite lateral não existe",
+        "exercises": [
+            {
+                "id": "cont1",
+                "title": "Verificar continuidade",
+                "content": "Verifique se $f(x) = \\\\frac{x^2 - 1}{x - 1}$ é contínua em $x = 1$. Se não for, classifique a descontinuidade.",
+                "difficulty": "Fácil",
+                "solution": "f(1) não está definida (0/0). Como lim(x→1) f(x) = 2 existe, a descontinuidade é removível."
+            },
+            {
+                "id": "cont2",
+                "title": "Continuidade por partes",
+                "content": "Para qual valor de $k$ a função $f(x) = \\\\begin{cases} x^2 + k, & x \\\\leq 1 \\\\\\\\ 2x + 1, & x > 1 \\\\end{cases}$ é contínua em $x = 1$?",
+                "difficulty": "Fácil",
+                "solution": "Para continuidade: lim(x→1⁻) = 1+k = lim(x→1⁺) = 3. Logo k = 2."
+            },
+            {
+                "id": "cont3",
+                "title": "TVI para raízes",
+                "content": "Use o Teorema do Valor Intermediário para mostrar que $x^3 + x - 1 = 0$ tem uma raiz no intervalo $(0, 1)$.",
+                "difficulty": "Médio",
+                "solution": "f(0) = -1 < 0 e f(1) = 1 > 0. Como f é contínua (polinomial) e muda de sinal, pelo TVI existe c ∈ (0,1) com f(c) = 0."
+            },
+            {
+                "id": "cont4",
+                "title": "Descontinuidade de salto",
+                "content": "Mostre que $f(x) = \\\\lfloor x \\\\rfloor$ (função piso) tem descontinuidade de salto em todo inteiro.",
+                "difficulty": "Médio",
+                "solution": "Para n inteiro: lim(x→n⁻) = n-1 e lim(x→n⁺) = n. Como os limites laterais são diferentes, há salto."
+            },
+            {
+                "id": "cont5",
+                "title": "Extensão contínua",
+                "content": "Defina $f(0)$ de modo que $f(x) = \\\\frac{\\\\sin(3x)}{x}$ seja contínua em $x = 0$.",
+                "difficulty": "Difícil",
+                "solution": "lim(x→0) sin(3x)/x = 3·lim(x→0) sin(3x)/(3x) = 3·1 = 3. Definimos f(0) = 3."
+            }
+        ],
+        "presentation": [
+            {
+                "title": "O que é Continuidade?",
+                "content": "Uma função é contínua quando seu gráfico pode ser desenhado sem levantar o lápis do papel.",
+                "formula": "\\\\lim_{x \\\\to p} f(x) = f(p)"
+            },
+            {
+                "title": "Três Condições",
+                "content": "f(p) definida + limite existe + limite = f(p).",
+                "formula": "f \\\\text{ contínua em } p"
+            },
+            {
+                "title": "Teorema do Valor Intermediário",
+                "content": "Se f é contínua em [a,b], ela assume todos os valores entre f(a) e f(b).",
+                "formula": "\\\\exists c: f(c) = d"
+            }
+        ]
+    },
+    "Teorema do Valor Médio": {
+        "prerequisites": [
+            "Derivadas",
+            "Continuidade"
+        ],
+        "material": "O **Teorema do Valor Médio (TVM)** é um dos resultados mais importantes do Cálculo (Guidorizzi Vol. 1, Cap. 4). Ele conecta a derivada (taxa instantânea) com a taxa média de variação.\n\n**Enunciado:**\nSe $f$ é contínua em $[a, b]$ e derivável em $(a, b)$, então existe $c \\\\in (a, b)$ tal que:\n$$f'(c) = \\\\frac{f(b) - f(a)}{b - a}$$\n\n**Interpretação geométrica:** Existe um ponto onde a reta tangente é paralela à reta secante que liga $(a, f(a))$ a $(b, f(b))$.\n\n**Caso especial — Teorema de Rolle:**\nSe $f(a) = f(b)$, então existe $c$ tal que $f'(c) = 0$.\n\n**Consequências importantes:**\n- Se $f'(x) = 0$ para todo $x \\\\in (a,b)$, então $f$ é constante\n- Se $f'(x) > 0$ para todo $x \\\\in (a,b)$, então $f$ é estritamente crescente\n- Se $f'(x) = g'(x)$ para todo $x$, então $f(x) = g(x) + C$",
+        "exercises": [
+            {
+                "id": "tvm1",
+                "title": "Aplicação direta",
+                "content": "Verifique as hipóteses do TVM e encontre o $c$ para $f(x) = x^2$ em $[0, 2]$.",
+                "difficulty": "Fácil",
+                "solution": "f contínua e derivável. f'(c) = (f(2)-f(0))/(2-0) = 4/2 = 2. f'(c) = 2c = 2, logo c = 1."
+            },
+            {
+                "id": "tvm2",
+                "title": "Rolle",
+                "content": "Mostre que $f(x) = x^3 - 3x$ tem pelo menos um ponto com tangente horizontal em $(-\\\\sqrt{3}, \\\\sqrt{3})$.",
+                "difficulty": "Fácil",
+                "solution": "f(-√3) = f(√3) = 0. Por Rolle, existe c com f'(c) = 3c²-3 = 0, ou seja, c = ±1."
+            },
+            {
+                "id": "tvm3",
+                "title": "Desigualdade pelo TVM",
+                "content": "Use o TVM para provar que $|\\\\sin a - \\\\sin b| \\\\leq |a - b|$ para quaisquer $a, b$ reais.",
+                "difficulty": "Médio",
+                "solution": "Pelo TVM: sin(a)-sin(b) = cos(c)·(a-b) para algum c. Como |cos(c)| ≤ 1, segue |sin a - sin b| ≤ |a-b|."
+            },
+            {
+                "id": "tvm4",
+                "title": "Função constante",
+                "content": "Se $f'(x) = 0$ para todo $x \\\\in \\\\mathbb{R}$ e $f(0) = 5$, determine $f(x)$.",
+                "difficulty": "Médio",
+                "solution": "Pelo TVM: f(x)-f(0) = f'(c)·(x-0) = 0 para todo x. Logo f(x) = f(0) = 5 (constante)."
+            },
+            {
+                "id": "tvm5",
+                "title": "TVM e crescimento",
+                "content": "Mostre que $e^x > 1 + x$ para todo $x > 0$ usando o TVM.",
+                "difficulty": "Difícil",
+                "solution": "Seja g(x) = eˣ - 1 - x. g(0) = 0 e g'(x) = eˣ - 1 > 0 para x > 0. Pelo TVM, g(x) - g(0) = g'(c)·x > 0. Logo g(x) > 0."
+            }
+        ],
+        "presentation": [
+            {
+                "title": "Teorema do Valor Médio",
+                "content": "Existe um instante onde a velocidade instantânea iguala a velocidade média.",
+                "formula": "f'(c) = \\\\frac{f(b) - f(a)}{b - a}"
+            },
+            {
+                "title": "Teorema de Rolle",
+                "content": "Caso especial: se f(a) = f(b), existe c com f'(c) = 0.",
+                "formula": "f(a) = f(b) \\\\Rightarrow \\\\exists c: f'(c) = 0"
+            },
+            {
+                "title": "Consequência",
+                "content": "Derivada positiva implica função crescente. Derivada zero implica constante.",
+                "formula": "f' > 0 \\\\Rightarrow f \\\\text{ crescente}"
+            }
+        ]
+    },
+    "Máximos e Mínimos": {
+        "prerequisites": [
+            "Derivadas",
+            "Teorema do Valor Médio"
+        ],
+        "material": "O estudo de **máximos e mínimos** de funções é uma das aplicações mais importantes da derivada (Guidorizzi Vol. 1, Cap. 4).\n\n**Definição:** $f$ tem máximo local em $p$ se $f(p) \\\\geq f(x)$ para todo $x$ em uma vizinhança de $p$.\n\n**Teorema de Fermat:** Se $f$ tem extremo local em $p$ e $f'(p)$ existe, então $f'(p) = 0$.\n\n**Pontos críticos:** São os pontos onde $f'(p) = 0$ ou $f'(p)$ não existe.\n\n**Teste da primeira derivada:**\n- Se $f'$ muda de $+$ para $-$ em $p$: máximo local\n- Se $f'$ muda de $-$ para $+$ em $p$: mínimo local\n\n**Teste da segunda derivada:**\n- $f'(p) = 0$ e $f''(p) < 0$: máximo local\n- $f'(p) = 0$ e $f''(p) > 0$: mínimo local\n- $f'(p) = 0$ e $f''(p) = 0$: teste inconclusivo",
+        "exercises": [
+            {
+                "id": "mm1",
+                "title": "Pontos críticos",
+                "content": "Encontre os pontos críticos de $f(x) = x^3 - 3x + 2$ e classifique-os.",
+                "difficulty": "Fácil",
+                "solution": "f'(x) = 3x²-3 = 0 → x = ±1. f''(x) = 6x. f''(1) = 6 > 0 (mín). f''(-1) = -6 < 0 (máx)."
+            },
+            {
+                "id": "mm2",
+                "title": "Otimização",
+                "content": "Um fazendeiro quer cercar uma área retangular com 100m de cerca, usando uma parede como um dos lados. Qual a área máxima?",
+                "difficulty": "Médio",
+                "solution": "A = x(100-2x). A'(x) = 100-4x = 0 → x = 25. A(25) = 25·50 = 1250 m²."
+            },
+            {
+                "id": "mm3",
+                "title": "Valores absolutos",
+                "content": "Encontre os valores máximo e mínimo absolutos de $f(x) = x^3 - 3x^2 + 1$ em $[-1, 4]$.",
+                "difficulty": "Médio",
+                "solution": "f'(x) = 3x²-6x = 0 → x = 0 ou x = 2. f(-1) = -3, f(0) = 1, f(2) = -3, f(4) = 17. Máx = 17, Mín = -3."
+            },
+            {
+                "id": "mm4",
+                "title": "Otimização com restrição",
+                "content": "Qual o retângulo de área máxima inscrito em um semicírculo de raio $r$?",
+                "difficulty": "Difícil",
+                "solution": "A = 2x·√(r²-x²). A'(x) = 0 → x = r/√2. Dimensões: 2x = r√2, y = r/√2. A = r²."
+            },
+            {
+                "id": "mm5",
+                "title": "Concavidade e inflexão",
+                "content": "Determine os intervalos de concavidade e os pontos de inflexão de $f(x) = x^4 - 6x^2$.",
+                "difficulty": "Difícil",
+                "solution": "f''(x) = 12x²-12 = 0 → x = ±1. f'' > 0 em (-∞,-1)∪(1,∞): côncava para cima. f'' < 0 em (-1,1): côncava para baixo. Inflexões: x = ±1."
+            }
+        ],
+        "presentation": [
+            {
+                "title": "Teorema de Fermat",
+                "content": "Se f tem extremo local em p e é derivável, então f'(p) = 0.",
+                "formula": "f'(p) = 0"
+            },
+            {
+                "title": "Teste da 2ª Derivada",
+                "content": "f''(p) > 0 → mínimo. f''(p) < 0 → máximo.",
+                "formula": "f''(p) \\\\gtrless 0"
+            },
+            {
+                "title": "Otimização",
+                "content": "Modelar o problema, derivar, igualar a zero, verificar extremos e fronteiras.",
+                "formula": "A'(x) = 0"
+            }
+        ]
+    },
+    "Integrais Indefinidas": {
+        "prerequisites": [
+            "Derivadas",
+            "Derivadas por Regra da Cadeia"
+        ],
+        "material": "A **integral indefinida** é a operação inversa da derivação (Guidorizzi Vol. 1, Cap. 5). Dada uma função $f$, buscamos uma função $F$ tal que $F'(x) = f(x)$. A função $F$ é chamada **primitiva** ou **antiderivada** de $f$.\n\n**Notação:**\n$$\\\\int f(x)\\,dx = F(x) + C$$\nonde $C$ é a constante de integração.\n\n**Fórmulas fundamentais:**\n- $\\\\int x^n\\,dx = \\\\frac{x^{n+1}}{n+1} + C$ (para $n \\\\neq -1$)\n- $\\\\int \\\\frac{1}{x}\\,dx = \\\\ln|x| + C$\n- $\\\\int e^x\\,dx = e^x + C$\n- $\\\\int \\\\cos x\\,dx = \\\\sin x + C$\n- $\\\\int \\\\sin x\\,dx = -\\\\cos x + C$\n\n**Técnica de Substituição:**\nSe $u = g(x)$, então $\\\\int f(g(x))g'(x)\\,dx = \\\\int f(u)\\,du$.\n\n**Integração por Partes:**\n$$\\\\int u\\,dv = uv - \\\\int v\\,du$$",
+        "exercises": [
+            {
+                "id": "ii1",
+                "title": "Integral direta",
+                "content": "Calcule: $\\\\int (3x^2 + 2x - 1)\\,dx$",
+                "difficulty": "Fácil",
+                "solution": "= x³ + x² - x + C."
+            },
+            {
+                "id": "ii2",
+                "title": "Integral trigonométrica",
+                "content": "Calcule: $\\\\int \\\\sin(2x)\\,dx$",
+                "difficulty": "Fácil",
+                "solution": "Substituição u = 2x: = -cos(2x)/2 + C."
+            },
+            {
+                "id": "ii3",
+                "title": "Substituição",
+                "content": "Calcule: $\\\\int x\\\\sqrt{x^2 + 1}\\,dx$",
+                "difficulty": "Médio",
+                "solution": "u = x²+1, du = 2x dx. = (1/2)∫√u du = (1/3)(x²+1)^{3/2} + C."
+            },
+            {
+                "id": "ii4",
+                "title": "Por partes",
+                "content": "Calcule: $\\\\int x e^x\\,dx$",
+                "difficulty": "Médio",
+                "solution": "u = x, dv = eˣdx. = xeˣ - ∫eˣdx = xeˣ - eˣ + C = eˣ(x-1) + C."
+            },
+            {
+                "id": "ii5",
+                "title": "Frações parciais",
+                "content": "Calcule: $\\\\int \\\\frac{1}{x^2 - 1}\\,dx$",
+                "difficulty": "Difícil",
+                "solution": "= ∫[1/(2(x-1)) - 1/(2(x+1))]dx = (1/2)ln|x-1| - (1/2)ln|x+1| + C = (1/2)ln|(x-1)/(x+1)| + C."
+            }
+        ],
+        "presentation": [
+            {
+                "title": "O que é Integral?",
+                "content": "A integral indefinida é a operação inversa da derivação. Se F'(x) = f(x), então F é primitiva de f.",
+                "formula": "\\\\int f(x)\\,dx = F(x) + C"
+            },
+            {
+                "title": "Fórmula da Potência",
+                "content": "A regra mais básica: aumentar o expoente em 1 e dividir pelo novo expoente.",
+                "formula": "\\\\int x^n dx = \\\\frac{x^{n+1}}{n+1} + C"
+            },
+            {
+                "title": "Substituição",
+                "content": "Técnica que simplifica integrais compostas identificando u = g(x).",
+                "formula": "\\\\int f(g(x))g'(x)dx = \\\\int f(u)du"
+            }
+        ]
+    },
+    "Integrais Definidas": {
+        "prerequisites": [
+            "Integrais Indefinidas",
+            "Continuidade"
+        ],
+        "material": "A **integral definida** está ligada ao cálculo de áreas (Guidorizzi Vol. 1, Cap. 6). Geometricamente, $\\\\int_a^b f(x)\\,dx$ representa a área com sinal entre o gráfico de $f$ e o eixo $x$, de $x = a$ a $x = b$.\n\n**Teorema Fundamental do Cálculo (TFC):**\nSe $f$ é contínua em $[a, b]$ e $F$ é uma primitiva de $f$, então:\n$$\\\\int_a^b f(x)\\,dx = F(b) - F(a)$$\n\nEste teorema conecta as duas operações fundamentais do Cálculo: diferenciação e integração.\n\n**Propriedades:**\n- $\\\\int_a^a f(x)\\,dx = 0$\n- $\\\\int_a^b f(x)\\,dx = -\\\\int_b^a f(x)\\,dx$\n- $\\\\int_a^b [f(x) + g(x)]\\,dx = \\\\int_a^b f(x)\\,dx + \\\\int_a^b g(x)\\,dx$\n- $\\\\int_a^b cf(x)\\,dx = c\\\\int_a^b f(x)\\,dx$\n\n**Valor Médio Integral:**\nSe $f$ é contínua em $[a, b]$, existe $c \\\\in [a, b]$ tal que:\n$$f(c) = \\\\frac{1}{b-a}\\\\int_a^b f(x)\\,dx$$",
+        "exercises": [
+            {
+                "id": "id1",
+                "title": "TFC direto",
+                "content": "Calcule: $\\\\int_0^2 (3x^2 + 1)\\,dx$",
+                "difficulty": "Fácil",
+                "solution": "[x³ + x]₀² = (8+2) - (0+0) = 10."
+            },
+            {
+                "id": "id2",
+                "title": "Área simples",
+                "content": "Calcule a área entre $f(x) = x^2$ e o eixo $x$ no intervalo $[0, 3]$.",
+                "difficulty": "Fácil",
+                "solution": "∫₀³ x² dx = [x³/3]₀³ = 27/3 = 9."
+            },
+            {
+                "id": "id3",
+                "title": "Área entre curvas",
+                "content": "Calcule a área entre $f(x) = x^2$ e $g(x) = x$ no intervalo $[0, 1]$.",
+                "difficulty": "Médio",
+                "solution": "∫₀¹ (x - x²) dx = [x²/2 - x³/3]₀¹ = 1/2 - 1/3 = 1/6."
+            },
+            {
+                "id": "id4",
+                "title": "TFC parte 2",
+                "content": "Encontre $F'(x)$ se $F(x) = \\\\int_0^{x^2} \\\\sin(t)\\,dt$.",
+                "difficulty": "Médio",
+                "solution": "Pelo TFC parte 2 + regra da cadeia: F'(x) = sin(x²)·2x = 2x·sin(x²)."
+            },
+            {
+                "id": "id5",
+                "title": "Valor médio",
+                "content": "Encontre o valor médio de $f(x) = x^2$ em $[0, 3]$.",
+                "difficulty": "Difícil",
+                "solution": "VM = (1/3)∫₀³ x² dx = (1/3)·9 = 3. Existe c = √3 ∈ (0,3) com f(c) = 3."
+            }
+        ],
+        "presentation": [
+            {
+                "title": "Integral Definida",
+                "content": "Calcula a 'área com sinal' sob o gráfico de f entre a e b.",
+                "formula": "\\\\int_a^b f(x)\\,dx"
+            },
+            {
+                "title": "Teorema Fundamental",
+                "content": "Integrar f de a até b = primitiva avaliada nos extremos.",
+                "formula": "\\\\int_a^b f(x)dx = F(b) - F(a)"
+            },
+            {
+                "title": "Área Entre Curvas",
+                "content": "Área = integral da diferença |f(x) - g(x)| no intervalo.",
+                "formula": "A = \\\\int_a^b |f(x) - g(x)|\\,dx"
             }
         ]
     }

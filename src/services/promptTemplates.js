@@ -7,16 +7,10 @@
  * Estratégias para acurácia:
  * 1. Chain-of-thought (3 etapas obrigatórias)
  * 2. Few-shot com exemplos numéricos
- * 3. Restrições Anti-Alucinação
+ * 3. Restrições Anti-Alucinação (importadas de prompts.js)
  */
 
-const ANTI_HALLUCINATION = `
-RESTRIÇÕES ANTI-ALUCINAÇÃO:
-- Use APENAS conceitos e fórmulas do Cálculo I (Guidorizzi)
-- NÃO invente teoremas ou propriedades que não existam
-- Se não souber a resposta, diga "Não tenho certeza sobre isso"
-- Cite o nome do teorema/propriedade usada quando aplicável
-- Use apenas notação matemática padrão`;
+import { ANTI_HALLUCINATION } from './prompts.js';
 
 export const promptTemplates = {
   // Template para primeira vez no tópico
@@ -93,8 +87,8 @@ Você é o Professor Guidorizzi respondendo uma dúvida específica de um aluno 
 Tópico: "${topic}"
 Pergunta do aluno: "${question}"
 ${context.score ? `Desempenho do aluno neste tópico: ${context.score}%` : ""}
-${context.previousDoubts && context.previousDoubts.length > 0 ? 
-  `Dúvidas anteriores relacionadas: ${context.previousDoubts.join(", ")}` : ""}
+${context.previousDoubts && context.previousDoubts.length > 0 ?
+      `Dúvidas anteriores relacionadas: ${context.previousDoubts.join(", ")}` : ""}
 
 RESPOSTA PEDAGÓGICA OBRIGATÓRIA (4 etapas):
 1. IDENTIFICAR: Nomeie o conceito do Cálculo envolvido (limite, derivada, integral, teorema, etc)
@@ -120,8 +114,8 @@ Tempo de estudo: ${performance.timeSpent || 0} minutos
 
 Opções de próximo tópico: ${candidates.join(", ")}
 
-${performance.score < 60 ? `⚠️ Aluno ainda tem deficiências em "${currentTopic}". Recomende revisar antes de avançar.` : 
-  `✅ Aluno compreende bem. Hora de avançar!`}
+${performance.score < 60 ? `⚠️ Aluno ainda tem deficiências em "${currentTopic}". Recomende revisar antes de avançar.` :
+      `✅ Aluno compreende bem. Hora de avançar!`}
 
 RESPONDA (4 partes):
 1. RECOMENDE qual tópico estudar agora (e por quê - conexión pedagógica)

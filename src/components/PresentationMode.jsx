@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Loader2, RefreshCw, Sparkles, Play, Pause, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
-import { generateSlides, createStudioSlides } from '../services/api';
+import { generateSlides } from '../services/api';
 import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
@@ -87,7 +87,6 @@ const PresentationMode = ({ topic, onBack }) => {
   const [source, setSource] = useState('');
   const [error, setError] = useState(null);
   const [autoPlay, setAutoPlay] = useState(false);
-  const [isGeneratingStudio, setIsGeneratingStudio] = useState(false);
   const [slideCount, setSlideCount] = useState(6);
   const toast = useToast();
 
@@ -143,17 +142,6 @@ const PresentationMode = ({ topic, onBack }) => {
     }
   };
 
-  const handleCreateInStudio = async () => {
-    setIsGeneratingStudio(true);
-    try {
-      await createStudioSlides(topic);
-      toast.success('Geração de deck oficial iniciada!');
-    } catch (err) {
-      toast.error('Erro ao solicitar deck no Studio: ' + err.message);
-    } finally {
-      setIsGeneratingStudio(false);
-    }
-  };
 
   const nextSlide = () => {
     if (currentSlide < slides.length - 1) setCurrentSlide(s => s + 1);
@@ -205,12 +193,10 @@ const PresentationMode = ({ topic, onBack }) => {
         <motion.button
           whileHover={{ x: -2, y: -2, boxShadow: "4px 4px 0px 0px rgba(255,255,255,0.2)" }}
           whileTap={{ scale: 0.98, x: 0, y: 0, boxShadow: "0px 0px 0px transparent" }}
-          onClick={handleCreateInStudio}
-          disabled={isGeneratingStudio}
-          className="w-full py-4 bg-zinc-950 border-2 border-white/20 text-white font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+          onClick={onBack}
+          className="w-full py-4 bg-zinc-950 border-2 border-white/20 text-white font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 transition-all"
         >
-          {isGeneratingStudio ? <Loader2 className="w-4 h-4 animate-spin" /> : <ExternalLink className="w-4 h-4" />}
-          GERAR NO STUDIO (DESKTOP)
+          VOLTAR AO DASHBOARD
         </motion.button>
       </div>
       <button onClick={onBack} className="mt-8 text-zinc-500 hover:text-white transition-colors text-[10px] font-black uppercase tracking-widest border-b-2 border-zinc-700 hover:border-white pb-1">
@@ -265,15 +251,6 @@ const PresentationMode = ({ topic, onBack }) => {
             <option value={10} className="bg-zinc-900 text-white">10 Slides</option>
             <option value={15} className="bg-zinc-900 text-signal">15 (Lento)</option>
           </select>
-          <motion.button
-            whileTap={{ scale: 0.9 }}
-            onClick={handleCreateInStudio}
-            disabled={isGeneratingStudio}
-            className="w-12 h-12 flex items-center justify-center bg-zinc-950 border-2 border-emerald-500 shadow-[2px_2px_0_theme(colors.emerald.500)] text-emerald-500 hover:bg-emerald-500 hover:text-zinc-950 transition-colors"
-            title="Gerar deck oficial"
-          >
-            {isGeneratingStudio ? <Loader2 className="w-5 h-5 animate-spin" /> : <ExternalLink className="w-5 h-5" />}
-          </motion.button>
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => loadSlides(slideCount)}

@@ -12,7 +12,7 @@
 // RESTRIÇÕES ANTI-ALUCINAÇÃO (sempre incluir)
 // ==========================================
 
-const ANTI_HALLUCINATION = `
+export const ANTI_HALLUCINATION = `
 RESTRIÇÕES ANTI-ALUCINAÇÃO:
 - Use APENAS conceitos e fórmulas do livro do Guidorizzi
 - NÃO invente teoremas ou propriedades que não existam
