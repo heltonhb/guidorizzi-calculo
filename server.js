@@ -47,7 +47,22 @@ app.use(helmet({
         },
     },
     crossOriginEmbedderPolicy: false,
+    hsts: {
+        maxAge: 31536000,
+        includeSubDomains: true,
+        preload: true,
+    },
 }));
+
+app.use((req, res, next) => {
+    if (req.secure || req.headers['x-forwarded-proto'] === 'https') {
+        return next();
+    }
+    if (nodeEnv === 'production') {
+        return res.redirect(`https://${req.headers.host}${req.url}`);
+    }
+    next();
+});
 
 app.use(cors({
     origin: (origin, callback) => {

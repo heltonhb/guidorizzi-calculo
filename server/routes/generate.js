@@ -61,17 +61,43 @@ export const createGenerateRouter = (groq, model) => {
         }
     };
 
+    // Helper: valida e sanitiza input
+    const validateTopic = (topic) => {
+        if (typeof topic !== 'string') {
+            return { valid: false, error: 'Topic must be a string' };
+        }
+        const trimmed = topic.trim();
+        if (trimmed.length < 2 || trimmed.length > 200) {
+            return { valid: false, error: 'Topic must be between 2 and 200 characters' };
+        }
+        return { valid: true, sanitized: trimmed.replace(/[<>]/g, '') };
+    };
+
+    const validateCount = (count, defaultVal, maxVal) => {
+        const parsed = parseInt(count, 10);
+        if (isNaN(parsed) || parsed < 1) return defaultVal;
+        return Math.min(parsed, maxVal);
+    };
+
     // POST /api/generate/flashcards
     router.post('/flashcards', async (req, res) => {
         const { topic } = req.body;
-        if (!topic) return res.status(400).json({ error: 'Topic é obrigatório' });
+        
+        if (!topic) {
+            return res.status(400).json({ error: 'Topic is required' });
+        }
+        
+        const validation = validateTopic(topic);
+        if (!validation.valid) {
+            return res.status(400).json({ error: validation.error });
+        }
 
         try {
-            console.log(`[Generate] Flashcards for topic: "${topic}"`);
-            const localContext = getLocalContext(topic) || '';
+            console.log(`[Generate] Flashcards for topic: "${validation.sanitized}"`);
+            const localContext = getLocalContext(validation.sanitized) || '';
             const systemPrompt = `Você é um gerador de flashcards focado no livro de cálculo de Guidorizzi. Retorne EXATAMENTE um objeto JSON com a propriedade "flashcards" cujo valor é um array. Cada item deve ter: "front" (pergunta) e "back" (resposta com LaTeX $...$). ${LATEX_JSON_INSTRUCTION} ${GUIDORIZZI_RULES} Contexto: ${localContext}`;
 
-            const parsed = await callGroqJson(systemPrompt, getDynamicFlashcardsPrompt(topic));
+            const parsed = await callGroqJson(systemPrompt, getDynamicFlashcardsPrompt(validation.sanitized));
 
             if (parsed?.flashcards && Array.isArray(parsed.flashcards)) {
                 console.log(`[Generate] ✅ ${parsed.flashcards.length} flashcards generated`);
@@ -87,14 +113,24 @@ export const createGenerateRouter = (groq, model) => {
     // POST /api/generate/quiz
     router.post('/quiz', async (req, res) => {
         const { topic, count = 5 } = req.body;
-        if (!topic) return res.status(400).json({ error: 'Topic é obrigatório' });
+        
+        if (!topic) {
+            return res.status(400).json({ error: 'Topic is required' });
+        }
+        
+        const validation = validateTopic(topic);
+        if (!validation.valid) {
+            return res.status(400).json({ error: validation.error });
+        }
+        
+        const validCount = validateCount(count, 5, 20);
 
         try {
-            console.log(`[Generate] Quiz(${count}) for topic: "${topic}"`);
-            const localContext = getLocalContext(topic) || '';
+            console.log(`[Generate] Quiz(${validCount}) for topic: "${validation.sanitized}"`);
+            const localContext = getLocalContext(validation.sanitized) || '';
             const systemPrompt = `Você é um gerador de quizzes inspirados nos problemas do livro Guidorizzi. Retorne EXATAMENTE um objeto JSON com "questions" contendo um array. Cada objeto: "text" (enunciado), "options" (4 strings), "correct" (índice 0-3), "explanation" (passo a passo). ${LATEX_JSON_INSTRUCTION} ${GUIDORIZZI_RULES} Contexto: ${localContext}`;
 
-            const parsed = await callGroqJson(systemPrompt, getDynamicQuizPrompt(topic, count));
+            const parsed = await callGroqJson(systemPrompt, getDynamicQuizPrompt(validation.sanitized, validCount));
 
             if (parsed?.questions && Array.isArray(parsed.questions)) {
                 const valid = parsed.questions.filter(q =>
@@ -116,14 +152,24 @@ export const createGenerateRouter = (groq, model) => {
     // POST /api/generate/slides
     router.post('/slides', async (req, res) => {
         const { topic, count = 6 } = req.body;
-        if (!topic) return res.status(400).json({ error: 'Topic é obrigatório' });
+        
+        if (!topic) {
+            return res.status(400).json({ error: 'Topic is required' });
+        }
+        
+        const validation = validateTopic(topic);
+        if (!validation.valid) {
+            return res.status(400).json({ error: validation.error });
+        }
+        
+        const validCount = validateCount(count, 6, 15);
 
         try {
-            console.log(`[Generate] Slides(${count}) for topic: "${topic}"`);
-            const localContext = getLocalContext(topic) || '';
+            console.log(`[Generate] Slides(${validCount}) for topic: "${validation.sanitized}"`);
+            const localContext = getLocalContext(validation.sanitized) || '';
             const systemPrompt = `Você é um gerador de slides educacionais de Cálculo baseado no livro Guidorizzi. Retorne EXATAMENTE um objeto JSON com "slides" contendo um array. Cada slide: "title" (string), "subtitle" (string), "blocks" (array de objetos com "type" e "content"). ${LATEX_JSON_INSTRUCTION} ${GUIDORIZZI_RULES} Mantenha legível em tela 9:16 mobile. Contexto: ${localContext}`;
 
-            const parsed = await callGroqJson(systemPrompt, getDynamicSlidesPrompt(topic, count));
+            const parsed = await callGroqJson(systemPrompt, getDynamicSlidesPrompt(validation.sanitized, validCount));
 
             if (parsed?.slides && Array.isArray(parsed.slides)) {
                 console.log(`[Generate] ✅ ${parsed.slides.length} slides generated`);
