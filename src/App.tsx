@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AppProvider } from './context/AppContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { AppContext } from './context/createAppContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { ErrorNotification } from './components/ErrorNotification';
@@ -168,14 +169,16 @@ function AppContent(): JSX.Element {
 function App(): JSX.Element {
   return (
     <QueryClientProvider client={queryClient}>
-      <AppProvider>
-        <ErrorBoundary>
-          <ToastProvider>
-            <ErrorNotification />
-            <AppContent />
-          </ToastProvider>
-        </ErrorBoundary>
-      </AppProvider>
+      <ThemeProvider>
+        <AppProvider>
+          <ErrorBoundary>
+            <ToastProvider>
+              <ErrorNotification />
+              <AppContent />
+            </ToastProvider>
+          </ErrorBoundary>
+        </AppProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

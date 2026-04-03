@@ -178,3 +178,46 @@ textarea:focus {
 .animate-pulse-border-cyber {
     animation: pulse-border-cyber 1s ease-in-out infinite;
 }
+
+/* Light Mode Styles */
+html.light body {
+    background-color: #f8f9fa;
+    color: #050505;
+}
+
+html.light .bg-zinc-950 {
+    background-color: #ffffff;
+}
+
+html.light .bg-zinc-900 {
+    background-color: #f1f3f5;
+}
+
+html.light .text-white {
+    color: #050505;
+}
+
+html.light .border-white\/20 {
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+html.light .border-zinc-950 {
+    border-color: #050505;
+}
+
+html.light .shadow-\[4px_4px_0_rgba\(255\,255\,255\,0\.2\)\] {
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.2);
+}
+
+html.light .text-zinc-400 {
+    color: #6b7280;
+}
+
+html.light .text-zinc-500 {
+    color: #6b7280;
+}
+
+html.light .hover\:bg-zinc-800:hover {
+    background-color: #1f2937;
+    color: #ffffff;
+}

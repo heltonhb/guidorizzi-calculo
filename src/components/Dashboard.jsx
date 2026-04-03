@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
 import contentData from '../data/content.json';
 import { useStudyMetrics } from '../hooks/useStudyMetrics';
+import ThemeToggle from './ThemeToggle';
 
 const Dashboard = ({ onNavigate }) => {
     const [search, setSearch] = useState('');
@@ -49,22 +50,25 @@ const Dashboard = ({ onNavigate }) => {
             className="flex flex-col gap-6 sm:gap-8 pb-10 px-2 sm:px-0"
         >
             <header className="space-y-4 sm:space-y-6">
-                <div className="flex flex-col items-start gap-3">
-                    <div className="flex items-center gap-2 px-3 py-1 bg-zinc-900 border-2 border-white/20 text-white text-[10px] uppercase font-black tracking-widest shadow-[2px_2px_0_rgba(255,255,255,0.2)]">
-                        <div className="flex h-2 w-2 relative">
-                            <span className="animate-ping absolute inline-flex h-full w-full bg-emerald-400 opacity-75"></span>
-                            <span className="relative inline-flex h-2 w-2 bg-emerald-500"></span>
+                <div className="flex items-center justify-between">
+                    <div className="flex flex-col items-start gap-3">
+                        <div className="flex items-center gap-2 px-3 py-1 bg-zinc-900 border-2 border-white/20 text-white text-[10px] uppercase font-black tracking-widest shadow-[2px_2px_0_rgba(255,255,255,0.2)]">
+                            <div className="flex h-2 w-2 relative">
+                                <span className="animate-ping absolute inline-flex h-full w-full bg-emerald-400 opacity-75"></span>
+                                <span className="relative inline-flex h-2 w-2 bg-emerald-500"></span>
+                            </div>
+                            {isTopicFromAI ? 'IA Generativa Ativa' : 'API Online'}
                         </div>
-                        {isTopicFromAI ? 'IA Generativa Ativa' : 'API Online'}
+                        <motion.h1
+                            initial={{ x: -20, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-white uppercase px-2 sm:px-0"
+                        >
+                            Guidorizzi
+                            <span className="block text-signal text-xl sm:text-2xl md:text-3xl lg:text-4xl mt-1 tracking-tight">Cálculo Precision</span>
+                        </motion.h1>
                     </div>
-                    <motion.h1
-                        initial={{ x: -20, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-white uppercase px-2 sm:px-0"
-                    >
-                        Guidorizzi
-                        <span className="block text-signal text-xl sm:text-2xl md:text-3xl lg:text-4xl mt-1 tracking-tight">Cálculo Precision</span>
-                    </motion.h1>
+                    <ThemeToggle />
                 </div>
             </header>
 
