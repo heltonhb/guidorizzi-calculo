@@ -1,20 +1,36 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AppProvider } from './context/AppContext';
 import { AppContext } from './context/createAppContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { ErrorNotification } from './components/ErrorNotification';
 import { ToastProvider } from './components/Toast';
 import Dashboard from './components/Dashboard';
-import StudyMaterial from './components/StudyMaterial';
-import ExerciseList from './components/ExerciseList';
-import PresentationMode from './components/PresentationMode';
-import ChatGuidorizzi from './components/ChatGuidorizzi';
-import QuizMode from './components/QuizMode';
-import Flashcards from './components/Flashcards';
 import { installConsoleCommands } from './lib/notebookConsole';
 
-function AppContent() {
+// Lazy load heavy components for better performance
+const StudyMaterial = lazy(() => import('./components/StudyMaterial'));
+const ExerciseList = lazy(() => import('./components/ExerciseList'));
+const PresentationMode = lazy(() => import('./components/PresentationMode'));
+const ChatGuidorizzi = lazy(() => import('./components/ChatGuidorizzi'));
+const QuizMode = lazy(() => import('./components/QuizMode'));
+const Flashcards = lazy(() => import('./components/Flashcards'));
+
+// Create a client
+const queryClient = new QueryClient();
+
+// Loading component for lazy-loaded routes
+const LoadingSpinner = () => (
+  <div className="flex items-center justify-center min-h-[60vh]">
+    <div className="text-center">
+      <div className="w-8 h-8 border-4 border-[#00f0ff] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+      <p className="text-zinc-400 text-sm">Carregando...</p>
+    </div>
+  </div>
+);
+
+function AppContent(): JSX.Element {
   const { view, setView, currentTopic, navigateTo } = React.useContext(AppContext);
 
   // 🔥 Inicializar console commands
@@ -75,7 +91,9 @@ function AppContent() {
               exit={{ opacity: 0, x: -100 }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
-              <StudyMaterial topic={currentTopic} onBack={() => setView('dashboard')} />
+              <Suspense fallback={<LoadingSpinner />}>
+                <StudyMaterial topic={currentTopic} onBack={() => setView('dashboard')} />
+              </Suspense>
             </motion.div>
           )}
           {view === 'exercises' && (
@@ -86,7 +104,9 @@ function AppContent() {
               exit={{ opacity: 0, x: -100 }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
-              <ExerciseList topic={currentTopic} onBack={() => setView('dashboard')} />
+              <Suspense fallback={<LoadingSpinner />}>
+                <ExerciseList topic={currentTopic} onBack={() => setView('dashboard')} />
+              </Suspense>
             </motion.div>
           )}
           {view === 'presentation' && (
@@ -97,7 +117,9 @@ function AppContent() {
               exit={{ opacity: 0, scale: 1.1, rotateY: -90 }}
               transition={{ type: "spring", stiffness: 200, damping: 25 }}
             >
-              <PresentationMode topic={currentTopic} onBack={() => setView('dashboard')} />
+              <Suspense fallback={<LoadingSpinner />}>
+                <PresentationMode topic={currentTopic} onBack={() => setView('dashboard')} />
+              </Suspense>
             </motion.div>
           )}
           {view === 'chat' && (
@@ -108,7 +130,9 @@ function AppContent() {
               exit={{ opacity: 0, y: 100 }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
-              <ChatGuidorizzi onBack={() => setView('dashboard')} />
+              <Suspense fallback={<LoadingSpinner />}>
+                <ChatGuidorizzi onBack={() => setView('dashboard')} />
+              </Suspense>
             </motion.div>
           )}
           {view === 'quiz' && (
@@ -118,7 +142,9 @@ function AppContent() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 100 }}
             >
-              <QuizMode topic={currentTopic} onBack={() => setView('dashboard')} />
+              <Suspense fallback={<LoadingSpinner />}>
+                <QuizMode topic={currentTopic} onBack={() => setView('dashboard')} />
+              </Suspense>
             </motion.div>
           )}
           {view === 'flashcards' && (
@@ -128,7 +154,9 @@ function AppContent() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 50 }}
             >
-              <Flashcards topic={currentTopic} onBack={() => setView('dashboard')} />
+              <Suspense fallback={<LoadingSpinner />}>
+                <Flashcards topic={currentTopic} onBack={() => setView('dashboard')} />
+              </Suspense>
             </motion.div>
           )}
         </AnimatePresence>
@@ -137,16 +165,18 @@ function AppContent() {
   );
 }
 
-function App() {
+function App(): JSX.Element {
   return (
-    <AppProvider>
-      <ErrorBoundary>
-        <ToastProvider>
-          <ErrorNotification />
-          <AppContent />
-        </ToastProvider>
-      </ErrorBoundary>
-    </AppProvider>
+    <QueryClientProvider client={queryClient}>
+      <AppProvider>
+        <ErrorBoundary>
+          <ToastProvider>
+            <ErrorNotification />
+            <AppContent />
+          </ToastProvider>
+        </ErrorBoundary>
+      </AppProvider>
+    </QueryClientProvider>
   );
 }
 

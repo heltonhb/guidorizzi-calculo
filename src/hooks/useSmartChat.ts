@@ -1,13 +1,21 @@
 /**
- * useSmartChat.js
- * 
- * Hook que gerencia chat inteligente:
- * - Prepara contexto automaticamente
- * - Seleciona prompts dinâmicos
- * - Integra com métricas de estudo
- * - Registra dúvidas
- * - Valida respostas contra conteúdo local
- * - Usa cache e fallback automático
+ * Custom hook for managing intelligent chat interactions with AI tutoring.
+ *
+ * This hook provides a comprehensive chat system that:
+ * - Automatically prepares student context based on study metrics
+ * - Dynamically selects appropriate prompts based on student performance
+ * - Integrates with study tracking and doubt recording
+ * - Validates AI responses against local content for accuracy
+ * - Implements caching and automatic fallback mechanisms
+ * - Generates contextual suggestions for continued learning
+ *
+ * @param {string} currentTopic - The current calculus topic being studied
+ * @returns {Object} Chat functionality and state
+ * @property {Function} queryWithContext - Main function to send queries with context
+ * @property {Object} chatContext - Current student context and metrics
+ * @property {Array} suggestions - Generated learning suggestions
+ * @property {Function} generateSuggestions - Function to generate new suggestions
+ * @property {boolean} isGeneratingSuggestions - Loading state for suggestion generation
  */
 
 import { useCallback, useMemo, useState } from 'react';
@@ -22,7 +30,22 @@ import {
 } from '../services/answerValidator';
 import useStudyMetrics from './useStudyMetrics';
 
-export const useSmartChat = (currentTopic) => {
+interface ChatContext {
+  topic: string;
+  performance: number;
+  doubts: string[];
+  timeSpent: number;
+}
+
+interface UseSmartChatReturn {
+  queryWithContext: (query: string) => Promise<{ answer: string; hasContext: boolean }>;
+  chatContext: ChatContext;
+  suggestions: string[];
+  generateSuggestions: () => Promise<void>;
+  isGeneratingSuggestions: boolean;
+}
+
+export const useSmartChat = (currentTopic: string): UseSmartChatReturn => {
   const { metrics, recordDoubts, getTopicMetrics } = useStudyMetrics();
   const [suggestions, setSuggestions] = useState([]);
   const [isGeneratingSuggestions, setIsGeneratingSuggestions] = useState(false);
@@ -49,9 +72,18 @@ export const useSmartChat = (currentTopic) => {
     return enhancedQuery;
   }, [chatContext]);
 
-  // Query inteligente - registra dúvida e enriquece query
-  // Agora com validação, cache e fallback automático
-  const queryWithContext = useCallback(async (userQuery) => {
+  /**
+   * Main function to send intelligent queries with context enrichment.
+   * Records the doubt, applies dynamic prompts, validates responses, and caches results.
+   *
+   * @param {string} userQuery - The student's question or query
+   * @returns {Promise<Object>} Response object with answer, context, and metadata
+   * @property {string} answer - The AI-generated response
+   * @property {boolean} success - Whether the query was successful
+   * @property {Object} context - The chat context used
+   * @property {string} source - Source of the answer ('cache', 'ai', 'local')
+   */
+  const queryWithContext = useCallback(async (userQuery: string) => {
     // 1. Verifica cache primeiro
     const cachedAnswer = getCachedAnswer(userQuery, currentTopic);
     if (cachedAnswer) {

@@ -36,3 +36,4 @@ ai_debug.log
 # Agent
 .agent/
 .opencode/
+dist/
