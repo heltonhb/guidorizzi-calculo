@@ -14,4 +14,7 @@ RESTRIÇÕES ANTI-ALUCINAÇÃO:
 - Para fórmulas, use apenas as padrão do Cálculo I
 - Use apenas notação matemática padrão`;
 
-export const LATEX_JSON_INSTRUCTION = `IMPORTANTE: Você DEVE usar barra invertida dupla (\\\\\\\\) para TODOS os comandos LaTeX para não quebrar o JSON. Exemplo: use \\\\\\\\frac ao invés de \\\\frac, \\\\\\\\int ao invés de \\\\int, \\\\\\\\to ao invés de \\\\to.`;
+export const LATEX_JSON_INSTRUCTION = `IMPORTANTE: 
+1. Use $ para inline math e $$ para display math nos campos de texto
+2. Use barra única (\) para comandos LaTeX (ex: \frac, \int, \lim)
+3. NÃO use barras duplas (\\) - isso quebra a renderização`;

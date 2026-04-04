@@ -8,6 +8,7 @@
  * - NÃO modifica texto que já contenha delimitadores KaTeX ($, $$, \[, \()
  * - Detecta comandos LaTeX órfãos (sem $) e os envelopa
  * - Preserva barras invertidas duplas (\\) que são sintaxe LaTeX válida
+ * - Trata fórmulas no meio de frases (não só linhas inteiras)
  */
 
 // Comandos LaTeX que indicam fórmula matemática
@@ -28,21 +29,28 @@ const LATEX_COMMANDS = [
     '\\leq', '\\geq', '\\neq', '\\approx', '\\equiv', '\\sim', '\\propto',
     '\\forall', '\\exists', '\\in', '\\notin', '\\subset', '\\supset', '\\cup', '\\cap',
     '\\cdot', '\\dots', '\\ldots', '\\cdots', '\\vdots', '\\ddots',
-    '\\left', '\\right', '\\mathbf', '\\mathrm', '\\text', '\\mathbb'
+    '\\left', '\\right', '\\mathbf', '\\mathrm', '\\text', '\\mathbb',
+    '\\dx', '\\dy', '\\dt', '\\du', '\\dv', '\\df', '\\dg',
+    '\\sen', '\\tg', '\\arcsen', '\\arctg', // Comandos em português
+    '\\ra', '\\la', '\\lla', '\\rra', // Setas curtas
+    '\\par', '\\nabla', // Derivada parcial
 ];
+
+// Regex mais abrangente para detectar comandos LaTeX em qualquer posição
+const LATEX_COMMAND_PATTERN = /\\(?:lim|liminf|limsup|max|min|sup|inf|int|iint|iiint|oint|oiint|sum|prod|coprod|frac|sqrt|cbrt|nthroot|sin|cos|tan|cot|sec|csc|arcsin|arccos|arctan|log|ln|exp|alpha|beta|gamma|delta|epsilon|zeta|eta|theta|iota|kappa|lambda|mu|nu|xi|pi|rho|sigma|tau|upsilon|phi|chi|psi|omega|Gamma|Delta|Theta|Lambda|Xi|Pi|Sigma|Phi|Psi|Omega|to|rightarrow|leftarrow|Rightarrow|Leftarrow|leftrightarrow|infinity|partial|nabla|pm|mp|times|div|leq|geq|neq|approx|equiv|sim|propto|forall|exists|in|notin|subset|supset|cup|cap|cdot|ldots|ccdots|vdots|ddots|left|right|text|mathbf|mathrm|mathbb|sen|tg|arcsen|arctg|ra|la|lla|rra|par|dx|dy|dt|du|dv|df|dg)(?:\b|[_{])/i;
 
 /**
  * Detecta se uma string contém comandos LaTeX
  */
 const hasLatexCommands = (text) => {
-    return LATEX_COMMANDS.some(cmd => text.includes(cmd));
+    return LATEX_COMMAND_PATTERN.test(text);
 };
 
 /**
- * Detecta se uma string contém símbolos matemáticos unicode
+ * Detecta símbolos matemáticos unicode
  */
 const hasMathSymbols = (text) => {
-    return /[≤≥≈≠±∫∑∮π∞√∂∇]/.test(text);
+    return /[≤≥≈≠±∫∑∮π∞√∂∇λμΣΩ]/.test(text);
 };
 
 /**
@@ -54,30 +62,59 @@ const hasKatexDelimiters = (text) => {
 
 /**
  * Converte barras invertidas duplas (\\\\) para simples (\)
- * Isso corrige o problema de a IA retornar \\frac ao invés de \frac
  */
 const fixDoubleBackslashes = (text) => {
-    // Substitui \\ por \ APENAS fora de delimitadores LaTeX ($)
-    // Primeiro, separa o texto em blocos
     const parts = text.split(/(\$[^$]*\$)/);
     return parts.map(part => {
-        // Se é um bloco $...$, não modifica
         if (part.startsWith('$') && part.endsWith('$')) {
             return part;
         }
-        // Caso contrário, converte \\ para \
         return part.replace(/\\\\/g, '\\');
     }).join('');
 };
 
 /**
+ * Wrap de fórmulas detectadas que não têm delimitadores
+ * Versão melhorada para detectar no meio de frases
+ */
+const wrapInlineMath = (text) => {
+    // Se já tem $, não modifica
+    if (hasKatexDelimiters(text)) {
+        return text;
+    }
+    
+    // Se tem comandos LaTeX ou símbolos math, faz wrap correto
+    if (hasLatexCommands(text) || hasMathSymbols(text)) {
+        let result = text;
+        
+        // Pattern mais preciso: detecta expressões matemáticas completas
+        // Captura: \comando{...} ou \comando_sub ou \comando^sup ou combinações
+        
+        // Substitui sequências como \frac{1}{2}, \lim_{x->0}, etc
+        result = result.replace(/(\\[a-zA-Z]+(?:_[^{}]*)?(?:\^[^{}]*)?(?:\s*[a-zA-Z_{}]+)*)/g, (match, cmd) => {
+            // Se já tem $ dentro, não modifica
+            if (cmd.includes('$')) return cmd;
+            return `$${cmd}$`;
+        });
+        
+        // Para fórmulas com parênteses como \sin(x), \cos(x), etc
+        // Faz wrap da expressão completa
+        result = result.replace(/(\\(?:sin|cos|tan|cot|sec|csc|log|ln|exp|arcsin|arccos|arctan)\s*\([^)]+\))/g, (match) => {
+            if (match.includes('$')) return match;
+            return `$${match}$`;
+        });
+        
+        // Para símbolos matemáticos isolados
+        result = result.replace(/([≤≥≈≠±∫∑∮π∞√∂∇λμΣΩ])\s*(?=[.,;:!)]|$)/g, '$$$1$$');
+        
+        return result;
+    }
+    
+    return text;
+};
+
+/**
  * Pré-processa o conteúdo antes de renderizar.
- * 
- * Corrigido (v2): 
- * - NÃO colapsa \\\\ em \\ (são delimitadores de quebra de linha LaTeX válidos)
- * - NÃO remove espaços ao redor de $ (pode quebrar contexto)
- * - Trata corretamente linhas mistas (texto + fórmula)
- * - Corrige barras invertidas duplas (\\\\) para simples (\)
  */
 export const preprocessMathContent = (content) => {
     if (!content || typeof content !== 'string') return '';
@@ -85,39 +122,17 @@ export const preprocessMathContent = (content) => {
     let result = content;
 
     // 0. Corrige barras invertidas duplas (\\\\) para simples (\)
-    // Isso corrige o problema de a IA retornar \\frac ao invés de \frac
     result = fixDoubleBackslashes(result);
 
-    // 1. Se já tem delimitadores KaTeX, limpa apenas artefatos de encoding
+    // 1. Se já tem delimitadores KaTeX, limpa apenas artefatos
     if (hasKatexDelimiters(result)) {
-        // Corrige $ excessivos (ex: $$$$ → $$) sem tocar em pares válidos
         result = result.replace(/\${3,}/g, '$$');
         return result;
     }
 
-    // 2. Se tem comandos LaTeX ou símbolos math, faz wrap em $
+    // 2. Se tem comandos LaTeX ou símbolos math, tenta wrap inline
     if (hasLatexCommands(result) || hasMathSymbols(result)) {
-        const lines = result.split('\n');
-        const processedLines = lines.map(line => {
-            const trimmed = line.trim();
-            if (!trimmed) return line;
-
-            // Se já tem $, mantém como está
-            if (trimmed.includes('$')) return line;
-
-            // Se a linha inteira parece ser fórmula (tem comandos LaTeX)
-            if (hasLatexCommands(trimmed)) {
-                return `$${trimmed}$`;
-            }
-
-            // Se tem apenas símbolos math unicode, wrap em $
-            if (hasMathSymbols(trimmed) && trimmed.length < 120) {
-                return `$${trimmed}$`;
-            }
-
-            return line;
-        });
-        return processedLines.join('\n');
+        return wrapInlineMath(result);
     }
 
     // 3. Para texto sem LaTeX, retorna original
