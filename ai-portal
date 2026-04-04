@@ -1,0 +1,4 @@
+#!/bin/bash
+# OmniRoute CLI Wrapper
+cd "/home/helton/disciplinas/calculo/app-gemini/omniroute" || exit 1
+npm run start
