@@ -17,6 +17,7 @@ const PresentationMode = lazy(() => import('./components/PresentationMode'));
 const ChatGuidorizzi = lazy(() => import('./components/ChatGuidorizzi'));
 const QuizMode = lazy(() => import('./components/QuizMode'));
 const Flashcards = lazy(() => import('./components/Flashcards'));
+const Profile = lazy(() => import('./components/Profile'));
 
 // Create a client
 const queryClient = new QueryClient();
@@ -157,6 +158,18 @@ function AppContent(): JSX.Element {
             >
               <Suspense fallback={<LoadingSpinner />}>
                 <Flashcards topic={currentTopic} onBack={() => setView('dashboard')} />
+              </Suspense>
+            </motion.div>
+          )}
+          {view === 'profile' && (
+            <motion.div
+              key="profile"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+            >
+              <Suspense fallback={<LoadingSpinner />}>
+                <Profile onBack={() => setView('dashboard')} />
               </Suspense>
             </motion.div>
           )}

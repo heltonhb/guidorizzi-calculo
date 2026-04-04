@@ -11,6 +11,7 @@ import 'katex/dist/katex.min.css';
 import { preprocessMathContent } from '../utils/mathPreprocessor';
 import LearningObjectives from './LearningObjectives';
 import { useLearningPath } from '../hooks/useLearningPath';
+import { useAppContext } from '../hooks/useAppContext';
 
 // Fallback local questions (used when API is unavailable)
 const LOCAL_QUESTIONS = {
@@ -47,6 +48,9 @@ const QuizMode = ({ topic, onBack }) => {
     
     // Hook de trilha de aprendizado
     const { getNextStudySuggestion, handleQuizCompletion, generateLearningPath } = useLearningPath(topic);
+    
+    // Gamification
+    const { onQuizComplete } = useAppContext();
 
     useEffect(() => {
         loadQuiz();
@@ -170,6 +174,9 @@ const QuizMode = ({ topic, onBack }) => {
         if (currentQuestionIndex < questions.length - 1) {
             setCurrentQuestionIndex(i => i + 1);
         } else {
+            // Gamification: adicionar XP ao completar quiz
+            const pct = Math.round((score / questions.length) * 100);
+            onQuizComplete(pct);
             setShowResults(true);
         }
     };

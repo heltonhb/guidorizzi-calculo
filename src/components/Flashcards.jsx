@@ -9,6 +9,7 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
 import { preprocessMathContent } from '../utils/mathPreprocessor';
+import { useAppContext } from '../hooks/useAppContext';
 
 const Flashcards = ({ topic, onBack }) => {
     const [loading, setLoading] = useState(true);
@@ -19,6 +20,9 @@ const Flashcards = ({ topic, onBack }) => {
     const [known, setKnown] = useState(new Set());
     const [source, setSource] = useState('');
     const toast = useToast();
+    
+    // Gamification
+    const { onFlashcardReview } = useAppContext();
 
     useEffect(() => {
         loadFlashcards();
@@ -65,6 +69,9 @@ const Flashcards = ({ topic, onBack }) => {
     };
 
     const toggleKnown = () => {
+        // Gamification: adicionar XP ao revisar flashcard
+        onFlashcardReview();
+        
         setKnown(prev => {
             const next = new Set(prev);
             if (next.has(currentIndex)) {

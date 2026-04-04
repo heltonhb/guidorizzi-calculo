@@ -1,7 +1,11 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { AppContext } from './createAppContext';
+import { useGamification } from '../hooks/useGamification';
 
 export const AppProvider = ({ children }) => {
+  // Gamification hook
+  const gamification = useGamification();
+  
   const [currentTopic, setCurrentTopic] = useState('');
   const [view, setView] = useState('dashboard');
   const [errors, setErrors] = useState([]);
@@ -109,6 +113,11 @@ export const AppProvider = ({ children }) => {
     globalFavorites,
     updateFavorites,
     isFavorited,
+    // Gamification
+    ...gamification,
+    onQuizComplete: gamification.onQuizComplete,
+    onExerciseCorrect: gamification.onExerciseCorrect,
+    onFlashcardReview: gamification.onFlashcardReview,
   };
 
   return (

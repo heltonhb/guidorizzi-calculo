@@ -4,12 +4,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
 import contentData from '../data/content.json';
 import { useStudyMetrics } from '../hooks/useStudyMetrics';
+import { useAppContext } from '../hooks/useAppContext';
 import ThemeToggle from './ThemeToggle';
+import { ProgressBar } from './ProgressBar';
 
 const Dashboard = ({ onNavigate }) => {
     const [search, setSearch] = useState('');
     const [isFocused, setIsFocused] = useState(false);
     const { metrics, getOverallPerformance, getProblemAreas, getRecentSessions } = useStudyMetrics();
+    const { xp, level, progressToNextLevel, nextLevelXP, streak } = useAppContext();
 
     const topics = Object.keys(contentData);
     const filteredTopics = topics.filter(t => t.toLowerCase().includes(search.toLowerCase()));
@@ -67,9 +70,33 @@ const Dashboard = ({ onNavigate }) => {
                             Guidorizzi
                             <span className="block text-signal text-xl sm:text-2xl md:text-3xl lg:text-4xl mt-1 tracking-tight">Cálculo Precision</span>
                         </motion.h1>
-                    </div>
-                    <ThemeToggle />
                 </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => onNavigate('profile')}
+                    className="w-10 h-10 flex items-center justify-center bg-zinc-950 border-2 border-amber-500/50 shadow-[2px_2px_0_rgba(255,255,255,0.2)] hover:border-amber-400 hover:shadow-[2px_2px_0_theme(colors.amber.400)] transition-all text-amber-400"
+                    title="Meu Perfil"
+                  >
+                    <Trophy className="w-5 h-5" />
+                  </button>
+                  <ThemeToggle />
+                </div>
+              </div>
+
+              {/* Gamification - Progress Bar */}
+              <div className="mt-4">
+                <ProgressBar 
+                  xp={xp} 
+                  level={level} 
+                  progressToNextLevel={progressToNextLevel} 
+                  nextLevelXP={nextLevelXP}
+                />
+                {streak > 0 && (
+                  <div className="flex items-center gap-2 mt-2 text-sm text-amber-400">
+                    <span className="🔥">{streak} dias seguidos!</span>
+                  </div>
+                )}
+              </div>
             </header>
 
             <motion.div variants={itemVariants} className="relative z-50">
