@@ -43,12 +43,22 @@ interface UseSmartChatReturn {
   suggestions: string[];
   generateSuggestions: () => Promise<void>;
   isGeneratingSuggestions: boolean;
+  conversationHistory: Array<{role: string; content: string}>;
+  clearHistory: () => void;
 }
 
 export const useSmartChat = (currentTopic: string): UseSmartChatReturn => {
   const { metrics, recordDoubts, getTopicMetrics } = useStudyMetrics();
-  const [suggestions, setSuggestions] = useState([]);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isGeneratingSuggestions, setIsGeneratingSuggestions] = useState(false);
+  
+  // Conversation history for multi-turn chats
+  const [conversationHistory, setConversationHistory] = useState<Array<{role: string; content: string}>>([]);
+
+  // Clear history when topic changes
+  useMemo(() => {
+    setConversationHistory([]);
+  }, [currentTopic]);
 
   // Prepara contexto do aluno
   const chatContext = useMemo(() => {
@@ -113,6 +123,13 @@ export const useSmartChat = (currentTopic: string): UseSmartChatReturn => {
       if (!result.fallbackUsed && result.answer) {
         cacheAnswer(userQuery, currentTopic, result.answer);
       }
+
+      // Update conversation history
+      setConversationHistory(prev => [
+        ...prev,
+        { role: 'user', content: userQuery },
+        { role: 'assistant', content: result.answer }
+      ].slice(-20)); // Keep last 20 messages for context window
 
       return {
         answer: result.answer,
@@ -207,7 +224,8 @@ export const useSmartChat = (currentTopic: string): UseSmartChatReturn => {
     suggestions,
     isGeneratingSuggestions,
     chatContext,
-    buildEnrichedQuery,
+    conversationHistory,
+    clearHistory: () => setConversationHistory([]),
   };
 };
 
