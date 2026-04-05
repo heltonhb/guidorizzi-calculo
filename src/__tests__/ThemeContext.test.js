@@ -1,7 +1,4 @@
-/**
- * Tests for ThemeContext utilities
- */
-
+/* eslint-disable no-undef */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mock localStorage before imports
@@ -31,11 +28,11 @@ describe('ThemeContext', () => {
 
     it('theme toggle switches between dark and light', () => {
         let theme = 'dark';
-        
+
         // Simulate toggle
         theme = theme === 'dark' ? 'light' : 'dark';
         expect(theme).toBe('light');
-        
+
         // Simulate toggle again
         theme = theme === 'dark' ? 'light' : 'dark';
         expect(theme).toBe('dark');
@@ -44,7 +41,7 @@ describe('ThemeContext', () => {
     it('stores theme correctly in localStorage', () => {
         localStorage.setItem('app_theme', 'light');
         expect(localStorage.setItem).toHaveBeenCalledWith('app_theme', 'light');
-        
+
         localStorage.setItem('app_theme', 'dark');
         expect(localStorage.setItem).toHaveBeenCalledWith('app_theme', 'dark');
     });

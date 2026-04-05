@@ -5,7 +5,7 @@
  * Inclui: tópico atual, desempenho, dúvidas, progresso
  */
 
-export const buildChatContext = (metrics, currentTopic, recentActivities = []) => {
+export const buildChatContext = (metrics, currentTopic) => {
   if (!metrics || !currentTopic) {
     return {
       topic: currentTopic,
@@ -16,7 +16,7 @@ export const buildChatContext = (metrics, currentTopic, recentActivities = []) =
   const topicMetrics = metrics.topics[currentTopic] || {};
   const topicDoubts = (metrics.doubts || []).filter(d => d.topic === currentTopic);
   const problemAreas = Object.entries(metrics.topics || {})
-    .filter(([_, data]) => data.score && data.score < 60)
+    .filter(([, data]) => data.score && data.score < 60)
     .map(([topic]) => topic);
 
   const context = {
@@ -30,8 +30,8 @@ export const buildChatContext = (metrics, currentTopic, recentActivities = []) =
     recentDoubts: topicDoubts.map(d => d.question).slice(-3),
     problemAreas: problemAreas.slice(0, 3),
     lastVisited: topicMetrics.lastVisited,
-    overallProgress: metrics.topics ? 
-      Math.round(Object.values(metrics.topics).reduce((sum, t) => sum + (t.score || 0), 0) / 
+    overallProgress: metrics.topics ?
+      Math.round(Object.values(metrics.topics).reduce((sum, t) => sum + (t.score || 0), 0) /
         Object.keys(metrics.topics).length) : 0,
     sessionDuration: topicMetrics.timeSpent || 0,
   };

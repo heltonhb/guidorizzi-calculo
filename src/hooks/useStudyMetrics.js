@@ -9,7 +9,7 @@
  * - Desempenho geral
  */
 
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 
 const defaultMetrics = {
@@ -80,7 +80,7 @@ export const useStudyMetrics = () => {
   // Registra resultado do quiz
   const recordQuizResult = useCallback((topicName, score, totalQuestions) => {
     const percentage = Math.round((score / totalQuestions) * 100);
-    
+
     setMetrics(prev => ({
       ...prev,
       topics: {
@@ -90,8 +90,8 @@ export const useStudyMetrics = () => {
           quizAttempts: (prev.topics[topicName]?.quizAttempts || 0) + 1,
           score: percentage,
           lastQuizDate: new Date().toISOString(),
-          errors: score < totalQuestions ? 
-            (prev.topics[topicName]?.errors || 0) + (totalQuestions - score) : 
+          errors: score < totalQuestions ?
+            (prev.topics[topicName]?.errors || 0) + (totalQuestions - score) :
             prev.topics[topicName]?.errors || 0
         }
       }
@@ -117,8 +117,8 @@ export const useStudyMetrics = () => {
   // Calcular desempenho geral
   const getOverallPerformance = useCallback(() => {
     const topicsWithScores = Object.entries(metrics.topics || {})
-      .filter(([_, data]) => data.score)
-      .map(([_, data]) => data.score);
+      .filter(([, data]) => data.score)
+      .map(([, data]) => data.score);
 
     if (topicsWithScores.length === 0) return 0;
     return Math.round(topicsWithScores.reduce((a, b) => a + b) / topicsWithScores.length);
@@ -127,9 +127,9 @@ export const useStudyMetrics = () => {
   // Identifica tópicos problemáticos (score < 60%)
   const getProblemAreas = useCallback(() => {
     return Object.entries(metrics.topics || {})
-      .filter(([_, data]) => data.score && data.score < 60)
-      .map(([topic, data]) => ({ 
-        topic, 
+      .filter(([, data]) => data.score && data.score < 60)
+      .map(([topic, data]) => ({
+        topic,
         score: data.score,
         errors: data.errors || 0,
         doubts: getTopicDoubts(topic).length

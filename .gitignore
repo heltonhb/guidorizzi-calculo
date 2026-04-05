@@ -37,3 +37,10 @@ ai_debug.log
 .agent/
 .opencode/
 dist/
+
+omniroute/
+test_regex.js
+
+# Lint logs
+lint_log.txt
+lint_log_v2.txt

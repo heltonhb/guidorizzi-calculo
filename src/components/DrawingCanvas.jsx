@@ -10,7 +10,6 @@ const DrawingCanvas = ({ visible, width = 1200, height = 700, onClose }) => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [mode, setMode] = useState('pen'); // 'pen', 'marker', 'eraser'
   const [color, setColor] = useState('#ec4899'); // Rosa default
-  const [lineWidth, setLineWidth] = useState(3);
   const [history, setHistory] = useState([]);
 
   // Cores disponíveis

@@ -12,23 +12,18 @@ import { useState, useEffect } from 'react';
 export const useSlideState = (topic, initialSlides = []) => {
   const [slides, setSlides] = useState(initialSlides);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [favorites, setFavorites] = useState([]);
+  const [favorites, setFavorites] = useState(() => {
+    const storageKey = `slides_favorites_${topic}`;
+    try {
+      const saved = localStorage.getItem(storageKey);
+      return saved ? JSON.parse(saved) : [];
+    } catch { return []; }
+  });
   const [autoPlay, setAutoPlay] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const [isDrawing, setIsDrawing] = useState(false);
 
-  // Carregar favoritos do localStorage
-  useEffect(() => {
-    const storageKey = `slides_favorites_${topic}`;
-    try {
-      const saved = localStorage.getItem(storageKey);
-      if (saved) {
-        setFavorites(JSON.parse(saved));
-      }
-    } catch (e) {
-      console.warn('Erro ao carregar favoritos:', e);
-    }
-  }, [topic]);
+  // Loading handled by lazy initializer
 
   // Persistir favoritos
   useEffect(() => {

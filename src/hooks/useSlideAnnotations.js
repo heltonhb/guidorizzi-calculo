@@ -18,8 +18,7 @@ export const useSlideAnnotations = (topic, slideIndex) => {
   // Carregar anotações ao mudar de slide
   useEffect(() => {
     try {
-      const storageKey = getStorageKey();
-      const saved = localStorage.getItem(storageKey);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       setAnnotations(saved || '');
       setHasChanges(false);
     } catch (e) {

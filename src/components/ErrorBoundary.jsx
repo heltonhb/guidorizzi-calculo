@@ -17,14 +17,14 @@ export class ErrorBoundary extends React.Component {
     };
   }
 
-  static getDerivedStateFromError(err) {
+  static getDerivedStateFromError(_) {
     return { hasError: true };
   }
 
   componentDidCatch(err, errorInfo) {
     // Log do erro para debugging
     console.error('🚨 Error Boundary Caught:', err, errorInfo);
-    
+
     this.setState(prevState => ({
       errorObj: err,
       errorInfo,
@@ -32,7 +32,7 @@ export class ErrorBoundary extends React.Component {
     }));
 
     // Enviar para analytics/logging em produção
-    const isDev = typeof process !== 'undefined' && process.env.NODE_ENV === 'development';
+    const isDev = import.meta.env.DEV;
     if (!isDev) {
       // Exemplo: logErrorToService(err, errorInfo);
     }
@@ -44,7 +44,7 @@ export class ErrorBoundary extends React.Component {
       errorObj: null,
       errorInfo: null,
     });
-    
+
     // Reload page se houver muitos erros
     if (this.state.errorCount > 3) {
       window.location.href = '/';
@@ -70,13 +70,13 @@ export class ErrorBoundary extends React.Component {
             {/* Error Message */}
             <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-6 backdrop-blur-sm mb-6">
               <h1 className="text-xl font-bold text-red-100 mb-3">Ops, algo deu errado!</h1>
-              
+
               <p className="text-sm text-red-200 mb-4">
                 Encontramos um erro inesperado na aplicação. Tente recarregar a página ou voltar para a página inicial.
               </p>
 
               {/* Error Details (Development) */}
-              {typeof process !== 'undefined' && process.env.NODE_ENV === 'development' && this.state.errorObj && (
+              {import.meta.env.DEV && this.state.errorObj && (
                 <details className="mt-4 cursor-pointer">
                   <summary className="text-xs text-red-300 font-mono hover:text-red-200">
                     Detalhes técnicos
@@ -107,7 +107,7 @@ export class ErrorBoundary extends React.Component {
               >
                 🔄 Tentar Novamente
               </motion.button>
-              
+
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}

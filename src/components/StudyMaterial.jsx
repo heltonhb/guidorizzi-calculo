@@ -181,7 +181,7 @@ const StudyMaterial = ({ topic, onBack }) => {
                                     remarkPlugins={[remarkMath]}
                                     rehypePlugins={[rehypeKatex]}
                                     components={{
-                                        img: ({ node, ...props }) => {
+                                        img: ({ node: _, ...props }) => {
                                             if (props.alt === 'ilustracao') {
                                                 return <StylizedIllustration concept={props.src} />;
                                             }

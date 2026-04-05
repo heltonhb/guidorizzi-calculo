@@ -28,7 +28,7 @@ const InteractiveGraph = ({ equation = "x^2", range = [-5, 5] }) => {
                 zoom={true}
                 height={400}
                 viewBox={{ x: range, y: range }}
-                preventInteraction={(e) => {
+                preventInteraction={(_) => {
                     // Allow touch on mobile but prevent conflict with parent scroll
                     return false;
                 }}

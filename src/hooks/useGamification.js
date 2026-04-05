@@ -106,41 +106,41 @@ export const useGamification = () => {
     const currentLevel = getLevel();
     const currentThreshold = XP_THRESHOLDS[currentLevel] || 0;
     const nextThreshold = XP_THRESHOLDS[currentLevel + 1] || XP_THRESHOLDS[XP_THRESHOLDS.length - 1];
-    
+
     if (xp >= nextThreshold) return 100;
-    
+
     const progress = ((xp - currentThreshold) / (nextThreshold - currentThreshold)) * 100;
     return Math.min(Math.max(progress, 0), 100);
   }, [xp, getLevel]);
 
   // Adicionar XP
-  const addXP = useCallback((amount, reason = "") => {
+  const addXP = useCallback((amount, _reason = "") => {
     setXP(prev => prev + amount);
-    
+
     // Checar badges após ganhar XP
     const checkBadges = () => {
       const newBadges = [...unlockedBadges];
       let hasNew = false;
-      
+
       BADGES.forEach(badge => {
         if (!newBadges.includes(badge.id)) {
-          if (badge.xpRequired <= xp + amount || 
-              (badge.id === "matematica_pura" && exercisesSolved + 1 >= 50) ||
-              (badge.id === "flashcard_pro" && flashcardsReviewed + 1 >= 100) ||
-              (badge.id === "quiz_master" && quizzesCompleted + 1 >= 10)) {
+          if (badge.xpRequired <= xp + amount ||
+            (badge.id === "matematica_pura" && exercisesSolved + 1 >= 50) ||
+            (badge.id === "flashcard_pro" && flashcardsReviewed + 1 >= 100) ||
+            (badge.id === "quiz_master" && quizzesCompleted + 1 >= 10)) {
             newBadges.push(badge.id);
             hasNew = true;
           }
         }
       });
-      
+
       if (hasNew) {
         setUnlockedBadges(newBadges);
         return newBadges.filter(b => !unlockedBadges.includes(b));
       }
       return [];
     };
-    
+
     return checkBadges();
   }, [xp, exercisesSolved, flashcardsReviewed, quizzesCompleted, unlockedBadges]);
 
@@ -148,18 +148,18 @@ export const useGamification = () => {
   const updateStreak = useCallback(() => {
     const today = new Date().toDateString();
     const yesterday = new Date(Date.now() - 86400000).toDateString();
-    
+
     if (lastActiveDate === today) {
       return; // Já ativo hoje
     }
-    
+
     if (lastActiveDate === yesterday) {
       setStreak(prev => prev + 1);
       addXP(REWARDS.streak_day, "Dia seguido");
     } else {
       setStreak(1); // Reiniciar streak
     }
-    
+
     setLastActiveDate(today);
   }, [lastActiveDate, addXP]);
 

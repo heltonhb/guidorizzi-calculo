@@ -5,7 +5,7 @@
  * Identifica gaps de conhecimento e sugere revisas baseadas em prerequisites.
  */
 
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { useStudyMetrics } from './useStudyMetrics';
 import contentData from '../data/content.json';
 
@@ -24,22 +24,22 @@ const CONCEPT_MAPPING = {
 };
 
 export const useLearningPath = (currentTopic) => {
-  const { metrics, getTopicMetrics, getProblemAreas, recordQuizResult } = useStudyMetrics();
+  const { metrics: _metrics, getTopicMetrics, getProblemAreas, recordQuizResult } = useStudyMetrics();
 
   /**
    * Analisa erros do quiz e retorna recomendações personalizadas
    */
   const analyzeQuizErrors = useCallback((topic, questions, userAnswers) => {
-    const topicMetrics = getTopicMetrics(topic);
+    const _topicMetrics = getTopicMetrics(topic);
     const recommendations = [];
-    
+
     // Analisar cada questão errada
     questions.forEach((q, index) => {
       if (userAnswers[index] !== q.correct) {
         // Identificar conceitos relacionados à questão
         const questionText = q.text.toLowerCase();
         const relatedConcepts = identifyConcepts(questionText, topic);
-        
+
         // Verificar se pré-requisitos não foram dominados
         const prerequisites = contentData[topic]?.prerequisites || [];
         prerequisites.forEach(prereq => {
@@ -53,7 +53,7 @@ export const useLearningPath = (currentTopic) => {
             });
           }
         });
-        
+
         // Adicionar recomendações baseadas nos conceitos
         relatedConcepts.forEach(concept => {
           recommendations.push({
@@ -66,7 +66,7 @@ export const useLearningPath = (currentTopic) => {
         });
       }
     });
-    
+
     return recommendations;
   }, [getTopicMetrics]);
 
@@ -75,12 +75,12 @@ export const useLearningPath = (currentTopic) => {
    */
   const getNextStudySuggestion = useCallback(() => {
     const problemAreas = getProblemAreas();
-    
+
     if (problemAreas.length === 0) {
       // Se não há áreas problemáticas, sugerir próximo tópico
       const topicOrder = Object.keys(contentData);
       const currentIndex = topicOrder.indexOf(currentTopic);
-      
+
       if (currentIndex < topicOrder.length - 1) {
         const nextTopic = topicOrder[currentIndex + 1];
         return {
@@ -90,7 +90,7 @@ export const useLearningPath = (currentTopic) => {
           priority: 'low'
         };
       }
-      
+
       return {
         type: 'review',
         topic: currentTopic,
@@ -98,7 +98,7 @@ export const useLearningPath = (currentTopic) => {
         priority: 'low'
       };
     }
-    
+
     // Retornar a área mais problemática
     const worstArea = problemAreas[0];
     return {
@@ -117,7 +117,7 @@ export const useLearningPath = (currentTopic) => {
   const generateLearningPath = useCallback(() => {
     const path = [];
     const problemAreas = getProblemAreas();
-    
+
     // 1. Adicionar áreas problemáticas primeiro
     problemAreas.forEach(area => {
       path.push({
@@ -127,7 +127,7 @@ export const useLearningPath = (currentTopic) => {
         type: 'review'
       });
     });
-    
+
     // 2. Adicionar pré-requisitos não dominados
     const currentPrereqs = contentData[currentTopic]?.prerequisites || [];
     currentPrereqs.forEach(prereq => {
@@ -141,13 +141,13 @@ export const useLearningPath = (currentTopic) => {
         });
       }
     });
-    
+
     // 3. Adicionar próximo tópico se o atual estiver dominado
     const currentMetrics = getTopicMetrics(currentTopic);
     if (currentMetrics.score >= 70) {
       const topicOrder = Object.keys(contentData);
       const currentIndex = topicOrder.indexOf(currentTopic);
-      
+
       if (currentIndex < topicOrder.length - 1) {
         const nextTopic = topicOrder[currentIndex + 1];
         path.push({
@@ -158,7 +158,7 @@ export const useLearningPath = (currentTopic) => {
         });
       }
     }
-    
+
     return path;
   }, [getProblemAreas, getTopicMetrics, currentTopic]);
 
@@ -183,13 +183,13 @@ export const useLearningPath = (currentTopic) => {
 const identifyConcepts = (questionText, topic) => {
   const concepts = [];
   const mapping = CONCEPT_MAPPING[topic] || [];
-  
+
   mapping.forEach(concept => {
     if (questionText.includes(concept.toLowerCase().split(' ')[0])) {
       concepts.push(concept);
     }
   });
-  
+
   return concepts.length > 0 ? concepts : [topic];
 };
 

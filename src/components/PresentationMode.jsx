@@ -96,10 +96,33 @@ const PresentationMode = ({ topic, onBack }) => {
   const [autoPlay, setAutoPlay] = useState(false);
   const [slideCount, setSlideCount] = useState(6);
   const toast = useToast();
+  const loadSlides = useCallback(async (count = slideCount) => {
+    setLoading(true);
+    setError(null);
+    setCurrentSlide(0);
+    setAutoPlay(false);
+
+    try {
+      const data = await generateSlides(topic, count);
+      if (data?.slides && data.slides.length > 0) {
+        setSlides(data.slides);
+        setSource(data.source || 'Guidorizzi API');
+        toast.success(`${data.slides.length} slides verticais gerados!`);
+      } else {
+        throw new Error('API não retornou conteúdo. Tente novamente.');
+      }
+    } catch (err) {
+      console.error('Error loading slides:', err);
+      setError(err.message || 'Falha na conexão com a API');
+      setSlides([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [topic, toast]);
 
   useEffect(() => {
     loadSlides(slideCount);
-  }, [topic]);
+  }, [topic, slideCount, loadSlides]);
 
   // Auto-play timer
   useEffect(() => {
@@ -125,29 +148,7 @@ const PresentationMode = ({ topic, onBack }) => {
     return () => window.removeEventListener('keydown', handler);
   }, [slides.length, currentSlide]);
 
-  const loadSlides = async (count = slideCount) => {
-    setLoading(true);
-    setError(null);
-    setCurrentSlide(0);
-    setAutoPlay(false);
-
-    try {
-      const data = await generateSlides(topic, count);
-      if (data?.slides && data.slides.length > 0) {
-        setSlides(data.slides);
-        setSource(data.source || 'Guidorizzi API');
-        toast.success(`${data.slides.length} slides verticais gerados!`);
-      } else {
-        throw new Error('API não retornou conteúdo. Tente novamente.');
-      }
-    } catch (err) {
-      console.error('Error loading slides:', err);
-      setError(err.message || 'Falha na conexão com a API');
-      setSlides([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Duplicate loadSlides removed. Original is defined as a useCallback above.
 
 
   const nextSlide = () => {
@@ -223,7 +224,7 @@ const PresentationMode = ({ topic, onBack }) => {
     'from-[#00f0ff]/30 to-[#ccff00]/30',
     'from-[#ff5500]/30 to-[#00f0ff]/30',
   ];
-  const gradient = gradients[currentSlide % gradients.length];
+  // const gradient = gradients[currentSlide % gradients.length];
 
   return (
     <div className="flex flex-col items-center gap-6 pb-8">
