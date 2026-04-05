@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, Loader2, RefreshCw, Sparkles, Play, Pause, ExternalLink } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { ChevronLeft, ChevronRight, Loader2, RefreshCw, Sparkles, Play, Pause } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
 import { generateSlides } from '../services/api';
@@ -12,13 +12,33 @@ import InteractiveGraph from './InteractiveGraph';
 import StylizedIllustration from './StylizedIllustration';
 import { preprocessMathContent } from '../utils/mathPreprocessor';
 
+/* ─── Chromatic Palette System ─── */
+const ACCENT_PALETTE = [
+  { name: 'signal', hex: '#ff5500', shadow: '#ff5500', text: 'text-[#ff5500]', bg: 'bg-[#ff5500]', border: 'border-[#ff5500]', glow: '0 0 30px rgba(255,85,0,0.3)' },
+  { name: 'cyber', hex: '#00f0ff', shadow: '#00f0ff', text: 'text-[#00f0ff]', bg: 'bg-[#00f0ff]', border: 'border-[#00f0ff]', glow: '0 0 30px rgba(0,240,255,0.3)' },
+  { name: 'lime', hex: '#ccff00', shadow: '#ccff00', text: 'text-[#ccff00]', bg: 'bg-[#ccff00]', border: 'border-[#ccff00]', glow: '0 0 30px rgba(204,255,0,0.3)' },
+  { name: 'pink', hex: '#ff0080', shadow: '#ff0080', text: 'text-[#ff0080]', bg: 'bg-[#ff0080]', border: 'border-[#ff0080]', glow: '0 0 30px rgba(255,0,128,0.3)' },
+  { name: 'orange', hex: '#ff4400', shadow: '#ff4400', text: 'text-[#ff4400]', bg: 'bg-[#ff4400]', border: 'border-[#ff4400]', glow: '0 0 30px rgba(255,68,0,0.3)' },
+];
+
+const getAccent = (index) => ACCENT_PALETTE[index % ACCENT_PALETTE.length];
+
+/* ─── Animated Block Wrapper ─── */
+const AnimatedBlock = ({ children, index }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.4, delay: 0.08 * index, ease: [0.25, 0.46, 0.45, 0.94] }}
+  >
+    {children}
+  </motion.div>
+);
+
 /**
  * Block type renderer for structured vertical slides
  */
-const SlideBlock = ({ block }) => {
+const SlideBlock = ({ block, index, accent }) => {
   const { type, content } = block;
-
-  // Pré-processa conteúdo matemático
   const processedContent = preprocessMathContent(content || '');
 
   const mdProps = {
@@ -30,59 +50,79 @@ const SlideBlock = ({ block }) => {
   switch (type) {
     case 'formula':
       return (
-        <div className="py-6 px-4 my-4 bg-zinc-950 border-4 border-white/20 shadow-[4px_4px_0_rgba(255,255,255,0.1)] flex items-center justify-center text-center">
-          <div className="prose prose-invert prose-lg max-w-none prose-p:leading-relaxed">
-            <ReactMarkdown {...mdProps} />
+        <AnimatedBlock index={index}>
+          <div
+            className="py-6 px-5 my-4 bg-zinc-950 border-4 shadow-[6px_6px_0] flex items-center justify-center text-center"
+            style={{ borderColor: accent.hex, boxShadow: `6px 6px 0 ${accent.hex}` }}
+          >
+            <div className="prose prose-invert prose-lg max-w-none prose-p:leading-relaxed">
+              <ReactMarkdown {...mdProps} />
+            </div>
           </div>
-        </div>
+        </AnimatedBlock>
       );
     case 'highlight':
       return (
-        <div className="py-4 px-5 my-4 bg-zinc-900 border-2 border-signal shadow-[4px_4px_0_theme(colors.signal)]">
-          <div className="prose prose-invert prose-sm max-w-none text-white font-bold leading-relaxed">
-            <ReactMarkdown {...mdProps} />
+        <AnimatedBlock index={index}>
+          <div
+            className="py-4 px-5 my-4 bg-zinc-900 border-l-[6px] shadow-[4px_4px_0]"
+            style={{ borderColor: accent.hex, boxShadow: `4px 4px 0 ${accent.hex}` }}
+          >
+            <div className="prose prose-invert prose-sm max-w-none text-white font-bold leading-relaxed">
+              <ReactMarkdown {...mdProps} />
+            </div>
           </div>
-        </div>
+        </AnimatedBlock>
       );
     case 'graph':
       return (
-        <div className="py-2 px-1 my-4 h-[250px] w-full relative border-4 border-white/10 bg-zinc-950 shadow-[4px_4px_0_rgba(255,255,255,0.05)]">
-          <InteractiveGraph equation={block.equation || "x^2"} />
-        </div>
+        <AnimatedBlock index={index}>
+          <div className="py-2 px-1 my-4 h-[250px] w-full relative border-4 border-white/10 bg-zinc-950 shadow-[4px_4px_0_rgba(255,255,255,0.05)]">
+            <InteractiveGraph equation={block.equation || "x^2"} />
+          </div>
+        </AnimatedBlock>
       );
     case 'example':
       return (
-        <div className="py-4 px-5 my-4 bg-zinc-900 border-2 border-emerald-500 shadow-[4px_4px_0_theme(colors.emerald.500)]">
-          <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-2 border-b-2 border-emerald-500/30 pb-2">Exemplo Prático</p>
-          <div className="prose prose-invert prose-sm max-w-none text-white leading-relaxed">
-            <ReactMarkdown {...mdProps} />
+        <AnimatedBlock index={index}>
+          <div className="py-4 px-5 my-4 bg-zinc-900 border-2 border-emerald-500 shadow-[4px_4px_0_theme(colors.emerald.500)]">
+            <p className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.2em] mb-2 border-b-2 border-emerald-500/30 pb-2">Exemplo Prático</p>
+            <div className="prose prose-invert prose-sm max-w-none text-white leading-relaxed">
+              <ReactMarkdown {...mdProps} />
+            </div>
           </div>
-        </div>
+        </AnimatedBlock>
       );
     case 'warning':
       return (
-        <div className="py-4 px-5 my-4 bg-red-950/50 border-4 border-red-500 shadow-[4px_4px_0_theme(colors.red.600)]">
-          <p className="text-[10px] font-black text-red-500 uppercase tracking-widest mb-2 border-b-2 border-red-500/30 pb-2 flex items-center gap-2">
-            <span className="text-lg">⚠️</span> Erro Comum
-          </p>
-          <div className="prose prose-invert prose-sm max-w-none text-red-200 leading-relaxed">
-            <ReactMarkdown {...mdProps} />
+        <AnimatedBlock index={index}>
+          <div className="py-4 px-5 my-4 bg-red-950/50 border-4 border-red-500 shadow-[4px_4px_0_theme(colors.red.600)]">
+            <p className="text-[10px] font-black text-red-500 uppercase tracking-[0.2em] mb-2 border-b-2 border-red-500/30 pb-2 flex items-center gap-2">
+              <span className="text-lg">⚠️</span> Erro Comum
+            </p>
+            <div className="prose prose-invert prose-sm max-w-none text-red-200 leading-relaxed">
+              <ReactMarkdown {...mdProps} />
+            </div>
           </div>
-        </div>
+        </AnimatedBlock>
       );
     case 'illustration':
       return (
-        <div className="py-2 px-1 my-4 w-full relative">
-          <StylizedIllustration concept={block.concept || 'calculo'} />
-        </div>
+        <AnimatedBlock index={index}>
+          <div className="py-2 px-1 my-4 w-full relative">
+            <StylizedIllustration concept={block.concept || 'calculo'} />
+          </div>
+        </AnimatedBlock>
       );
     default: // 'text'
       return (
-        <div className="py-2">
-          <div className="prose prose-invert prose-sm max-w-none text-zinc-300 leading-relaxed">
-            <ReactMarkdown {...mdProps} />
+        <AnimatedBlock index={index}>
+          <div className="py-2">
+            <div className="prose prose-invert prose-sm max-w-none text-zinc-300 leading-relaxed">
+              <ReactMarkdown {...mdProps} />
+            </div>
           </div>
-        </div>
+        </AnimatedBlock>
       );
   }
 };
@@ -96,6 +136,9 @@ const PresentationMode = ({ topic, onBack }) => {
   const [autoPlay, setAutoPlay] = useState(false);
   const [slideCount, setSlideCount] = useState(6);
   const toast = useToast();
+
+  const accent = useMemo(() => getAccent(currentSlide), [currentSlide]);
+
   const loadSlides = useCallback(async (count = slideCount) => {
     setLoading(true);
     setError(null);
@@ -118,7 +161,7 @@ const PresentationMode = ({ topic, onBack }) => {
     } finally {
       setLoading(false);
     }
-  }, [topic, toast]);
+  }, [topic, slideCount, toast]);
 
   useEffect(() => {
     loadSlides(slideCount);
@@ -148,9 +191,6 @@ const PresentationMode = ({ topic, onBack }) => {
     return () => window.removeEventListener('keydown', handler);
   }, [slides.length, currentSlide]);
 
-  // Duplicate loadSlides removed. Original is defined as a useCallback above.
-
-
   const nextSlide = () => {
     if (currentSlide < slides.length - 1) setCurrentSlide(s => s + 1);
   };
@@ -159,41 +199,49 @@ const PresentationMode = ({ topic, onBack }) => {
     if (currentSlide > 0) setCurrentSlide(s => s - 1);
   };
 
-  // Loading
+  // ──────── Loading ────────
   if (loading) return (
     <div className="flex flex-col items-center justify-center h-screen gap-8">
-      <div className="w-24 h-24 bg-zinc-950 border-4 border-[#00f0ff] shadow-[8px_8px_0_#00f0ff] flex items-center justify-center">
-        <Loader2 className="w-12 h-12 text-[#00f0ff] animate-spin" />
-      </div>
+      <motion.div
+        animate={{ rotate: [0, 0, 360], scale: [1, 1.05, 1] }}
+        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        className="w-28 h-28 bg-zinc-950 border-4 border-[#ff5500] shadow-[8px_8px_0_#ff5500] flex items-center justify-center"
+      >
+        <Loader2 className="w-14 h-14 text-[#ff5500] animate-spin" />
+      </motion.div>
       <div className="text-center space-y-4 border-2 border-white/10 p-6 bg-zinc-900">
-        <span className="text-white font-black uppercase tracking-widest text-xs block text-center bg-[#00f0ff] text-zinc-950 px-3 py-1 border-2 border-zinc-950 inline-block">
+        <motion.span
+          animate={{ opacity: [1, 0.5, 1] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+          className="text-white font-black uppercase tracking-[0.2em] text-xs block text-center bg-[#ff5500] text-zinc-950 px-4 py-2 border-2 border-zinc-950 inline-block"
+        >
           Modo Aula • Guidorizzi
-        </span>
-        <p className="text-zinc-400 font-bold text-xs max-w-[250px] text-center uppercase tracking-widest">
-          Consultando fontes e gerando slides sobre "{topic}"...
+        </motion.span>
+        <p className="text-zinc-400 font-bold text-xs max-w-[250px] text-center uppercase tracking-[0.15em]">
+          Consultando fontes e gerando slides sobre &ldquo;{topic}&rdquo;...
         </p>
       </div>
     </div>
   );
 
-  // Error / Empty
+  // ──────── Error / Empty ────────
   if (slides.length === 0) return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-8 p-8 text-center">
       <div className="w-24 h-24 bg-zinc-950 border-4 border-white/20 shadow-[8px_8px_0_rgba(255,255,255,0.1)] flex items-center justify-center">
         <Sparkles className="w-10 h-10 text-white/50" />
       </div>
       <div className="space-y-4">
-        <h2 className="text-2xl font-black text-white uppercase tracking-tighter border-b-4 border-[#00f0ff] pb-2 inline-block">Aula: "{topic}"</h2>
+        <h2 className="text-2xl font-black text-white uppercase tracking-tighter border-b-4 border-[#ff5500] pb-2 inline-block">Aula: &ldquo;{topic}&rdquo;</h2>
         <p className="text-zinc-400 font-bold text-sm max-w-[280px]">
           {error || 'Não foi possível gerar os slides dinâmicos.'}
         </p>
       </div>
       <div className="flex flex-col gap-4 w-full max-w-xs mt-4">
         <motion.button
-          whileHover={{ x: -2, y: -2, boxShadow: "4px 4px 0px 0px #00f0ff" }}
+          whileHover={{ x: -2, y: -2, boxShadow: "6px 6px 0px 0px #ff5500" }}
           whileTap={{ scale: 0.98, x: 0, y: 0, boxShadow: "0px 0px 0px transparent" }}
           onClick={() => loadSlides(slideCount)}
-          className="w-full py-4 bg-[#00f0ff] border-2 border-[#00f0ff] text-zinc-950 font-black uppercase tracking-widest text-[11px] flex items-center justify-center gap-3 transition-all"
+          className="w-full py-4 bg-[#ff5500] border-2 border-[#ff5500] text-zinc-950 font-black uppercase tracking-[0.2em] text-[11px] flex items-center justify-center gap-3 transition-all"
         >
           <RefreshCw className="w-5 h-5" />
           TENTAR NOVAMENTE
@@ -202,34 +250,21 @@ const PresentationMode = ({ topic, onBack }) => {
           whileHover={{ x: -2, y: -2, boxShadow: "4px 4px 0px 0px rgba(255,255,255,0.2)" }}
           whileTap={{ scale: 0.98, x: 0, y: 0, boxShadow: "0px 0px 0px transparent" }}
           onClick={onBack}
-          className="w-full py-4 bg-zinc-950 border-2 border-white/20 text-white font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 transition-all"
+          className="w-full py-4 bg-zinc-950 border-2 border-white/20 text-white font-black uppercase tracking-[0.15em] text-[10px] flex items-center justify-center gap-2 transition-all"
         >
           VOLTAR AO DASHBOARD
         </motion.button>
       </div>
-      <button onClick={onBack} className="mt-8 text-zinc-500 hover:text-white transition-colors text-[10px] font-black uppercase tracking-widest border-b-2 border-zinc-700 hover:border-white pb-1">
-        VOLTAR AO DASHBOARD
-      </button>
     </div>
   );
 
   const slide = slides[currentSlide];
   const progress = ((currentSlide + 1) / slides.length) * 100;
 
-  // Gradient palette - Cores Vibrantes Brutalistas
-  const gradients = [
-    'from-[#00f0ff]/30 to-[#ff5500]/30',
-    'from-[#ff5500]/30 to-[#ccff00]/30',
-    'from-[#ccff00]/30 to-[#00f0ff]/30',
-    'from-[#00f0ff]/30 to-[#ccff00]/30',
-    'from-[#ff5500]/30 to-[#00f0ff]/30',
-  ];
-  // const gradient = gradients[currentSlide % gradients.length];
-
   return (
     <div className="flex flex-col items-center gap-6 pb-8">
-      {/* Header */}
-      <header className="w-full flex items-center justify-between bg-zinc-950 border-b-4 border-white/20 pb-4 mb-2">
+      {/* ─── Header ─── */}
+      <header className="w-full flex items-center justify-between bg-zinc-950 border-b-4 pb-4 mb-2 transition-colors duration-500" style={{ borderColor: accent.hex }}>
         <motion.button
           whileTap={{ scale: 0.9 }}
           onClick={onBack}
@@ -238,8 +273,16 @@ const PresentationMode = ({ topic, onBack }) => {
           <ChevronLeft className="w-6 h-6" />
         </motion.button>
         <div className="text-center flex-1 px-4">
-          <h2 className="text-lg font-black text-[#00f0ff] uppercase tracking-tighter truncate">{topic}</h2>
-          <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest mt-1">
+          <motion.h2
+            key={`title-${currentSlide}`}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-lg font-black uppercase tracking-tighter truncate transition-colors duration-500"
+            style={{ color: accent.hex }}
+          >
+            {topic}
+          </motion.h2>
+          <p className="text-[10px] text-zinc-500 font-black uppercase tracking-[0.2em] mt-1">
             Slide {currentSlide + 1} de {slides.length}
           </p>
         </div>
@@ -251,7 +294,7 @@ const PresentationMode = ({ topic, onBack }) => {
               setSlideCount(newCount);
               loadSlides(newCount);
             }}
-            className="appearance-none h-12 px-4 bg-zinc-950 border-2 border-white/20 text-white text-[10px] font-black uppercase tracking-widest hover:border-white shadow-[2px_2px_0_rgba(255,255,255,0.2)] transition-all outline-none cursor-pointer text-center"
+            className="appearance-none h-12 px-4 bg-zinc-950 border-2 border-white/20 text-white text-[10px] font-black uppercase tracking-[0.15em] hover:border-white shadow-[2px_2px_0_rgba(255,255,255,0.2)] transition-all outline-none cursor-pointer text-center"
             title="Quantidade de Slides"
           >
             <option value={3} className="bg-zinc-900 text-white">3 Slides</option>
@@ -262,7 +305,8 @@ const PresentationMode = ({ topic, onBack }) => {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => loadSlides(slideCount)}
-            className="w-12 h-12 flex items-center justify-center bg-zinc-950 border-2 border-[#00f0ff] shadow-[2px_2px_0_#00f0ff] text-[#00f0ff] hover:bg-[#00f0ff] hover:text-zinc-950 transition-colors"
+            className="w-12 h-12 flex items-center justify-center bg-zinc-950 border-2 shadow-[2px_2px_0] transition-colors duration-500"
+            style={{ borderColor: accent.hex, boxShadow: `2px 2px 0 ${accent.hex}`, color: accent.hex }}
             title="Novo conteúdo"
           >
             <RefreshCw className="w-5 h-5" />
@@ -270,85 +314,134 @@ const PresentationMode = ({ topic, onBack }) => {
         </div>
       </header>
 
-      {/* Progress bar */}
+      {/* ─── Progress Bar ─── */}
       <div className="w-full px-2">
-        <div className="h-3 border-2 border-white/20 bg-zinc-900">
+        <div className="h-2 border-2 border-white/20 bg-zinc-900 overflow-hidden">
           <motion.div
-            className="h-full bg-[#00f0ff] border-r-2 border-white/20"
+            className="h-full transition-colors duration-500"
+            style={{ backgroundColor: accent.hex, boxShadow: accent.glow }}
             animate={{ width: `${progress}%` }}
             transition={{ type: 'spring', stiffness: 200, damping: 25 }}
           />
         </div>
       </div>
 
-      {/* Slide Card */}
+      {/* ─── Slide Card ─── */}
       <AnimatePresence mode="wait">
         <motion.div
           key={currentSlide}
-          initial={{ opacity: 0, x: 100 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -100 }}
+          initial={{ opacity: 0, x: 80, scale: 0.97 }}
+          animate={{ opacity: 1, x: 0, scale: 1 }}
+          exit={{ opacity: 0, x: -80, scale: 0.97 }}
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
           className="w-full relative"
         >
           <div
-            className={cn(
-              "relative border-8 border-white overflow-hidden",
-              "bg-zinc-950 shadow-[16px_16px_0_#00f0ff]",
-            )}
-            style={{ aspectRatio: '9/16' }}
+            className="relative border-[6px] border-white overflow-hidden bg-zinc-950 transition-shadow duration-500"
+            style={{
+              aspectRatio: '9/16',
+              boxShadow: `12px 12px 0 ${accent.hex}, ${accent.glow}`,
+            }}
           >
-            <div className="relative z-10 flex flex-col h-full p-8 pt-10">
-              {/* LIVE indicator */}
-              <div className="flex items-center gap-4 mb-8 pb-4 border-b-4 border-white/10">
-                <div className="px-3 py-1 bg-zinc-900 border-2 border-white/20 text-[10px] font-black text-white uppercase tracking-widest shadow-[2px_2px_0_rgba(255,255,255,0.1)]">
+            {/* Diagonal accent stripe */}
+            <div
+              className="absolute top-0 right-0 w-32 h-32 opacity-10 pointer-events-none"
+              style={{
+                background: `linear-gradient(135deg, ${accent.hex} 0%, transparent 60%)`,
+              }}
+            />
+
+            {/* Scan-line texture overlay */}
+            <div className="absolute inset-0 pointer-events-none slide-scanlines opacity-[0.03]" />
+
+            <div className="relative z-10 flex flex-col h-full p-6 pt-8 sm:p-8 sm:pt-10">
+              {/* Slide badge + LIVE indicator */}
+              <div className="flex items-center gap-3 mb-6 pb-4 border-b-4 border-white/10">
+                <motion.div
+                  key={`badge-${currentSlide}`}
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="px-4 py-2 border-2 text-[11px] font-black uppercase tracking-[0.15em] transition-colors duration-500"
+                  style={{ borderColor: accent.hex, color: accent.hex, backgroundColor: 'rgba(0,0,0,0.5)' }}
+                >
                   {currentSlide + 1}/{slides.length}
-                </div>
+                </motion.div>
                 {source.includes('LIVE') && (
-                  <div className="flex items-center gap-2 text-[10px] font-black text-emerald-500 uppercase tracking-widest bg-zinc-900 border-2 border-emerald-500 px-3 py-1 shadow-[2px_2px_0_theme(colors.emerald.500)]">
-                    <div className="w-2 h-2 bg-emerald-500 border border-zinc-950" />
+                  <div className="flex items-center gap-2 text-[10px] font-black text-emerald-500 uppercase tracking-[0.2em] bg-zinc-900 border-2 border-emerald-500 px-3 py-1 shadow-[2px_2px_0_theme(colors.emerald.500)]">
+                    <motion.div
+                      animate={{ opacity: [1, 0.3, 1] }}
+                      transition={{ duration: 1.2, repeat: Infinity }}
+                      className="w-2 h-2 bg-emerald-500 border border-zinc-950"
+                    />
                     Tempo Real
                   </div>
                 )}
               </div>
 
-              <h2 className="text-3xl font-black text-white leading-none tracking-tighter uppercase mb-4">
+              {/* ─── DRAMATIC TITLE ─── */}
+              <motion.h2
+                key={`slide-title-${currentSlide}`}
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="text-4xl sm:text-5xl font-black text-white leading-[0.9] tracking-[-0.04em] uppercase mb-3"
+              >
                 {slide.title}
-              </h2>
+              </motion.h2>
 
               {slide.subtitle && (
-                <p className="text-xs text-[#00f0ff] font-black mb-6 uppercase tracking-widest bg-zinc-900 p-3 border-l-4 border-[#00f0ff]">
-                  {slide.subtitle}
-                </p>
+                <motion.div
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: '100%' }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                  className="mb-6 overflow-hidden"
+                >
+                  <p
+                    className="text-[11px] font-black uppercase tracking-[0.2em] p-3 border-l-[6px] bg-zinc-900/80"
+                    style={{ borderColor: accent.hex, color: accent.hex }}
+                  >
+                    {slide.subtitle}
+                  </p>
+                </motion.div>
               )}
 
-              <div className="flex-1 overflow-y-auto pr-4 space-y-4 custom-scrollbar scroll-smooth">
+              {/* ─── Content Blocks (staggered) ─── */}
+              <div className="flex-1 overflow-y-auto pr-2 space-y-3 custom-scrollbar scroll-smooth">
                 {slide.blocks?.map((block, i) => (
-                  <SlideBlock key={i} block={block} />
+                  <SlideBlock key={i} block={block} index={i} accent={accent} />
                 ))}
                 {(!slide.blocks || slide.blocks.length === 0) && (
-                  <SlideBlock block={{ type: 'text', content: slide.content || '' }} />
+                  <SlideBlock block={{ type: 'text', content: slide.content || '' }} index={0} accent={accent} />
                 )}
               </div>
 
-              <div className="flex justify-center gap-2 mt-8 pt-6 border-t-4 border-white/10">
-                {slides.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setCurrentSlide(i)}
-                    className={cn(
-                      "h-3 transition-all border-2",
-                      i === currentSlide ? "bg-[#00f0ff] border-zinc-950 w-12" : "bg-zinc-900 border-white/20 w-4 hover:border-white"
-                    )}
-                  />
-                ))}
+              {/* ─── Dots Navigation ─── */}
+              <div className="flex justify-center gap-2 mt-6 pt-5 border-t-4 border-white/10">
+                {slides.map((_, i) => {
+                  const dotAccent = getAccent(i);
+                  return (
+                    <motion.button
+                      key={i}
+                      onClick={() => setCurrentSlide(i)}
+                      whileHover={{ scale: 1.3 }}
+                      whileTap={{ scale: 0.9 }}
+                      className={cn(
+                        "h-3 transition-all duration-300 border-2",
+                        i === currentSlide
+                          ? "w-10"
+                          : "w-3 bg-zinc-800 border-zinc-600 hover:border-white"
+                      )}
+                      style={i === currentSlide ? { backgroundColor: dotAccent.hex, borderColor: dotAccent.hex } : {}}
+                    />
+                  );
+                })}
               </div>
             </div>
           </div>
         </motion.div>
       </AnimatePresence>
 
-      {/* Nav */}
+      {/* ─── Navigation Controls ─── */}
       <div className="flex items-center gap-4 w-full">
         <motion.button
           whileTap={{ scale: 0.9 }}
@@ -365,13 +458,14 @@ const PresentationMode = ({ topic, onBack }) => {
         <motion.button
           whileTap={{ scale: 0.95 }}
           onClick={() => setAutoPlay(!autoPlay)}
-          className={cn(
-            "flex-1 h-16 font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 transition-all border-2",
-            autoPlay ? "bg-[#00f0ff] text-zinc-950 border-[#00f0ff] shadow-[4px_4px_0_#00f0ff]" : "bg-zinc-900 border-white/30 text-white hover:border-white shadow-[4px_4px_0_rgba(255,255,255,0.2)]"
-          )}
+          className="flex-1 h-16 font-black uppercase tracking-[0.15em] text-xs flex items-center justify-center gap-3 transition-all duration-500 border-2"
+          style={autoPlay
+            ? { backgroundColor: accent.hex, color: '#09090b', borderColor: accent.hex, boxShadow: `4px 4px 0 ${accent.hex}` }
+            : { backgroundColor: '#18181b', borderColor: 'rgba(255,255,255,0.3)', color: '#fff', boxShadow: '4px 4px 0 rgba(255,255,255,0.2)' }
+          }
         >
           {autoPlay ? <Pause className="w-5 h-5 fill-zinc-950" /> : <Play className="w-5 h-5 fill-current text-white" />}
-          {autoPlay ? 'PAUSAR APRESENTAÇÃO' : 'INICIAR APRESENTAÇÃO'}
+          {autoPlay ? 'PAUSAR' : 'APRESENTAR'}
         </motion.button>
 
         <motion.button
@@ -389,10 +483,19 @@ const PresentationMode = ({ topic, onBack }) => {
 
       <style dangerouslySetInnerHTML={{
         __html: `
-                .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-                .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-                .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
-            `}} />
+          .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+          .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+          .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); }
+          .slide-scanlines {
+            background: repeating-linear-gradient(
+              0deg,
+              transparent,
+              transparent 2px,
+              rgba(255,255,255,0.03) 2px,
+              rgba(255,255,255,0.03) 4px
+            );
+          }
+        `}} />
     </div>
   );
 };
