@@ -48,8 +48,8 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, loading, onRetry 
                 message.role === 'user'
                   ? "bg-transparent hover:bg-white/[0.02]"
                   : message.isError
-                    ? "bg-zinc-950/80 border-l-8 border-l-red-500 pl-6"
-                    : "bg-zinc-950/80 border-l-8 border-l-[#FF5500] pl-6"
+                    ? "bg-[#09090b]/80 border-l-8 border-l-red-500 pl-6"
+                    : "bg-[#09090b]/80 border-l-8 border-l-[#FF5500] pl-6"
               )}
             >
               <div className="flex items-center justify-between">
@@ -78,7 +78,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, loading, onRetry 
                 "prose max-w-none prose-p:leading-relaxed prose-pre:bg-[#0a0a0a] prose-pre:border-2 prose-pre:border-white/10 prose-pre:-mx-4 sm:prose-pre:mx-0 prose-pre:px-4 prose-pre:py-4 prose-pre:rounded-none",
                 message.role === 'user'
                   ? "prose-invert prose-p:text-xl sm:prose-p:text-2xl prose-p:font-bold prose-p:text-white"
-                  : "prose-invert prose-zinc prose-strong:text-white prose-code:text-[#FF5500] prose-code:bg-zinc-900 prose-code:px-1.5 prose-code:py-0.5 prose-code:border prose-code:border-zinc-800 text-zinc-300"
+                  : "prose-invert prose-zinc prose-strong:text-white prose-code:text-[#FF5500] prose-code:bg-[#111] prose-code:px-1.5 prose-code:py-0.5 prose-code:border prose-code:border-[#333] text-[#d4d4d8]"
               )}>
                 <ReactMarkdown
                   remarkPlugins={[remarkMath]}
