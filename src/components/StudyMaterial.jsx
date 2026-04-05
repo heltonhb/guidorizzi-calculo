@@ -9,6 +9,7 @@ import 'katex/dist/katex.min.css';
 import { useToast } from './Toast';
 import { preprocessMathContent } from '../utils/mathPreprocessor';
 import LearningObjectives from './LearningObjectives';
+import StylizedIllustration from './StylizedIllustration';
 import contentData from '../data/content.json';
 
 const StudyMaterial = ({ topic, onBack }) => {
@@ -72,7 +73,7 @@ const StudyMaterial = ({ topic, onBack }) => {
             setLoading(true);
             try {
                 const notebookId = 'b7988097-f2a3-4a68-a71d-b2d424d96b9a';
-                const response = await queryNotebook(notebookId, `Gere um material de estudo detalhado sobre ${topic} baseado no Guidorizzi. Use markdown.`);
+                const response = await queryNotebook(notebookId, `Gere um material de estudo detalhado sobre ${topic} baseado no Guidorizzi. Use markdown. Ocasionalmente, quando apropriado para representar visualmente um conceito vital, insira a tag exata [ilustracao:conceito] (ex: [ilustracao:limite]) em uma linha isolada.`);
                 const result = response.answer || response.content || 'Nenhum conteúdo retornado.';
                 setContent(result);
                 setCache(result);
@@ -133,7 +134,7 @@ const StudyMaterial = ({ topic, onBack }) => {
             {/* Learning Objectives - Show before content */}
             {contentData[topic]?.learningObjectives && (
                 <div className="max-w-4xl mx-auto w-full">
-                    <LearningObjectives 
+                    <LearningObjectives
                         objectives={contentData[topic].learningObjectives}
                         topic={topic}
                         showInitially={true}
@@ -173,12 +174,22 @@ const StudyMaterial = ({ topic, onBack }) => {
                                 Inteligência Guidorizzi
                             </div>
 
+                            <StylizedIllustration concept={topic} />
+
                             <div className="prose prose-invert max-w-none prose-p:text-zinc-300 prose-p:leading-[1.8] prose-p:text-lg prose-headings:text-white prose-headings:font-black prose-headings:uppercase prose-headings:tracking-tight prose-strong:text-white prose-strong:font-black prose-code:text-signal prose-pre:bg-zinc-950 prose-pre:border-2 prose-pre:border-white/20 prose-pre:rounded-none prose-pre:shadow-[4px_4px_0_theme(colors.signal)]">
                                 <ReactMarkdown
                                     remarkPlugins={[remarkMath]}
                                     rehypePlugins={[rehypeKatex]}
+                                    components={{
+                                        img: ({ node, ...props }) => {
+                                            if (props.alt === 'ilustracao') {
+                                                return <StylizedIllustration concept={props.src} />;
+                                            }
+                                            return <img {...props} />;
+                                        }
+                                    }}
                                 >
-                                    {preprocessMathContent(content)}
+                                    {preprocessMathContent(content).replace(/\[(?:ilustracao|ilustração):\s*(.*?)\]/gi, '![ilustracao]($1)')}
                                 </ReactMarkdown>
                             </div>
 

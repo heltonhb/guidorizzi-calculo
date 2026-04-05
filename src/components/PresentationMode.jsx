@@ -9,6 +9,7 @@ import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
 import { useToast } from './Toast';
 import InteractiveGraph from './InteractiveGraph';
+import StylizedIllustration from './StylizedIllustration';
 import { preprocessMathContent } from '../utils/mathPreprocessor';
 
 /**
@@ -67,6 +68,12 @@ const SlideBlock = ({ block }) => {
           <div className="prose prose-invert prose-sm max-w-none text-red-200 leading-relaxed">
             <ReactMarkdown {...mdProps} />
           </div>
+        </div>
+      );
+    case 'illustration':
+      return (
+        <div className="py-2 px-1 my-4 w-full relative">
+          <StylizedIllustration concept={block.concept || 'calculo'} />
         </div>
       );
     default: // 'text'

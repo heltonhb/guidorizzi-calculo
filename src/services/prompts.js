@@ -145,6 +145,7 @@ IMPORTANTE: Responda SOMENTE com JSON válido, sem texto adicional. Use este for
         { "type": "text", "content": "Parágrafo de explicação didática" },
         { "type": "formula", "content": "$$\\\\frac{d}{dx}x^n = nx^{n-1}$$" },
         { "type": "graph", "equation": "x^2" },
+        { "type": "illustration", "concept": "derivada" },
         { "type": "example", "content": "Exemplo: Se $f(x) = x^3$, então $f'(x) = 3x^2$" },
         { "type": "highlight", "content": "Ponto-chave a memorizar" }
       ]
@@ -174,6 +175,7 @@ Regras para os slides:
 - Último slide: Resumo 3 pontos + conexão próximo tópico + auto-avaliação
 - Cada slide deve ter 3-5 blocos (não muitos, é formato vertical mobile)
 - Sempre que explicar uma função simples interativa (ex: parábolas, exponenciais, senos), inclua um bloco "type": "graph" definindo a equação de uma variável no campo "equation" (ex: "x^2", "x^3", "sin(x)", "cos(x)", "exp(x)", "2*x").
+- Use "type": "illustration" e passe "concept" (ex: "limite", "derivada", "integral") MUITO OCASIONALMENTE para gerar uma arte abstrata Neo-Brutalista.
 - Use "type": "formula" para fórmulas centralizadas ($$...$$)
 - Use "type": "highlight" para conceitos-chave a memorizar
 - Use "type": "example" para exemplos práticos com números REAIS
