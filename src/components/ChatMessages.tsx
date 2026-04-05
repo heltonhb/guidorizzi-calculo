@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { AlertCircle, Bot, User, Zap, Sparkles, RotateCcw, Loader2 } from 'lucide-react';
+import { RotateCcw, Zap, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
 import ReactMarkdown from 'react-markdown';
@@ -34,50 +34,52 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, loading, onRetry 
   return (
     <div
       ref={scrollRef}
-      className="flex-1 overflow-y-auto space-y-6 pr-2 custom-scrollbar mb-6"
+      className="flex-1 overflow-y-auto pr-2 custom-scrollbar mb-6"
     >
-      <AnimatePresence initial={false}>
-        {messages.map((message) => (
-          <motion.div
-            key={message.id}
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            className={cn(
-              "relative flex gap-4 p-6 border-2 transition-all duration-300",
-              message.role === 'user'
-                ? "bg-zinc-900 border-[#00f0ff] ml-12 shadow-[4px_4px_0_#00f0ff]"
-                : message.isError
-                  ? "bg-zinc-900 border-red-500 mr-12 shadow-[4px_4px_0_theme(colors.red.500)]"
-                  : "bg-white text-zinc-950 border-white mr-12 shadow-[4px_4px_0_theme(colors.zinc.700)]"
-            )}
-          >
-            {message.role === 'assistant' && !message.isError && (
-              <div className="absolute -top-3 -right-3 w-8 h-8 bg-zinc-950 border-2 border-zinc-950 rounded-none flex items-center justify-center shadow-[2px_2px_0_#fff]">
-                {message.hasContext ? <Zap className="w-4 h-4 text-[#00f0ff]" /> : <Sparkles className="w-4 h-4 text-[#00f0ff]" />}
+      <div className="flex flex-col border-t-2 border-white/10">
+        <AnimatePresence initial={false}>
+          {messages.map((message) => (
+            <motion.div
+              key={message.id}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className={cn(
+                "relative flex flex-col gap-3 py-8 px-4 border-b-2 border-white/10 transition-all duration-300 w-full group",
+                message.role === 'user'
+                  ? "bg-transparent hover:bg-white/[0.02]"
+                  : message.isError
+                    ? "bg-zinc-950/80 border-l-8 border-l-red-500 pl-6"
+                    : "bg-zinc-950/80 border-l-8 border-l-[#FF5500] pl-6"
+              )}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  {message.role === 'user' ? (
+                    <span className="text-[#00f0ff] font-mono text-sm font-black tracking-widest uppercase">&gt; QUERY.INPUT // [USER]</span>
+                  ) : message.isError ? (
+                    <span className="text-red-500 font-mono text-xs font-black tracking-widest uppercase">&gt;&gt; SYSTEM.ERROR // [FAILED]</span>
+                  ) : (
+                    <span className="text-[#FF5500] font-mono text-xs font-black tracking-widest uppercase">&gt;&gt; GUIDORIZZI.AI.CORE // [SUCCESS]</span>
+                  )}
+                </div>
+                {/* Context Indicator for AI Messages */}
+                {message.role === 'assistant' && !message.isError && (
+                  <div className="hidden sm:flex items-center gap-2 text-zinc-600 font-mono text-[10px] tracking-widest uppercase">
+                    {message.hasContext ? (
+                      <><Zap className="w-3 h-3 text-[#FF5500]" /> CONTEXT: ACTIVE</>
+                    ) : (
+                      <><Sparkles className="w-3 h-3 text-zinc-600" /> CONTEXT: NONE</>
+                    )}
+                  </div>
+                )}
               </div>
-            )}
-            {message.isError && (
-              <div className="absolute -top-3 -right-3 w-8 h-8 bg-zinc-950 border-2 border-red-500 flex items-center justify-center shadow-[2px_2px_0_theme(colors.red.500)]">
-                <AlertCircle className="w-4 h-4 text-red-500" />
-              </div>
-            )}
-            <div className={cn(
-              "w-12 h-12 flex items-center justify-center flex-shrink-0 border-2 shadow-[2px_2px_0_rgba(0,0,0,1)]",
-              message.role === 'user'
-                ? "bg-[#00f0ff] border-zinc-950 text-zinc-950"
-                : message.isError
-                  ? "bg-red-500 border-zinc-950 text-zinc-950"
-                  : "bg-zinc-950 border-zinc-900 text-white"
-            )}>
-              {message.isError
-                ? <AlertCircle className="w-6 h-6" />
-                : message.role === 'user'
-                  ? <User className="w-6 h-6" />
-                  : <Bot className="w-6 h-6" />
-              }
-            </div>
-            <div className="flex-1 pt-1">
-              <div className={cn("prose prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-zinc-900 prose-pre:border-2 prose-pre:border-zinc-800 prose-pre:-mx-4 prose-pre:px-4 prose-pre:py-3 prose-pre:rounded-none", message.role === 'user' ? "prose-invert" : "prose-zinc prose-strong:text-zinc-900 prose-code:text-zinc-800 prose-code:bg-zinc-100 prose-code:px-1 prose-code:py-0.5 prose-code:border prose-code:border-zinc-300 text-zinc-800")}>
+
+              <div className={cn(
+                "prose max-w-none prose-p:leading-relaxed prose-pre:bg-[#0a0a0a] prose-pre:border-2 prose-pre:border-white/10 prose-pre:-mx-4 sm:prose-pre:mx-0 prose-pre:px-4 prose-pre:py-4 prose-pre:rounded-none",
+                message.role === 'user'
+                  ? "prose-invert prose-p:text-xl sm:prose-p:text-2xl prose-p:font-bold prose-p:text-white"
+                  : "prose-invert prose-zinc prose-strong:text-white prose-code:text-[#FF5500] prose-code:bg-zinc-900 prose-code:px-1.5 prose-code:py-0.5 prose-code:border prose-code:border-zinc-800 text-zinc-300"
+              )}>
                 <ReactMarkdown
                   remarkPlugins={[remarkMath]}
                   rehypePlugins={[rehypeKatex]}
@@ -85,31 +87,41 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, loading, onRetry 
                   {preprocessMathContent(message.content)}
                 </ReactMarkdown>
               </div>
+
               {message.isError && (
                 <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{ x: 2, y: -2, boxShadow: "-4px 4px 0px 0px #000" }}
+                  whileTap={{ scale: 0.98, x: 0, y: 0, boxShadow: "0px 0px 0px transparent" }}
                   onClick={onRetry}
-                  className="mt-4 px-6 py-3 bg-red-500 border-2 border-zinc-950 text-xs font-black uppercase tracking-widest text-zinc-950 hover:bg-red-600 flex items-center gap-2 transition-colors shadow-[2px_2px_0_#000]"
+                  className="mt-4 self-start px-6 py-3 bg-red-500 border-2 border-red-500 text-xs font-black uppercase tracking-widest text-zinc-950 flex items-center gap-2 transition-all rounded-none"
                 >
                   <RotateCcw className="w-4 h-4" />
-                  Tentar Novamente
+                  RERUN.SEQUENCE
                 </motion.button>
               )}
-            </div>
-          </motion.div>
-        ))}
-        {loading && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="bg-zinc-900 border-2 border-[#00f0ff] p-6 mr-12 flex items-center gap-4 shadow-[4px_4px_0_#00f0ff]"
-          >
-            <Loader2 className="w-6 h-6 text-[#00f0ff] animate-spin" />
-            <span className="text-sm font-bold text-white uppercase tracking-widest">Consultando inteligência Guidorizzi...</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </motion.div>
+          ))}
+
+          {loading && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex flex-col gap-3 py-8 px-4 bg-zinc-950/80 border-l-8 border-l-[#00f0ff] pl-6 w-full border-b-2 border-white/10"
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-[#00f0ff] font-mono text-xs font-black tracking-widest uppercase animate-pulse">
+                  &gt;&gt; GUIDORIZZI.AI.CORE // [PROCESSING...]
+                </span>
+              </div>
+              <div className="flex items-center gap-4 py-4">
+                <div className="w-3 h-8 bg-[#00f0ff] animate-pulse" style={{ animationDelay: '0ms' }} />
+                <div className="w-3 h-8 bg-[#00f0ff] animate-pulse" style={{ animationDelay: '150ms', animationDuration: '1.2s' }} />
+                <div className="w-3 h-8 bg-[#00f0ff] animate-pulse" style={{ animationDelay: '300ms', animationDuration: '0.8s' }} />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 };
