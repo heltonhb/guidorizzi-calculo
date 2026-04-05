@@ -82,34 +82,34 @@ const wrapInlineMath = (text) => {
     if (hasKatexDelimiters(text)) {
         return text;
     }
-    
+
     // Se tem comandos LaTeX ou símbolos math, faz wrap correto
     if (hasLatexCommands(text) || hasMathSymbols(text)) {
         let result = text;
-        
+
         // Pattern mais preciso: detecta expressões matemáticas completas
         // Captura: \comando{...} ou \comando_sub ou \comando^sup ou combinações
-        
+
         // Substitui sequências como \frac{1}{2}, \lim_{x->0}, etc
         result = result.replace(/(\\[a-zA-Z]+(?:_[^{}]*)?(?:\^[^{}]*)?(?:\s*[a-zA-Z_{}]+)*)/g, (match, cmd) => {
             // Se já tem $ dentro, não modifica
             if (cmd.includes('$')) return cmd;
             return `$${cmd}$`;
         });
-        
+
         // Para fórmulas com parênteses como \sin(x), \cos(x), etc
         // Faz wrap da expressão completa
         result = result.replace(/(\\(?:sin|cos|tan|cot|sec|csc|log|ln|exp|arcsin|arccos|arctan)\s*\([^)]+\))/g, (match) => {
             if (match.includes('$')) return match;
             return `$${match}$`;
         });
-        
+
         // Para símbolos matemáticos isolados
         result = result.replace(/([≤≥≈≠±∫∑∮π∞√∂∇λμΣΩ])\s*(?=[.,;:!)]|$)/g, '$$$1$$');
-        
+
         return result;
     }
-    
+
     return text;
 };
 
@@ -124,9 +124,13 @@ export const preprocessMathContent = (content) => {
     // 0. Corrige barras invertidas duplas (\\\\) para simples (\)
     result = fixDoubleBackslashes(result);
 
+    // 0.5 Helper para converter delimitadores padrão do modelo para padrão remark-math ($, $$)
+    result = result.replace(/\\\[/g, '$$$$').replace(/\\\]/g, '$$$$');
+    result = result.replace(/\\\(/g, '$$').replace(/\\\)/g, '$$');
+
     // 1. Se já tem delimitadores KaTeX, limpa apenas artefatos
     if (hasKatexDelimiters(result)) {
-        result = result.replace(/\${3,}/g, '$$');
+        result = result.replace(/\${3,}/g, '$$$$');
         return result;
     }
 
