@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { getLocalContext } from '../services/ragService.js';
 import { GUIDORIZZI_RULES } from '../constants.js';
 
-const MAX_QUERY_LENGTH = 2000;
+const MAX_QUERY_LENGTH = 12000;
 const MIN_QUERY_LENGTH = 2;
 
 /**
@@ -32,7 +32,7 @@ export const createQueryRouter = (groq, model) => {
 
     router.post('/', async (req, res) => {
         const { query } = req.body;
-        
+
         if (!query) {
             return res.status(400).json({ error: 'Missing query parameter' });
         }
