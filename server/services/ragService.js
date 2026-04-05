@@ -90,26 +90,32 @@ export const getLocalContext = (query) => {
  */
 export const sanitizeLatexJson = (rawText) => {
     if (!rawText) return rawText;
-    
+
+    let fixed = rawText;
+
+    // Proactive replace for common math commands that might be sent with single backslash
+    // We add an extra backslash so JSON.parse receives a literal backslash.
+    // If the LLM already sent double backslashes (\\\\), this regex (/(?<!\\)\\(command)\b/g)
+    // will skip them, ensuring we don't accidentally add too many.
+    const latexCommands = [
+        'frac', 'lim', 'sqrt', 'int', 'sum', 'prod', 'sin', 'cos', 'tan', 'log', 'ln',
+        'alpha', 'beta', 'gamma', 'delta', 'theta', 'lambda', 'pi', 'infty',
+        'to', 'from', 'left', 'right', 'neq', 'leq', 'geq', 'approx', 'equiv', 'cdot'
+    ];
+
+    latexCommands.forEach(cmd => {
+        // Look for \cmd that is NOT preceded by another \
+        const regex = new RegExp(`(?<!\\\\)\\\\\\b${cmd}\\b`, 'g');
+        fixed = fixed.replace(regex, `\\\\${cmd}`);
+    });
+
     try {
-        // Primeiro tenta parsar para verificar se é válido
-        JSON.parse(rawText);
-        // Se já é válido, retorna como está
-        return rawText;
+        // Tenta parsar
+        JSON.parse(fixed);
+        return fixed;
     } catch (e) {
-        // Se não é válido, tenta corrigir escapes de aspas
-        // Substitui \" por " (aspasescapadasvsaspas reais)
-        let fixed = rawText.replace(/\\"/g, '"');
-        
-        // Corrige barras invertidas isoladas antes de comandos conhecidos
-        const latexCommands = ['frac', 'lim', 'sqrt', 'int', 'sum', 'prod', 'sin', 'cos', 'tan', 'log', 'alpha', 'beta', 'gamma', 'delta', 'theta', 'lambda', 'pi', 'infty', 'to', 'from', 'left', 'right'];
-        
-        latexCommands.forEach(cmd => {
-            // Substitui \cmd por \\cmd (exceto se já tem \\
-            const regex = new RegExp(`\\\\${cmd}(?![a-zA-Z])`, 'g');
-            fixed = fixed.replace(regex, `\\\\${cmd}`);
-        });
-        
+        // Se ainda não for válido, tenta corrigir escapes de aspas
+        fixed = fixed.replace(/\\"/g, '"');
         return fixed;
     }
 };
