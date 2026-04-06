@@ -195,11 +195,19 @@ const Dashboard = ({ onNavigate }) => {
             <div className="grid gap-5 pr-2">
                 <Card
                     variants={itemVariants}
-                    title="Desafio Guidorizzi"
-                    description="Teste seus conhecimentos"
-                    icon={<Trophy className="w-6 h-6 text-[#ccff00]" />}
-                    color="lime"
-                    onClick={() => onNavigate('quiz', currentTopic)}
+                    title="Estude Conceitos"
+                    description="Material didático completo"
+                    icon={<BookOpen className="w-6 h-6 text-[#22c55e]" />}
+                    color="emerald"
+                    onClick={() => onNavigate('study', currentTopic)}
+                />
+                <Card
+                    variants={itemVariants}
+                    title="Exercícios"
+                    description="Pratique resolvendo problemas"
+                    icon={<ListTodo className="w-6 h-6 text-[#00f0ff]" />}
+                    color="cyan"
+                    onClick={() => onNavigate('exercises', currentTopic)}
                 />
                 <Card
                     variants={itemVariants}
@@ -224,6 +232,14 @@ const Dashboard = ({ onNavigate }) => {
                     icon={<MessageSquare className="w-6 h-6 text-[#22c55e]" />}
                     color="emerald"
                     onClick={() => onNavigate('chat')}
+                />
+                <Card
+                    variants={itemVariants}
+                    title="Desafio Guidorizzi"
+                    description="Teste seus conhecimentos"
+                    icon={<Trophy className="w-6 h-6 text-[#ccff00]" />}
+                    color="lime"
+                    onClick={() => onNavigate('quiz', currentTopic)}
                 />
             </div>
         </motion.div>

@@ -6,7 +6,17 @@ export const AppProvider = ({ children }) => {
   // Gamification hook
   const gamification = useGamification();
   
-  const [currentTopic, setCurrentTopic] = useState('');
+  // Inicializar currentTopic do localStorage (último tópico estudado)
+  const [currentTopic, setCurrentTopicState] = useState(() => {
+    try {
+      const saved = localStorage.getItem('app_lastTopic');
+      return saved || '';
+    } catch (e) {
+      console.warn('Erro ao carregar último tópico:', e);
+      return '';
+    }
+  });
+  
   const [view, setView] = useState('dashboard');
   const [errors, setErrors] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -25,6 +35,17 @@ export const AppProvider = ({ children }) => {
     }
   });
 
+  // Persistir lastTopic quando currentTopic muda
+  useEffect(() => {
+    if (currentTopic) {
+      try {
+        localStorage.setItem('app_lastTopic', currentTopic);
+      } catch (e) {
+        console.warn('Erro ao salvar último tópico:', e);
+      }
+    }
+  }, [currentTopic]);
+
   // Persistir favoritos
   useEffect(() => {
     try {
@@ -33,6 +54,11 @@ export const AppProvider = ({ children }) => {
       console.warn('Erro ao salvar favoritos globais:', e);
     }
   }, [globalFavorites]);
+
+  // Wrapper para setCurrentTopic que persiste
+  const setCurrentTopic = useCallback((topic) => {
+    setCurrentTopicState(topic);
+  }, []);
 
   const removeError = useCallback((errorId) => {
     setErrors(prev => prev.filter(e => e.id !== errorId));
