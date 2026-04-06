@@ -4,11 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { generateQuizQuestions } from '../services/api';
 import { useToast } from './Toast';
 import { cn } from '../lib/utils';
-import ReactMarkdown from 'react-markdown';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
-import 'katex/dist/katex.min.css';
-import { preprocessMathContent } from '../utils/mathPreprocessor';
+import MathDisplay from './MathDisplay';
 import LearningObjectives from './LearningObjectives';
 import { useLearningPath } from '../hooks/useLearningPath';
 import { useAppContext } from '../hooks/useAppContext';
@@ -317,14 +313,10 @@ const QuizMode = ({ topic, onBack }) => {
                                 className="space-y-6 max-w-2xl mx-auto w-full"
                             >
                                 <div className="p-8 bg-zinc-950 border-2 border-white/20 shadow-[8px_8px_0_rgba(255,255,255,0.2)] min-h-[160px] flex items-center justify-center text-center">
-                                    <div className="prose prose-invert prose-lg prose-headings:font-black prose-headings:uppercase prose-p:font-bold max-w-none">
-                                        <ReactMarkdown
-                                            remarkPlugins={[remarkMath]}
-                                            rehypePlugins={[rehypeKatex]}
-                                        >
-                                            {preprocessMathContent(questions[currentQuestionIndex].text)}
-                                        </ReactMarkdown>
-                                    </div>
+                                    <MathDisplay 
+                                        content={questions[currentQuestionIndex].text}
+                                        className="prose prose-invert prose-lg prose-headings:font-black prose-headings:uppercase prose-p:font-bold max-w-none"
+                                    />
                                 </div>
 
                                 {/* Hint System - antes das opções */}
@@ -401,12 +393,10 @@ const QuizMode = ({ topic, onBack }) => {
                                                             String.fromCharCode(65 + i)}
                                                 </div>
                                                 <div className="flex-1">
-                                                    <ReactMarkdown
-                                                        remarkPlugins={[remarkMath]}
-                                                        rehypePlugins={[rehypeKatex]}
-                                                    >
-                                                        {preprocessMathContent(opt)}
-                                                    </ReactMarkdown>
+                                                    <MathDisplay 
+                                                        content={opt}
+                                                        className="prose prose-invert prose-sm max-w-none"
+                                                    />
                                                 </div>
                                             </motion.button>
                                         );
@@ -436,9 +426,10 @@ const QuizMode = ({ topic, onBack }) => {
                                                     </span>
                                                 </div>
                                                 <div className="prose prose-invert prose-sm max-w-none text-white font-medium">
-                                                    <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-                                                        {preprocessMathContent(questions[currentQuestionIndex].explanation)}
-                                                    </ReactMarkdown>
+                                                    <MathDisplay 
+                                                        content={questions[currentQuestionIndex].explanation}
+                                                        className="prose prose-invert prose-sm max-w-none text-white font-medium"
+                                                    />
                                                 </div>
                                             </div>
                                             <button
