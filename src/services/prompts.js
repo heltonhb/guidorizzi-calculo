@@ -99,13 +99,18 @@ EXEMPLO DE RESPOSTA IDEAL (para o tema "Limites"):
   ]
 }
 
-Regras:
+Regras CRÍTICAS:
 - "correct" é o índice (0-3) da alternativa correta
+- ⚠️ VALIDAÇÃO OBRIGATÓRIA: O valor em options[correct] DEVE corresponder exatamente ao resultado numérico mencionado na explicação. Se a explicação calcula "12", então options[correct] DEVE ser "12".
+- ⚠️ VERIFICAÇÃO: Sempre calcule o resultado passo a passo na explicação ANTES de indicar qual índice é correto. Se o cálculo resulta em 12, mas está marcando como 20, RECALCULE imediatamente.
 - Cada questão deve ter exatamente 4 opções
 - Varie a dificuldade: 2 fáceis, 2 médias, 1 difícil
 - Use notação LaTeX para fórmulas (ex: $\\lim_{x \\to 0} \\frac{\\sin x}{x}$)
 - As explicações devem mencionar conceitos do Guidorizzi
-- Inclua o passo a passo na explicação`;
+- Inclua o passo a passo numérico na explicação
+- Exemplo de ERRO CRÍTICO a evitar: 
+  - ❌ ERRADO: text: "Calcule $\\lim_{x \\to 2} \\frac{x^3-8}{x-2}$", options: ["12", "20", "16", "14"], correct: 1, explanation: "...= 12" (correct aponta para "20", mas a explicação é "12")
+  - ✅ CORRETO: correct deve apontar para o índice onde está "12"`;
 
 export const getDynamicSlidesPrompt = (topic, count = 6) =>
   `Com base no conteúdo do Guidorizzi sobre "${topic}", gere exatamente ${count} slides para uma aula no formato VERTICAL (9:16, estilo mobile).

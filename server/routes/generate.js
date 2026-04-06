@@ -79,6 +79,44 @@ export const createGenerateRouter = (groq, model) => {
         return Math.min(parsed, maxVal);
     };
 
+    // ⚠️ VALIDAÇÃO: Verifica se a questão tem consistência básica
+    // (correct index é válido e está dentro do range de options)
+    const validateQuestionConsistency = (question) => {
+        const { text, options, correct, explanation } = question;
+        
+        // Validação básica
+        if (!text || !options || typeof correct !== 'number') {
+            return { valid: false, reason: 'Dados incompletos' };
+        }
+        
+        // Verifica se correct está dentro do range
+        if (correct < 0 || correct >= options.length) {
+            console.warn(`⚠️ AVISO: Questão tem índice 'correct' inválido: ${correct} (options.length: ${options.length})`);
+            return { valid: false, reason: `Índice correto ${correct} está fora do range` };
+        }
+        
+        // Validação de compatibilidade (aviso, não erro)
+        const correctAnswer = options[correct];
+        if (explanation && correctAnswer) {
+            // Verifica se a explicação menciona um número diferente do resultado
+            // Exemplo: explicação diz "= 12" mas correct aponta para "20"
+            const explanationHasNumber = /[=:]?\s*(\d+(?:\.\d+)?)\s*\./.test(explanation);
+            if (explanationHasNumber) {
+                const numberInExplanation = explanation.match(/[=:]?\s*(\d+(?:\.\d+)?)\s*\./)?.[1];
+                const answerText = correctAnswer.replace(/\$.*?\$/g, '').trim();
+                
+                if (numberInExplanation && !answerText.includes(numberInExplanation)) {
+                    console.warn(`⚠️ ATENÇÃO: Possível inconsistência detectada!`);
+                    console.warn(`   Explicação menciona: "${numberInExplanation}"`);
+                    console.warn(`   Resposta correta é: "${correctAnswer}"`);
+                    console.warn(`   Questão: "${text.substring(0, 60)}..."`);
+                }
+            }
+        }
+        
+        return { valid: true };
+    };
+
     // POST /api/generate/flashcards
     router.post('/flashcards', async (req, res) => {
         const { topic } = req.body;
@@ -133,10 +171,16 @@ export const createGenerateRouter = (groq, model) => {
             const parsed = await callGroqJson(systemPrompt, getDynamicQuizPrompt(validation.sanitized, validCount));
 
             if (parsed?.questions && Array.isArray(parsed.questions)) {
-                const valid = parsed.questions.filter(q =>
-                    q.text && q.options && Array.isArray(q.options) &&
-                    q.options.length >= 2 && typeof q.correct === 'number'
-                );
+                const valid = parsed.questions.filter(q => {
+                    const consistency = validateQuestionConsistency(q);
+                    // ⚠️ Log de questões com problemas potenciais (mas ainda retorna se valid)
+                    if (!consistency.valid) {
+                        console.warn(`[Generate] Questão rejeitada: ${consistency.reason}`);
+                        return false;
+                    }
+                    return q.text && q.options && Array.isArray(q.options) &&
+                        q.options.length >= 2 && typeof q.correct === 'number';
+                });
                 if (valid.length > 0) {
                     console.log(`[Generate] ✅ ${valid.length} quiz questions generated`);
                     return res.json({ status: 'success', questions: valid, source: 'Groq (Llama 3)' });
