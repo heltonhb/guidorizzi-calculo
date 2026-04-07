@@ -8,6 +8,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { ErrorNotification } from './components/ErrorNotification';
 import { ToastProvider } from './components/Toast';
 import Dashboard from './components/Dashboard';
+import BottomNav from './components/BottomNav';
 import { installConsoleCommands } from './lib/notebookConsole';
 
 // Lazy load heavy components for better performance
@@ -175,6 +176,7 @@ function AppContent(): JSX.Element {
           )}
         </AnimatePresence>
       </main>
+      <BottomNav />
     </div>
   );
 }

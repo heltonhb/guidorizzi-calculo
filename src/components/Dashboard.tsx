@@ -39,27 +39,36 @@ const Dashboard = ({ onNavigate }) => {
             variants={containerVariants}
             className="flex flex-col gap-6 sm:gap-8 pb-10 px-2 sm:px-0"
         >
-            <header className="space-y-6">
+            <header className="space-y-8">
                 {/* Title */}
                 <motion.div
                     initial={{ y: -20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    className="bg-gradient-to-r from-amber-400 via-orange-400 to-orange-500 text-black px-6 py-4 font-black text-2xl md:text-3xl tracking-widest uppercase rounded-xl shadow-[6px_6px_0_rgba(0,0,0,0.4)]"
+                    className="bg-orange-500 border-4 border-black text-black px-6 py-4 font-black text-2xl md:text-3xl tracking-widest uppercase shadow-[6px_6px_0_rgba(0,0,0,1)] text-center"
                 >
                     Cálculo Precision
                 </motion.div>
 
-                {/* Gamification Circle + Stats */}
-                <div className="flex items-center gap-6">
+                {/* Gamification Stats */}
+                <div className="flex items-center justify-between gap-4">
                     {/* Level Circle */}
                     <motion.div
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
-                        className="flex-shrink-0"
+                        className="relative flex-shrink-0 w-[110px] h-[110px] bg-zinc-800 border-4 border-black rounded-full shadow-[6px_6px_0_rgba(0,0,0,1)] flex items-center justify-center p-1"
                     >
-                        <div className="w-24 h-24 rounded-full bg-zinc-950 border-4 border-orange-500 flex flex-col items-center justify-center shadow-[0_0_20px_rgba(255,127,0,0.4)]">
-                            <p className="text-2xl font-black text-orange-400">{level}</p>
-                            <p className="text-[10px] font-bold text-orange-300 text-center">ESTUDANTE</p>
+                        {/* Segment overlay using conic gradient */}
+                        <div
+                            className="absolute inset-[4px] rounded-full"
+                            style={{ background: `conic-gradient(#f97316 ${progressToNextLevel}%, transparent ${progressToNextLevel}%)`, WebkitMask: 'radial-gradient(transparent 58%, black 60%)' }}
+                        ></div>
+                        {/* Static dark overlay to make empty parts look distinct, optional */}
+                        <div className="absolute inset-[4px] rounded-full border-4 border-orange-500 border-dashed opacity-30"></div>
+
+                        <div className="flex flex-col items-center z-10 translate-y-1">
+                            <span className="text-[10px] font-black text-orange-500 uppercase tracking-widest leading-none">Level</span>
+                            <span className="text-4xl font-black text-white leading-none my-1">{level}</span>
+                            <span className="text-[8px] font-black text-orange-400 text-center leading-[1.1] max-w-[70px] uppercase">Estudante de Cálculo</span>
                         </div>
                     </motion.div>
 
@@ -70,19 +79,17 @@ const Dashboard = ({ onNavigate }) => {
                         className="flex-1 space-y-3"
                     >
                         <div>
-                            <p className="text-2xl font-black text-orange-400">{xp} <span className="text-lg">XP</span></p>
-                            <p className="text-xs text-zinc-400">{nextLevelXP - progressToNextLevel} para próximo nível</p>
+                            <p className="text-3xl font-black text-orange-500">{xp} <span className="text-lg">XP</span></p>
+                            <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider">{nextLevelXP - progressToNextLevel} para próximo nível</p>
                         </div>
-                        <div className="bg-zinc-900 border-3 border-orange-500 p-2 rounded-lg shadow-[4px_4px_0_rgba(255,127,0,0.3)]">
-                            <div className="flex items-center gap-3">
-                                <div className="flex-1 h-4 bg-zinc-800 border-2 border-yellow-300 rounded-full overflow-hidden">
-                                    <div 
-                                        className="h-full bg-gradient-to-r from-yellow-300 to-orange-400"
-                                        style={{ width: `${progressToNextLevel}%` }}
-                                    />
-                                </div>
-                                <p className="text-sm font-black text-yellow-300 w-10 text-right">{progressToNextLevel}%</p>
+                        <div className="bg-zinc-800 border-4 border-black p-1 shadow-[4px_4px_0_rgba(0,0,0,1)] flex items-center">
+                            <div className="flex-1 h-6 bg-zinc-900 border-r-4 border-black overflow-hidden flex">
+                                <div
+                                    className="h-full bg-lime-400 border-r-4 border-black"
+                                    style={{ width: `${progressToNextLevel}%` }}
+                                />
                             </div>
+                            <p className="text-xs font-black text-lime-400 w-12 text-center">{progressToNextLevel}%</p>
                         </div>
                     </motion.div>
                 </div>
@@ -90,13 +97,10 @@ const Dashboard = ({ onNavigate }) => {
 
             <motion.div variants={itemVariants} className="relative z-50">
                 <div className={cn(
-                    "relative flex items-center bg-zinc-950 border-2 transition-all duration-300",
-                    isFocused ? "border-signal shadow-[4px_4px_0_theme(colors.signal)]" : "border-white/20 shadow-[4px_4px_0_rgba(255,255,255,0.2)]"
+                    "relative flex items-center bg-zinc-400 border-4 border-black transition-all duration-200 mt-2",
+                    isFocused ? "shadow-[8px_8px_0_theme(colors.black)] translate-x-[-2px] translate-y-[-2px]" : "shadow-[6px_6px_0_rgba(0,0,0,1)]"
                 )}>
-                    <Search className={cn(
-                        "ml-5 w-6 h-6 transition-colors duration-300",
-                        isFocused ? "text-signal" : "text-zinc-500"
-                    )} />
+                    <Search className="ml-4 w-6 h-6 text-black flex-shrink-0" strokeWidth={3} />
                     <input
                         type="text"
                         value={search}
@@ -104,7 +108,7 @@ const Dashboard = ({ onNavigate }) => {
                         onFocus={() => setIsFocused(true)}
                         onBlur={() => setTimeout(() => setIsFocused(false), 200)}
                         placeholder="O QUE VAMOS ESTUDAR HOJE?"
-                        className="w-full min-w-0 bg-transparent px-4 py-5 focus:outline-none placeholder:text-zinc-600 text-white font-bold uppercase tracking-wider text-sm sm:text-base"
+                        className="w-full min-w-0 bg-transparent px-3 py-4 focus:outline-none placeholder:text-zinc-700 text-black font-black uppercase tracking-wider text-sm sm:text-base md:text-lg"
                     />
                 </div>
 
@@ -114,13 +118,13 @@ const Dashboard = ({ onNavigate }) => {
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 5 }}
                             exit={{ opacity: 0, y: -10 }}
-                            className="absolute top-full mt-2 left-0 right-0 p-2 bg-zinc-950 border-2 border-white/20 shadow-[8px_8px_0_rgba(255,255,255,0.2)] z-50"
+                            className="absolute top-full mt-2 left-0 right-0 p-2 bg-zinc-900 border-4 border-black shadow-[6px_6px_0_rgba(0,0,0,1)] z-50"
                         >
                             {filteredTopics.map(t => (
                                 <button
                                     key={t}
-                                    onClick={() => { setSearch(t); setIsFocused(false); }}
-                                    className="flex items-center gap-3 w-full text-left p-4 hover:bg-zinc-800 text-sm font-bold uppercase tracking-wider text-white transition-colors border-2 border-transparent hover:border-white/20"
+                                    onMouseDown={() => { setSearch(t); setIsFocused(false); }}
+                                    className="flex items-center gap-3 w-full text-left p-4 hover:bg-zinc-800 text-sm font-black uppercase tracking-wider text-white transition-colors border-4 border-transparent hover:border-black"
                                 >
                                     {t}
                                 </button>
@@ -130,24 +134,30 @@ const Dashboard = ({ onNavigate }) => {
                 </AnimatePresence>
             </motion.div>
 
-            {/* Stats de Progresso - REMOVIDO para manter layout limpo */}
-
-            <div className="space-y-4">
+            <div className="space-y-4 mt-2">
+                <Card
+                    variants={itemVariants}
+                    title="Estude Conceitos"
+                    description="Material didático completo"
+                    icon={<BookCheck className="w-8 h-8" />}
+                    color="lime"
+                    onClick={() => onNavigate('material', currentTopic)}
+                />
+                <Card
+                    variants={itemVariants}
+                    title="Exercícios"
+                    description="Pratique resolvendo problemas"
+                    icon={<Trophy className="w-8 h-8" />}
+                    color="cyan"
+                    onClick={() => onNavigate('exercises', currentTopic)}
+                />
                 <Card
                     variants={itemVariants}
                     title="Flashcards AI"
                     description="Reforce conceitos fundamentais"
-                    icon={<BookCheck className="w-8 h-8" />}
+                    icon={<Presentation className="w-8 h-8" />}
                     color="signal"
                     onClick={() => onNavigate('flashcards', currentTopic)}
-                />
-                <Card
-                    variants={itemVariants}
-                    title="Modo Aula"
-                    description="Apresentação em alta definição"
-                    icon={<Presentation className="w-8 h-8" />}
-                    color="cyan"
-                    onClick={() => onNavigate('presentation', currentTopic)}
                 />
                 <Card
                     variants={itemVariants}
@@ -157,14 +167,6 @@ const Dashboard = ({ onNavigate }) => {
                     color="emerald"
                     onClick={() => onNavigate('chat')}
                 />
-                <Card
-                    variants={itemVariants}
-                    title="Desafio Guidorizzi"
-                    description="Teste seus conhecimentos"
-                    icon={<Trophy className="w-8 h-8" />}
-                    color="lime"
-                    onClick={() => onNavigate('quiz', currentTopic)}
-                />
             </div>
         </motion.div>
     );
@@ -173,40 +175,24 @@ const Dashboard = ({ onNavigate }) => {
 const Card = ({ title, description, icon, color, onClick, variants }) => {
     const colorMap = {
         cyan: {
-            border: "border-[#00f0ff]",
-            text: "text-[#00f0ff]",
-            bg: "bg-cyan-600/10",
-            shadow: "shadow-[5px_5px_0_#00f0ff]",
-            iconColor: "text-[#00f0ff]",
-            iconBg: "bg-cyan-950",
-            iconBorder: "border-[#00f0ff]"
+            border: "border-cyan-400",
+            text: "text-cyan-400",
+            iconColor: "text-cyan-400",
         },
         signal: {
-            border: "border-[#ff5500]",
-            text: "text-[#ff5500]",
-            bg: "bg-orange-600/10",
-            shadow: "shadow-[5px_5px_0_#ff5500]",
-            iconColor: "text-[#ff5500]",
-            iconBg: "bg-orange-950",
-            iconBorder: "border-[#ff5500]"
+            border: "border-orange-500",
+            text: "text-orange-500",
+            iconColor: "text-orange-500",
         },
         lime: {
-            border: "border-[#ccff00]",
-            text: "text-[#ccff00]",
-            bg: "bg-lime-600/10",
-            shadow: "shadow-[5px_5px_0_#ccff00]",
-            iconColor: "text-[#ccff00]",
-            iconBg: "bg-lime-950",
-            iconBorder: "border-[#ccff00]"
+            border: "border-lime-400",
+            text: "text-lime-400",
+            iconColor: "text-lime-400",
         },
         emerald: {
-            border: "border-[#22c55e]",
-            text: "text-[#22c55e]",
-            bg: "bg-emerald-600/10",
-            shadow: "shadow-[5px_5px_0_#22c55e]",
-            iconColor: "text-[#22c55e]",
-            iconBg: "bg-emerald-950",
-            iconBorder: "border-[#22c55e]"
+            border: "border-emerald-400",
+            text: "text-emerald-400",
+            iconColor: "text-emerald-400",
         }
     };
 
@@ -215,23 +201,22 @@ const Card = ({ title, description, icon, color, onClick, variants }) => {
     return (
         <motion.button
             variants={variants}
-            whileHover={{ x: -3, y: -3 }}
-            whileTap={{ x: 3, y: 3, boxShadow: "0px 0px 0px transparent" }}
+            whileHover={{ x: -2, y: -2 }}
+            whileTap={{ x: 4, y: 4, boxShadow: "0px 0px 0px transparent" }}
             onClick={onClick}
             className={cn(
-                "group relative w-full p-5 text-left transition-all bg-zinc-950 overflow-hidden",
-                "border-4 rounded-xl outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-950 focus:ring-white",
-                colors.border,
-                colors.shadow,
-                colors.bg
+                "group relative w-full p-4 sm:p-5 text-left transition-all bg-zinc-900 overflow-hidden",
+                "border-4 rounded-none outline-none focus:ring-4 focus:ring-offset-2 focus:ring-offset-black focus:ring-white",
+                "shadow-[6px_6px_0_#000000] hover:shadow-[8px_8px_0_#000000]",
+                colors.border
             )}
         >
-            <div className="flex items-start gap-4">
+            <div className="flex items-center gap-4 sm:gap-6 relative z-10">
                 {/* Icon Box */}
                 <div className={cn(
-                    "flex-shrink-0 w-16 h-16 flex items-center justify-center border-3 rounded-lg transition-transform duration-300 group-hover:scale-110",
-                    colors.iconBg,
-                    colors.iconBorder
+                    "flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center border-4 rounded-none transition-transform duration-200 group-hover:scale-110",
+                    "bg-[#111111]",
+                    colors.border
                 )}>
                     <div className={colors.iconColor}>
                         {icon}
@@ -240,14 +225,17 @@ const Card = ({ title, description, icon, color, onClick, variants }) => {
 
                 {/* Content */}
                 <div className="flex-1 min-w-0">
-                    <h3 className={cn("font-black text-lg tracking-tight uppercase", colors.text)}>
+                    <h3 className={cn("font-black text-lg sm:text-xl tracking-tight uppercase leading-none", colors.text)}>
                         {title}
                     </h3>
-                    <p className="text-zinc-400 text-sm font-bold uppercase tracking-wider mt-1">
+                    <p className="text-zinc-300 text-[10px] sm:text-xs font-bold uppercase tracking-wider mt-2 truncate sm:whitespace-normal">
                         {description}
                     </p>
                 </div>
             </div>
+
+            {/* Inner background highlight on hover matching brutalist principles */}
+            <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-5 transition-opacity pointer-events-none z-0" />
         </motion.button>
     );
 };
