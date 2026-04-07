@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BookOpen, ListTodo, Presentation, Search, Trophy, BookCheck, MessageSquare } from 'lucide-react';
+import { BookCheck, MessageSquare, Presentation, Search, Trophy } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
 import contentData from '../data/content.json';
@@ -133,22 +133,6 @@ const Dashboard = ({ onNavigate }) => {
             {/* Stats de Progresso - REMOVIDO para manter layout limpo */}
 
             <div className="space-y-4">
-                <Card
-                    variants={itemVariants}
-                    title="Estude Conceitos"
-                    description="Material didático completo"
-                    icon={<BookOpen className="w-8 h-8" />}
-                    color="emerald"
-                    onClick={() => onNavigate('study', currentTopic)}
-                />
-                <Card
-                    variants={itemVariants}
-                    title="Exercícios"
-                    description="Pratique resolvendo problemas"
-                    icon={<ListTodo className="w-8 h-8" />}
-                    color="cyan"
-                    onClick={() => onNavigate('exercises', currentTopic)}
-                />
                 <Card
                     variants={itemVariants}
                     title="Flashcards AI"
