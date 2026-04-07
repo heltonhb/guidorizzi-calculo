@@ -55,7 +55,7 @@ const Dashboard = ({ onNavigate }) => {
             <header className="space-y-4 sm:space-y-6">
                 <div className="flex items-center justify-between">
                     <div className="flex flex-col items-start gap-3">
-                        <div className="flex items-center gap-2 px-3 py-1 bg-zinc-900 border-2 border-white/20 text-white text-[10px] uppercase font-black tracking-widest shadow-[2px_2px_0_rgba(255,255,255,0.2)]">
+                        <div className="flex items-center gap-2 px-3 py-1 bg-zinc-900 border-2 rounded-xl border-white/20 text-white text-[10px] uppercase font-black tracking-widest shadow-[2px_2px_0_rgba(255,255,255,0.2)]">
                             <div className="flex h-2 w-2 relative">
                                 <span className="animate-ping absolute inline-flex h-full w-full bg-emerald-400 opacity-75"></span>
                                 <span className="relative inline-flex h-2 w-2 bg-emerald-500"></span>
@@ -74,7 +74,7 @@ const Dashboard = ({ onNavigate }) => {
                     <div className="flex items-center gap-2">
                         <button
                             onClick={() => onNavigate('profile')}
-                            className="w-10 h-10 flex items-center justify-center bg-zinc-950 border-2 border-amber-500/50 shadow-[2px_2px_0_rgba(255,255,255,0.2)] hover:border-amber-400 hover:shadow-[2px_2px_0_theme(colors.amber.400)] transition-all text-amber-400"
+                            className="w-10 h-10 flex items-center justify-center bg-zinc-950 border-2 rounded-xl border-amber-500/50 shadow-[2px_2px_0_rgba(255,255,255,0.2)] hover:border-amber-400 hover:shadow-[2px_2px_0_theme(colors.amber.400)] transition-all text-amber-400"
                             title="Meu Perfil"
                         >
                             <Trophy className="w-5 h-5" />
@@ -101,12 +101,12 @@ const Dashboard = ({ onNavigate }) => {
 
             <motion.div variants={itemVariants} className="relative z-50">
                 <div className={cn(
-                    "relative flex items-center bg-zinc-950 border-2 transition-all duration-300",
-                    isFocused ? "border-signal shadow-[4px_4px_0_theme(colors.signal)]" : "border-white/20 shadow-[4px_4px_0_rgba(255,255,255,0.2)]"
+                    "relative flex items-center bg-zinc-950 border-2 rounded-2xl transition-all duration-300",
+                    isFocused ? "border-premium-blue shadow-[6px_6px_0_theme(colors.premium-blue)]" : "border-white/20 shadow-[6px_6px_0_rgba(255,255,255,0.2)]"
                 )}>
                     <Search className={cn(
                         "ml-5 w-6 h-6 transition-colors duration-300",
-                        isFocused ? "text-signal" : "text-zinc-500"
+                        isFocused ? "text-premium-blue" : "text-zinc-500"
                     )} />
                     <input
                         type="text"
@@ -125,13 +125,13 @@ const Dashboard = ({ onNavigate }) => {
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 5 }}
                             exit={{ opacity: 0, y: -10 }}
-                            className="absolute top-full mt-2 left-0 right-0 p-2 bg-zinc-950 border-2 border-white/20 shadow-[8px_8px_0_rgba(255,255,255,0.2)] z-50"
+                            className="absolute top-full mt-2 left-0 right-0 p-2 bg-zinc-950 border-2 border-white/20 rounded-2xl shadow-[8px_8px_0_rgba(255,255,255,0.2)] z-50"
                         >
                             {filteredTopics.map(t => (
                                 <button
                                     key={t}
                                     onClick={() => { setSearch(t); setIsFocused(false); }}
-                                    className="flex items-center gap-3 w-full text-left p-4 hover:bg-zinc-800 text-sm font-bold uppercase tracking-wider text-white transition-colors border-2 border-transparent hover:border-white/20"
+                                    className="flex items-center gap-3 w-full text-left p-4 hover:bg-zinc-800 text-sm font-bold uppercase tracking-wider rounded-xl text-white transition-colors border-2 border-transparent hover:border-white/20"
                                 >
                                     <Sparkles className="w-5 h-5 text-signal" />
                                     {t}
@@ -140,10 +140,10 @@ const Dashboard = ({ onNavigate }) => {
                             {!topics.some(t => t.toLowerCase() === search.toLowerCase()) && (
                                 <button
                                     onClick={() => setIsFocused(false)}
-                                    className="flex items-center gap-3 w-full text-left p-4 bg-signal/10 hover:bg-signal/20 text-sm font-black uppercase tracking-wider transition-colors border-2 border-signal mt-2"
+                                    className="flex items-center gap-3 w-full text-left p-4 bg-premium-blue/10 hover:bg-premium-blue/20 text-sm font-black uppercase tracking-wider rounded-xl transition-colors border-2 border-premium-blue mt-2"
                                 >
-                                    <Wand2 className="w-5 h-5 text-signal" />
-                                    <span className="text-signal">GERAR ALVO: "{search}"</span>
+                                    <Wand2 className="w-5 h-5 text-premium-blue" />
+                                    <span className="text-premium-blue">GERAR ALVO: "{search}"</span>
                                 </button>
                             )}
                         </motion.div>
@@ -154,22 +154,22 @@ const Dashboard = ({ onNavigate }) => {
             {/* Stats de Progresso */}
             {topicsStudied > 0 && (
                 <motion.div variants={itemVariants} className="grid grid-cols-2 gap-4">
-                    <div className="p-4 bg-zinc-950 border-2 border-white/20 shadow-[4px_4px_0_rgba(255,255,255,0.2)] space-y-1">
+                    <div className="p-4 bg-zinc-950 border-2 rounded-2xl border-white/20 shadow-[4px_4px_0_rgba(255,255,255,0.2)] space-y-1">
                         <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Tópicos Totais</p>
                         <p className="text-3xl font-black text-white font-mono">{topicsStudied}</p>
                         <p className="text-xs font-bold text-zinc-500">{totalStudyMinutes} MIN</p>
                     </div>
-                    <div className="p-4 bg-zinc-950 border-2 border-white/20 shadow-[4px_4px_0_rgba(255,255,255,0.2)] space-y-1">
+                    <div className="p-4 bg-zinc-950 border-2 rounded-2xl border-white/20 shadow-[4px_4px_0_rgba(255,255,255,0.2)] space-y-1">
                         <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Desempenho</p>
                         <p className={cn(
                             "text-3xl font-black font-mono",
-                            overallScore >= 70 ? "text-emerald-400" : overallScore >= 40 ? "text-amber-400" : "text-signal"
+                            overallScore >= 70 ? "text-emerald-400" : overallScore >= 40 ? "text-amber-400" : "text-premium-blue"
                         )}>{Math.round(overallScore)}%</p>
                         <p className="text-xs font-bold text-zinc-500">{recentSessions.length} RECENTES</p>
                     </div>
                     {bestTopic && bestTopic[1].score > 0 && (
-                        <div className="col-span-2 p-4 bg-emerald-950/20 border-2 border-emerald-500 shadow-[4px_4px_0_theme(colors.emerald.500)] flex items-center gap-4">
-                            <div className="w-10 h-10 bg-emerald-900 flex items-center justify-center border-2 border-emerald-500">
+                        <div className="col-span-2 p-4 bg-emerald-950/20 border-2 rounded-2xl border-emerald-500 shadow-[6px_6px_0_theme(colors.emerald.500)] flex items-center gap-4">
+                            <div className="w-10 h-10 bg-emerald-900 flex items-center justify-center rounded-xl border-2 border-emerald-500">
                                 <Sparkles className="w-5 h-5 text-emerald-400" />
                             </div>
                             <div className="flex-1">
@@ -179,13 +179,13 @@ const Dashboard = ({ onNavigate }) => {
                         </div>
                     )}
                     {problemAreas.length > 0 && (
-                        <div className="col-span-2 p-4 bg-signal/5 border-2 border-signal shadow-[4px_4px_0_theme(colors.signal)] flex items-center gap-4">
-                            <div className="w-10 h-10 bg-orange-950 flex items-center justify-center border-2 border-signal">
-                                <Zap className="w-5 h-5 text-signal" />
+                        <div className="col-span-2 p-4 bg-premium-blue/5 border-2 rounded-2xl border-premium-blue shadow-[6px_6px_0_theme(colors.premium-blue)] flex items-center gap-4">
+                            <div className="w-10 h-10 bg-blue-950 flex items-center justify-center rounded-xl border-2 border-premium-blue">
+                                <Zap className="w-5 h-5 text-premium-blue" />
                             </div>
                             <div className="flex-1">
-                                <p className="text-[10px] font-black text-signal uppercase tracking-widest">Atenção Crítica</p>
-                                <p className="text-lg font-black text-signal uppercase">{problemAreas.map(a => a.topic).join(' | ')}</p>
+                                <p className="text-[10px] font-black text-premium-blue uppercase tracking-widest">Atenção Crítica</p>
+                                <p className="text-lg font-black text-premium-blue uppercase">{problemAreas.map(a => a.topic).join(' | ')}</p>
                             </div>
                         </div>
                     )}
@@ -256,14 +256,14 @@ const Card = ({ title, description, icon, color, onClick, variants }) => {
             onClick={onClick}
             className={cn(
                 "group relative w-full p-4 sm:p-6 text-left transition-all bg-zinc-950 overflow-hidden",
-                "border-2 rounded-none outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-950 focus:ring-white",
+                "border-2 rounded-2xl outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-950 focus:ring-white",
                 borderColors[color],
                 shadowColors[color]
             )}
         >
             <div className="flex items-center gap-3 sm:gap-6">
                 <div className={cn(
-                    "flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center border-2 bg-zinc-900 transition-transform duration-300 group-hover:rotate-3",
+                    "flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 flex items-center rounded-xl justify-center border-2 bg-zinc-900 transition-transform duration-300 group-hover:rotate-3",
                     borderColors[color]
                 )}>
                     {icon}

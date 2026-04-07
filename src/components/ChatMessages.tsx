@@ -44,22 +44,22 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, loading, onRetry 
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               className={cn(
-                "relative flex flex-col gap-3 py-8 px-4 border-b-2 border-white/10 transition-all duration-300 w-full group",
+                "relative flex flex-col gap-3 py-8 px-4 border-b-2 border-white/10 transition-all duration-300 w-full group rounded-2xl mb-4",
                 message.role === 'user'
-                  ? "bg-transparent hover:bg-white/[0.02]"
+                  ? "bg-zinc-900 border-2 border-premium-blue/30"
                   : message.isError
-                    ? "bg-[#09090b]/80 border-l-8 border-l-red-500 pl-6"
-                    : "bg-[#09090b]/80 border-l-8 border-l-[#FF5500] pl-6"
+                    ? "bg-[#09090b]/80 border-2 border-red-500"
+                    : "bg-[#09090b]/80 border-2 border-premium-blue"
               )}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   {message.role === 'user' ? (
-                    <span className="text-[#00f0ff] font-mono text-sm font-black tracking-widest uppercase">&gt; QUERY.INPUT // [USER]</span>
+                    <span className="text-premium-blue font-mono text-sm font-black tracking-widest uppercase">&gt; QUERY.INPUT // [USER]</span>
                   ) : message.isError ? (
                     <span className="text-red-500 font-mono text-xs font-black tracking-widest uppercase">&gt;&gt; SYSTEM.ERROR // [FAILED]</span>
                   ) : (
-                    <span className="text-[#FF5500] font-mono text-xs font-black tracking-widest uppercase">&gt;&gt; GUIDORIZZI.AI.CORE // [SUCCESS]</span>
+                    <span className="text-premium-blue font-mono text-xs font-black tracking-widest uppercase">&gt;&gt; GUIDORIZZI.AI.CORE // [SUCCESS]</span>
                   )}
                 </div>
                 {/* Context Indicator for AI Messages */}
@@ -75,10 +75,10 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, loading, onRetry 
               </div>
 
               <div className={cn(
-                "prose max-w-none prose-p:leading-relaxed prose-pre:bg-[#0a0a0a] prose-pre:border-2 prose-pre:border-white/10 prose-pre:-mx-4 sm:prose-pre:mx-0 prose-pre:px-4 prose-pre:py-4 prose-pre:rounded-none",
+                "prose max-w-none prose-p:leading-relaxed prose-pre:bg-[#0a0a0a] prose-pre:border-2 prose-pre:border-white/10 prose-pre:-mx-4 sm:prose-pre:mx-0 prose-pre:px-4 prose-pre:py-4 prose-pre:rounded-xl",
                 message.role === 'user'
                   ? "prose-invert prose-p:text-xl sm:prose-p:text-2xl prose-p:font-bold prose-p:text-white"
-                  : "prose-invert prose-zinc prose-strong:text-white prose-code:text-[#FF5500] prose-code:bg-[#111] prose-code:px-1.5 prose-code:py-0.5 prose-code:border prose-code:border-[#333] text-[#d4d4d8]"
+                  : "prose-invert prose-zinc prose-strong:text-white prose-code:text-premium-blue prose-code:bg-[#111] prose-code:px-1.5 prose-code:py-0.5 prose-code:border prose-code:border-[#333] text-[#d4d4d8]"
               )}>
                 <ReactMarkdown
                   remarkPlugins={[remarkMath]}
@@ -106,17 +106,17 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, loading, onRetry 
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="flex flex-col gap-3 py-8 px-4 bg-zinc-950/80 border-l-8 border-l-[#00f0ff] pl-6 w-full border-b-2 border-white/10"
+              className="flex flex-col gap-3 py-8 px-4 bg-zinc-950/80 border-2 rounded-2xl border-premium-blue pl-6 w-full border-b-2 border-white/10 mb-4"
             >
               <div className="flex items-center gap-3">
-                <span className="text-[#00f0ff] font-mono text-xs font-black tracking-widest uppercase animate-pulse">
+                <span className="text-premium-blue font-mono text-xs font-black tracking-widest uppercase animate-pulse">
                   &gt;&gt; GUIDORIZZI.AI.CORE // [PROCESSING...]
                 </span>
               </div>
               <div className="flex items-center gap-4 py-4">
-                <div className="w-3 h-8 bg-[#00f0ff] animate-pulse" style={{ animationDelay: '0ms' }} />
-                <div className="w-3 h-8 bg-[#00f0ff] animate-pulse" style={{ animationDelay: '150ms', animationDuration: '1.2s' }} />
-                <div className="w-3 h-8 bg-[#00f0ff] animate-pulse" style={{ animationDelay: '300ms', animationDuration: '0.8s' }} />
+                <div className="w-3 h-8 bg-premium-blue animate-pulse" style={{ animationDelay: '0ms' }} />
+                <div className="w-3 h-8 bg-premium-blue animate-pulse" style={{ animationDelay: '150ms', animationDuration: '1.2s' }} />
+                <div className="w-3 h-8 bg-premium-blue animate-pulse" style={{ animationDelay: '300ms', animationDuration: '0.8s' }} />
               </div>
             </motion.div>
           )}

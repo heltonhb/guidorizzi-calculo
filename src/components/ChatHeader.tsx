@@ -14,7 +14,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ onBack }) => {
         <motion.button
           whileTap={{ scale: 0.9, x: 2, y: 2, boxShadow: "0px 0px 0px transparent" }}
           onClick={onBack}
-          className="w-12 h-12 flex items-center justify-center bg-zinc-950 border-2 border-white/20 hover:bg-white hover:text-zinc-950 transition-colors shadow-[2px_2px_0_rgba(255,255,255,0.2)]"
+          className="w-12 h-12 flex items-center justify-center rounded-xl bg-zinc-950 border-2 border-white/20 hover:bg-white hover:text-zinc-950 transition-colors shadow-[2px_2px_0_rgba(255,255,255,0.2)]"
         >
           <ChevronLeft className="w-6 h-6" />
         </motion.button>
@@ -27,7 +27,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ onBack }) => {
 
       {/* Desktop Header - inside main area */}
       <div className="hidden md:flex items-center justify-between mb-6 pb-6 border-b-4 border-white/20">
-        <div className="space-y-1 pl-4 border-l-4 border-[#00f0ff]">
+        <div className="space-y-1 pl-4 border-l-4 border-premium-blue">
           <h2 className="text-2xl font-black tracking-tighter uppercase text-white">Ask Guidorizzi</h2>
           <p className="text-xs text-zinc-400 font-bold tracking-widest uppercase">Contexto Inteligente</p>
         </div>
@@ -35,7 +35,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ onBack }) => {
           <motion.button
             whileTap={{ scale: 0.9, x: 2, y: 2, boxShadow: "0px 0px 0px transparent" }}
             onClick={onBack}
-            className="px-4 py-2 h-12 flex items-center justify-center bg-zinc-950 border-2 border-white/20 shadow-[4px_4px_0_rgba(255,255,255,0.2)] uppercase font-black tracking-widest text-xs hover:bg-white hover:text-zinc-950 transition-colors"
+            className="px-4 py-2 h-12 flex items-center rounded-xl justify-center bg-zinc-950 border-2 border-white/20 shadow-[4px_4px_0_rgba(255,255,255,0.2)] uppercase font-black tracking-widest text-xs hover:bg-white hover:text-zinc-950 transition-colors"
           >
             Voltar ✕
           </motion.button>

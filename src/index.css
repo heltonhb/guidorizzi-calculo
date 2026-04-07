@@ -7,11 +7,13 @@
     --color-technical: #f8f9fa;
     --color-signal: #ff5500;
     --color-acid: #a3e635;
-    /* Cores Vibrantes Brutalistas */
+    /* Premium Brutalist Design Colors */
+    --color-premium-blue: #1152d4;
     --color-cyber: #00f0ff;
     --color-neon-lime: #ccff00;
     --color-hot-pink: #ff0080;
     --color-electric-orange: #ff4400;
+    --font-sans: 'Space Grotesk', system-ui, sans-serif;
 }
 
 /* Mobile overflow prevention - Samsung Internet Browser fix */
@@ -33,21 +35,22 @@ body {
 
 /* Touch action utilities for mobile */
 @layer utilities {
+
     /* Allow vertical scroll/pan only */
     .touch-pan-y {
         touch-action: pan-y;
     }
-    
+
     /* Allow horizontal scroll/pan only */
     .touch-pan-x {
         touch-action: pan-x;
     }
-    
+
     /* Allow both directions */
     .touch-pan-xy {
         touch-action: pan-x pan-y;
     }
-    
+
     /* Prevent scroll/pan - for fixed elements */
     .touch-none {
         touch-action: none;
@@ -59,11 +62,11 @@ body {
     html {
         overflow-x: hidden !important;
     }
-    
+
     body {
         overflow-x: hidden !important;
     }
-    
+
     #root,
     main,
     section,
@@ -83,27 +86,31 @@ body {
 /* Brutalist utilities */
 @layer utilities {
     .brutalist-shadow {
-        box-shadow: 4px 4px 0px 0px theme('colors.signal');
+        box-shadow: 6px 6px 0px 0px theme('colors.premium-blue');
     }
 
     .brutalist-shadow-sm {
-        box-shadow: 2px 2px 0px 0px theme('colors.signal');
+        box-shadow: 3px 3px 0px 0px theme('colors.premium-blue');
     }
 
     .brutalist-shadow-cyber {
-        box-shadow: 4px 4px 0px 0px theme('colors.cyber');
+        box-shadow: 6px 6px 0px 0px theme('colors.cyber');
     }
 
     .brutalist-shadow-lime {
-        box-shadow: 4px 4px 0px 0px theme('colors.neon-lime');
+        box-shadow: 6px 6px 0px 0px theme('colors.neon-lime');
+    }
+
+    .brutalist-shadow-signal {
+        box-shadow: 6px 6px 0px 0px theme('colors.signal');
     }
 
     .brutalist-glow-cyber {
-        box-shadow: 0 0 20px theme('colors.cyber'), 4px 4px 0px 0px theme('colors.cyber');
+        box-shadow: 0 0 20px theme('colors.cyber'), 6px 6px 0px 0px theme('colors.cyber');
     }
 
     .brutalist-glow-signal {
-        box-shadow: 0 0 20px theme('colors.signal'), 4px 4px 0px 0px theme('colors.signal');
+        box-shadow: 0 0 20px theme('colors.signal'), 6px 6px 0px 0px theme('colors.signal');
     }
 }
 
