@@ -12,44 +12,47 @@ interface ChatInputProps {
 
 const ChatInput: React.FC<ChatInputProps> = ({ input, setInput, onSend, loading, suggestions, onSuggestionClick }) => {
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && input.trim() && !loading) {
       onSend();
     }
   };
 
   return (
-    <div className="mt-auto border-t-4 border-zinc-800 bg-[#050505] flex flex-col shadow-[0_-4px_20px_rgba(0,0,0,0.5)]">
-      {/* Suggestions as raw commands */}
+    <div className="mt-auto border-t-[12px] border-zinc-900 bg-zinc-950 flex flex-col z-50 relative shadow-[0_-16px_32px_rgba(0,0,0,0.8)]">
+      {/* Suggestions block as raw terminal output */}
       {suggestions.length > 0 && (
-        <div className="md:hidden flex overflow-x-auto custom-scrollbar border-b-2 border-zinc-800">
+        <div className="flex flex-wrap overflow-x-auto custom-scrollbar border-b-4 border-zinc-900 bg-zinc-950">
+          <div className="px-6 py-4 bg-zinc-900 text-zinc-500 font-mono text-[10px] font-black uppercase tracking-widest hidden sm:flex items-center">
+            SYS.SUGGESTIONS //
+          </div>
           {suggestions.slice(0, 4).map((sug, i) => (
             <button
               key={i}
               onClick={() => onSuggestionClick(sug)}
-              className="flex-shrink-0 px-5 py-3 bg-transparent border-r-2 border-zinc-800 text-[10px] font-mono font-black uppercase tracking-widest text-zinc-400 hover:bg-premium-blue hover:text-white transition-colors whitespace-nowrap"
+              className="flex-shrink-0 px-6 py-4 bg-zinc-950 border-r-4 border-zinc-900 text-xs font-mono font-black uppercase tracking-widest text-zinc-400 hover:bg-white hover:text-zinc-950 transition-colors whitespace-nowrap"
             >
-              &gt; {typeof sug === 'string' ? (sug.length > 35 ? sug.substring(0, 35) + '...' : sug) : sug}
+              &gt; {typeof sug === 'string' ? (sug.length > 40 ? sug.substring(0, 40) + '...' : sug) : sug}
             </button>
           ))}
         </div>
       )}
 
-      <div className="flex flex-col sm:flex-row bg-[#080808]">
+      <div className="flex flex-col sm:flex-row bg-zinc-950">
         {/* Terminal Prefix Indicator */}
-        <div className="hidden sm:flex items-center justify-center px-4 bg-premium-blue text-white">
-          <Terminal className="w-6 h-6 stroke-[3px]" />
+        <div className="hidden sm:flex items-center justify-center px-8 bg-zinc-900 border-r-4 border-zinc-900 text-white">
+          <Terminal className="w-8 h-8 stroke-2 text-premium-blue" />
         </div>
 
         {/* Input Area */}
-        <div className="flex-1 flex items-center relative">
-          <span className="absolute left-4 sm:left-6 text-premium-blue font-mono font-black text-xl select-none animate-pulse">_</span>
+        <div className="flex-1 flex items-center relative py-2 sm:py-0">
+          <span className="absolute left-4 sm:left-8 text-emerald-500 font-mono font-black text-2xl select-none animate-pulse">$&gt;</span>
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="AWAITING CALC QUERY..."
-            className="w-full bg-transparent border-none px-4 sm:px-6 pl-10 sm:pl-12 py-5 sm:py-6 focus:outline-none text-premium-blue placeholder:text-zinc-700 font-mono text-sm sm:text-base tracking-widest uppercase rounded-none"
+            className="w-full bg-zinc-950 border-none px-4 sm:px-8 pl-12 sm:pl-20 py-6 sm:py-10 focus:outline-none text-white placeholder:text-zinc-700 font-mono text-base sm:text-xl font-bold tracking-widest uppercase rounded-none"
           />
         </div>
 
@@ -57,19 +60,20 @@ const ChatInput: React.FC<ChatInputProps> = ({ input, setInput, onSend, loading,
         <button
           onClick={onSend}
           disabled={!input.trim() || loading}
-          className="px-8 py-4 sm:py-0 bg-white border-t-2 sm:border-t-0 sm:border-l-4 border-zinc-800 flex items-center justify-center disabled:opacity-50 disabled:bg-zinc-900 disabled:text-zinc-600 transition-colors text-black font-mono font-black tracking-widest hover:bg-premium-blue hover:text-white uppercase"
+          className="px-12 py-6 sm:py-0 bg-premium-blue border-l-4 border-zinc-950 flex flex-col items-center justify-center disabled:opacity-50 disabled:bg-zinc-900 disabled:text-zinc-600 transition-colors text-white font-mono font-black tracking-widest hover:bg-white hover:text-zinc-950 uppercase group"
         >
-          EXECUTE
+          <span className="text-xl">EXECUTE</span>
+          <span className="text-[10px] text-zinc-950/50 group-hover:text-zinc-500 mt-1">CTRL+ENTER</span>
         </button>
       </div>
 
       {/* Footer Meta */}
-      <div className="border-t-2 border-zinc-800 bg-[#020202] py-2 flex items-center justify-between px-4">
-        <div className="flex items-center gap-2 text-[10px] font-mono">
-          <Zap className="w-3 h-3 text-premium-blue" />
-          <span className="text-premium-blue font-black uppercase tracking-widest">Guidorizzi Subsystem</span>
+      <div className="border-t-4 border-zinc-900 bg-zinc-950 py-3 flex items-center justify-between px-6">
+        <div className="flex items-center gap-3 text-xs font-mono">
+          <Zap className="w-4 h-4 text-emerald-500" />
+          <span className="text-emerald-500 font-black uppercase tracking-widest">Guidorizzi Neural Subsystem // ACTIVE</span>
         </div>
-        <span className="text-zinc-600 font-mono text-[10px] uppercase font-black tracking-widest hidden sm:inline-block">ENG. TERMINAL v1.0</span>
+        <span className="text-zinc-600 font-mono text-xs uppercase font-black tracking-widest hidden sm:inline-block">CALC_V2.0_ENG_TERMINAL</span>
       </div>
     </div>
   );

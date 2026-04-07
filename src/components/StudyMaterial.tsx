@@ -93,131 +93,140 @@ const StudyMaterial = ({ topic, onBack }) => {
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex flex-col gap-8 min-h-screen pb-20 overflow-visible"
+            className="flex flex-col min-h-screen bg-zinc-950 pb-32 overflow-hidden"
         >
             {/* Reading Progress Indicator */}
-            <div className="fixed top-0 left-0 w-full h-2 z-[100] bg-zinc-900 border-b-2 border-white/20">
+            <div className="fixed top-0 left-0 w-full h-3 z-[100] bg-zinc-950 border-b-4 border-zinc-800">
                 <motion.div
                     className="h-full bg-premium-blue"
                     style={{ width: `${readingProgress}%` }}
                 />
             </div>
 
-            {/* Floating Back Button */}
+            {/* Giant Back Action Block */}
             <motion.button
-                initial={{ opacity: 0, x: -20 }}
+                initial={{ opacity: 0, x: -50 }}
                 animate={{ opacity: 1, x: 0 }}
-                whileTap={{ scale: 0.9, x: -2, y: 2, boxShadow: "0px 0px 0px transparent" }}
+                whileTap={{ scale: 0.95, x: -4, y: 4, boxShadow: "0px 0px 0px transparent" }}
                 onClick={onBack}
-                className="fixed bottom-8 left-8 w-14 h-14 z-[90] flex items-center justify-center rounded-xl bg-zinc-950 border-2 border-white/20 shadow-[4px_4px_0_rgba(255,255,255,0.2)] text-white hover:border-premium-blue hover:shadow-[4px_4px_0_theme(colors.premium-blue)] hover:text-premium-blue transition-colors"
+                className="fixed bottom-8 sm:bottom-12 left-4 sm:left-12 z-[90] flex items-center justify-center gap-4 py-4 px-8 rounded-2xl bg-zinc-900 border-4 border-premium-blue text-white shadow-[8px_8px_0_theme(colors.premium-blue)] hover:bg-premium-blue hover:text-white transition-colors uppercase font-black tracking-widest"
             >
-                <ChevronLeft className="w-7 h-7" />
+                <ChevronLeft className="w-8 h-8" />
+                <span className="hidden sm:block">Retornar</span>
             </motion.button>
-            <header className="flex items-center justify-between border-b-2 border-white/20 pb-6 mb-6">
-                <motion.button
-                    whileTap={{ scale: 0.9, x: 2, y: 2, boxShadow: "0px 0px 0px transparent" }}
-                    onClick={onBack}
-                    className="w-12 h-12 flex items-center justify-center rounded-xl bg-zinc-950 border-2 border-white/20 shadow-[2px_2px_0_rgba(255,255,255,0.2)] hover:border-premium-blue hover:shadow-[2px_2px_0_theme(colors.premium-blue)] hover:text-premium-blue transition-colors"
-                >
-                    <ChevronLeft className="w-6 h-6 text-white" />
-                </motion.button>
-                <div className="flex-1 text-center">
-                    <h2 className="text-3xl font-black tracking-tight text-white uppercase">{topic}</h2>
-                    <div className="flex items-center justify-center gap-2 mt-2">
-                        <div className="w-2 h-2 bg-emerald-500 animate-none border border-emerald-900"></div>
-                        <p className="text-emerald-400 text-[10px] uppercase font-black tracking-widest">IA sob demanda</p>
+
+            {/* Typographic Brutalist Header */}
+            <header className="relative w-full pt-32 pb-16 px-4 sm:px-12">
+                <div className="absolute top-0 right-0 w-[80vw] h-full bg-premium-blue/5 blur-[120px] rounded-full pointer-events-none" />
+
+                <h2 className="text-[15vw] sm:text-[10vw] leading-[0.8] font-black tracking-tighter text-white uppercase break-words mix-blend-difference drop-shadow-2xl">
+                    {topic}
+                </h2>
+
+                <div className="mt-12 flex items-center justify-start gap-4">
+                    <div className="flex items-center gap-3 px-6 py-3 bg-zinc-900 border-4 border-emerald-500 rounded-xl shadow-[6px_6px_0_theme(colors.emerald.500)]">
+                        <div className="w-3 h-3 bg-emerald-500 animate-pulse"></div>
+                        <p className="text-emerald-400 text-sm uppercase font-black tracking-widest">Guidorizzi AI Core</p>
+                    </div>
+                    <div className="px-6 py-3 border-4 border-zinc-700 bg-zinc-950 rounded-xl text-zinc-400 font-bold uppercase tracking-widest text-sm shadow-[6px_6px_0_rgba(255,255,255,0.05)]">
+                        Modo Aula
                     </div>
                 </div>
-                <div className="w-12" />
             </header>
 
-            {/* Learning Objectives - Show before content */}
-            {contentData[topic]?.learningObjectives && (
-                <div className="max-w-4xl mx-auto w-full">
-                    <LearningObjectives
-                        objectives={contentData[topic].learningObjectives}
-                        topic={topic}
-                        showInitially={true}
-                    />
-                </div>
-            )}
-
-            <AnimatePresence mode="wait">
-                {loading ? (
-                    <motion.div
-                        key="loading"
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 1.05 }}
-                        className="flex-1 flex flex-col items-center justify-center gap-8 py-20"
-                    >
-                        <div className="relative w-24 h-24 bg-zinc-950 rounded-2xl border-2 border-premium-blue shadow-[6px_6px_0_theme(colors.premium-blue)] flex items-center justify-center">
-                            <Loader2 className="w-10 h-10 text-premium-blue animate-spin" />
-                        </div>
-                        <div className="text-center space-y-3 bg-zinc-950 rounded-2xl border-2 border-white/20 p-6 shadow-[6px_6px_0_rgba(255,255,255,0.2)]">
-                            <h3 className="text-xl font-black text-white tracking-widest uppercase">Analisando Guidorizzi</h3>
-                            <p className="text-zinc-400 font-bold max-w-[250px] leading-relaxed mx-auto uppercase text-xs tracking-wider">
-                                SINTETIZANDO CONTEÚDO MATEMÁTICO...
-                            </p>
-                        </div>
-                    </motion.div>
-                ) : (
-                    <motion.div
-                        key="content"
-                        initial={{ y: 30, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        className="space-y-8"
-                    >
-                        <div className="relative p-8 md:p-12 bg-zinc-950 rounded-2xl border-2 border-white/20 shadow-[6px_6px_0_rgba(255,255,255,0.2)]">
-                            <div className="inline-flex items-center gap-3 px-4 py-2 rounded-xl bg-zinc-900 border-2 border-premium-blue text-premium-blue text-[11px] font-black uppercase tracking-[0.2em] mb-12 shadow-[2px_2px_0_theme(colors.premium-blue)]">
-                                <Sparkles className="w-4 h-4" />
-                                Inteligência Guidorizzi
-                            </div>
-
-                            <StylizedIllustration concept={topic} />
-
-                            <div className="prose prose-invert max-w-none prose-p:text-zinc-300 prose-p:leading-[1.8] prose-p:text-lg prose-headings:text-white prose-headings:font-black prose-headings:uppercase prose-headings:tracking-tight prose-strong:text-white prose-strong:font-black prose-code:text-premium-blue prose-pre:bg-zinc-950 prose-pre:border-2 prose-pre:border-white/20 prose-pre:rounded-2xl prose-pre:shadow-[6px_6px_0_rgba(255,255,255,0.1)]">
-                                <ReactMarkdown
-                                    remarkPlugins={[remarkMath]}
-                                    rehypePlugins={[rehypeKatex]}
-                                    components={{
-                                        img: ({ node: _, ...props }) => {
-                                            if (props.alt === 'ilustracao') {
-                                                return <StylizedIllustration concept={props.src} />;
-                                            }
-                                            return <img {...props} />;
-                                        }
-                                    }}
-                                >
-                                    {preprocessMathContent(content).replace(/\[(?:ilustracao|ilustração):\s*(.*?)\]/gi, '![ilustracao]($1)')}
-                                </ReactMarkdown>
-                            </div>
-
-                            <div className="mt-16 flex items-center justify-between border-t-2 border-white/20 pt-10">
-                                <div className="flex items-center gap-3 text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em]">
-                                    <div className="w-2 h-2 bg-emerald-500"></div>
-                                    Conteúdo Verificado
-                                </div>
-                                <div className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">
-                                    Fonte: Guidorizzi Vol. 1-4
-                                </div>
-                            </div>
-                        </div>
-
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.3 }}
-                            className="flex gap-4 p-6 bg-zinc-950 rounded-2xl border-2 border-premium-blue shadow-[6px_6px_0_theme(colors.premium-blue)]"
-                        >
-                            <Info className="w-6 h-6 text-premium-blue flex-shrink-0" />
-                            <p className="text-premium-blue font-bold uppercase text-xs tracking-wider leading-relaxed">
-                                ESTE RESUMO FOI OTIMIZADO PARA LEITURA RÁPIDA MANTENDO O RIGOR MATEMÁTICO DO GUIDORIZZI.
-                            </p>
-                        </motion.div>
-                    </motion.div>
+            <main className="relative z-20 px-4 sm:px-12 flex-1 w-full max-w-7xl mx-auto">
+                {/* Learning Objectives - Show before content */}
+                {contentData[topic]?.learningObjectives && (
+                    <div className="mb-16 -ml-4 sm:-ml-12 border-l-[12px] border-premium-blue pl-4 sm:pl-12">
+                        <LearningObjectives
+                            objectives={contentData[topic].learningObjectives}
+                            topic={topic}
+                            showInitially={true}
+                        />
+                    </div>
                 )}
-            </AnimatePresence>
+
+                <AnimatePresence mode="wait">
+                    {loading ? (
+                        <motion.div
+                            key="loading"
+                            initial={{ opacity: 0, y: 50 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -50 }}
+                            className="w-full flex flex-col items-start justify-center gap-12 py-32"
+                        >
+                            <div className="relative w-32 h-32 bg-zinc-900 rounded-full border-8 border-t-premium-blue border-r-premium-blue border-b-zinc-800 border-l-zinc-800 animate-spin flex items-center justify-center shadow-[0_0_40px_theme(colors.premium-blue)]">
+                                <Loader2 className="w-12 h-12 text-premium-blue animate-spin" style={{ animationDirection: 'reverse' }} />
+                            </div>
+                            <div>
+                                <h3 className="text-5xl font-black text-white tracking-tighter uppercase mb-4">Ingestão de Dados</h3>
+                                <p className="text-premium-blue font-bold text-2xl tracking-widest uppercase">
+                                    Sintetizando Conhecimento Matemático...
+                                </p>
+                            </div>
+                        </motion.div>
+                    ) : (
+                        <motion.div
+                            key="content"
+                            initial={{ y: 50, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            className="w-full space-y-16"
+                        >
+                            <div className="relative bg-zinc-900 border-4 border-zinc-800 rounded-3xl p-8 sm:p-16 shadow-[16px_16px_0_rgba(0,0,0,0.5)]">
+
+                                {/* Deep Accent Anchor */}
+                                <div className="absolute -top-8 -left-8 w-24 h-24 bg-premium-blue rounded-2xl border-4 border-zinc-950 flex items-center justify-center shadow-[8px_8px_0_rgba(255,255,255,0.1)] z-30">
+                                    <Sparkles className="w-10 h-10 text-white" />
+                                </div>
+
+                                <StylizedIllustration concept={topic} />
+
+                                <div className="mt-8 prose prose-invert max-w-none prose-p:text-zinc-300 prose-p:text-xl sm:prose-p:text-2xl prose-p:leading-[1.8] prose-p:font-medium prose-headings:text-white prose-headings:text-3xl sm:prose-headings:text-5xl prose-headings:font-black prose-headings:uppercase prose-headings:tracking-tighter prose-headings:mt-16 prose-headings:mb-8 prose-strong:text-white prose-strong:font-black prose-code:text-premium-blue prose-pre:bg-zinc-950 prose-pre:border-4 prose-pre:border-zinc-800 prose-pre:rounded-2xl prose-pre:shadow-[8px_8px_0_rgba(0,0,0,0.5)]">
+                                    <ReactMarkdown
+                                        remarkPlugins={[remarkMath]}
+                                        rehypePlugins={[rehypeKatex]}
+                                        components={{
+                                            img: ({ node: _, ...props }) => {
+                                                if (props.alt === 'ilustracao') {
+                                                    return <StylizedIllustration concept={props.src} />;
+                                                }
+                                                return <img {...props} className="border-4 border-zinc-800 rounded-2xl shadow-[8px_8px_0_rgba(0,0,0,0.5)]" />;
+                                            }
+                                        }}
+                                    >
+                                        {preprocessMathContent(content).replace(/\[(?:ilustracao|ilustração):\s*(.*?)\]/gi, '![ilustracao]($1)')}
+                                    </ReactMarkdown>
+                                </div>
+
+                                <div className="mt-24 w-full border-t-8 border-premium-blue pt-12 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+                                    <div className="flex items-center gap-4 px-6 py-3 bg-zinc-950 border-4 border-emerald-500 rounded-xl shadow-[4px_4px_0_theme(colors.emerald.500)]">
+                                        <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
+                                        <span className="text-emerald-400 font-black uppercase tracking-widest text-xs">Acurácia Matemática</span>
+                                    </div>
+                                    <div className="text-sm font-black text-zinc-600 uppercase tracking-[0.2em]">
+                                        Fonte Primária: Guidorizzi Vol. 1-4
+                                    </div>
+                                </div>
+                            </div>
+
+                            <motion.div
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.4 }}
+                                className="ml-auto w-full sm:w-[80%] bg-zinc-950 border-4 border-premium-blue rounded-3xl p-8 sm:p-10 shadow-[12px_12px_0_theme(colors.premium-blue)] flex gap-8 items-start relative overflow-hidden"
+                            >
+                                <div className="absolute top-0 right-0 p-8 text-premium-blue/10 pointer-events-none">
+                                    <Info className="w-32 h-32" />
+                                </div>
+                                <Info className="w-10 h-10 text-premium-blue flex-shrink-0 relative z-10" />
+                                <p className="text-white font-black uppercase text-lg sm:text-xl tracking-widest leading-relaxed relative z-10">
+                                    SÍNTESE OTIMIZADA PARA ABSORÇÃO ACELERADA. O RIGOR TEÓRICO FOI MANTIDO SOB PROTOCOLOS DE ALTA PERFORMANCE.
+                                </p>
+                            </motion.div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </main>
         </motion.div>
     );
 };
