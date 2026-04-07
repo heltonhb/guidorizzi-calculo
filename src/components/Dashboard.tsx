@@ -178,25 +178,25 @@ const Card = ({ title, description, icon, color, onClick, variants }) => {
             border: "border-cyan-400",
             text: "text-cyan-400",
             iconColor: "text-cyan-400",
-            shadowColor: "#22d3ee", // cyan-400
+            bevel: "#22d3ee", // cyan-400
         },
         signal: {
             border: "border-orange-500",
             text: "text-orange-500",
             iconColor: "text-orange-500",
-            shadowColor: "#f97316", // orange-500
+            bevel: "#f97316", // orange-500
         },
         lime: {
             border: "border-lime-400",
             text: "text-lime-400",
             iconColor: "text-lime-400",
-            shadowColor: "#a3e635", // lime-400
+            bevel: "#a3e635", // lime-400
         },
         emerald: {
             border: "border-emerald-400",
             text: "text-emerald-400",
             iconColor: "text-emerald-400",
-            shadowColor: "#34d399", // emerald-400
+            bevel: "#34d399", // emerald-400
         }
     };
 
@@ -205,50 +205,42 @@ const Card = ({ title, description, icon, color, onClick, variants }) => {
     return (
         <motion.button
             variants={variants}
-            whileHover={{ x: -4, y: -4 }}
-            whileTap={{ x: 2, y: 2 }}
+            // Add a slight hover lift and deepen the shadow to emphasize the 3D button press.
+            whileHover={{ y: -2 }}
+            whileTap={{ y: 6, boxShadow: `0px 2px 0px 0px ${colors.bevel}, 0px 4px 0px 0px #000` }}
             onClick={onClick}
             className={cn(
-                "group relative w-full p-4 sm:p-5 text-left transition-all bg-zinc-900 overflow-visible",
-                "border-4 rounded-none outline-none focus:ring-4 focus:ring-offset-2 focus:ring-offset-black focus:ring-white",
+                "group relative w-full p-4 sm:p-5 text-left transition-all overflow-visible",
+                "bg-[#111] border-4 rounded-xl outline-none focus:ring-4 focus:ring-offset-2 focus:ring-offset-black focus:ring-white",
                 colors.border
             )}
             style={{
-                // Stacked shadow effect to simulate 3D depth
-                boxShadow: `
-                    2px 2px 0px 0px #000,
-                    4px 4px 0px 0px #000,
-                    6px 6px 0px 0px #000,
-                    8px 8px 0px 0px #000,
-                    10px 10px 0px 0px #000
-                `
+                // Stacked shadow: first layer creates the physical edge (bevel), second layer creates the drop shadow
+                boxShadow: `0px 6px 0px 0px ${colors.bevel}, 0px 12px 0px 0px #000`
             }}
         >
             <div className="flex items-center gap-4 sm:gap-6 relative z-10">
-                {/* Icon Box */}
+                {/* Icon Layout */}
                 <div className={cn(
-                    "flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center border-4 rounded-none transition-transform duration-200 group-hover:scale-110",
-                    "bg-[#111111]",
-                    colors.border
+                    "flex-shrink-0 w-12 h-12 flex items-center justify-center transition-transform duration-200 group-hover:scale-110",
+                    colors.iconColor
                 )}>
-                    <div className={colors.iconColor}>
-                        {icon}
-                    </div>
+                    {icon}
                 </div>
 
                 {/* Content */}
                 <div className="flex-1 min-w-0">
-                    <h3 className={cn("font-black text-lg sm:text-xl tracking-tight uppercase leading-none", colors.text)}>
+                    <h3 className={cn("font-black text-xl sm:text-2xl tracking-tighter uppercase leading-none", colors.text)}>
                         {title}
                     </h3>
-                    <p className="text-zinc-300 text-[10px] sm:text-xs font-bold uppercase tracking-wider mt-2 truncate sm:whitespace-normal">
+                    <p className="text-zinc-100 text-[10px] sm:text-xs font-bold uppercase tracking-widest mt-1 md:mt-2 truncate sm:whitespace-normal">
                         {description}
                     </p>
                 </div>
             </div>
 
             {/* Inner background highlight on hover matching brutalist principles */}
-            <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-5 transition-opacity pointer-events-none z-0" />
+            <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none z-0 rounded-lg" />
         </motion.button>
     );
 };
