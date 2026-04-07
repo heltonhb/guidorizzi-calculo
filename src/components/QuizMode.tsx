@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, Loader2, Sparkles, CheckCircle2, XCircle, Trophy, RefreshCw, Zap, Lightbulb, BrainCircuit } from 'lucide-react';
+import { ChevronLeft, Loader2, CheckCircle2, XCircle, Trophy, RefreshCw, Zap, Lightbulb, BrainCircuit } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { generateQuizQuestions } from '../services/api';
 import { useToast } from './Toast';
@@ -230,48 +230,75 @@ const QuizMode = ({ topic, onBack }) => {
                 <motion.div
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    className="flex flex-col items-center gap-10 py-8"
+                    className="flex flex-col items-center gap-8 py-8"
                 >
-                    <div className="w-32 h-32 bg-zinc-900 border-8 border-premium-blue shadow-[16px_16px_0_theme(colors.premium-blue)] flex items-center justify-center transform rotate-6">
-                        <Zap className="w-14 h-14 text-white" fill="currentColor" />
-                    </div>
-
-                    <div className="text-center bg-zinc-900 border-4 border-white p-8 shadow-[12px_12px_0_rgba(255,255,255,0.2)] max-w-md w-full">
-                        <h3 className="text-3xl font-black text-white uppercase tracking-widest">{topic}</h3>
-                        <p className="text-zinc-400 font-bold text-sm uppercase tracking-widest mt-4 max-w-[280px] mx-auto">
-                            {questions.length} questões de múltipla escolha baseadas no Guidorizzi
+                    {/* Top Banner - Lime */}
+                    <motion.div
+                        initial={{ y: -20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        className="w-full max-w-2xl bg-lime-400 text-black border-4 border-black px-6 py-4 shadow-[8px_8px_0_rgba(0,0,0,0.6)]"
+                    >
+                        <p className="text-center font-black text-xl uppercase tracking-widest">
+                            {questions.length} QUESTÕES GERADAS SOBRE "{topic}"!
                         </p>
-                        {source.includes('LIVE') && (
-                            <div className="flex items-center gap-3 justify-center text-xs font-black uppercase tracking-widest text-premium-blue border-t-4 border-zinc-800 pt-4 mt-4">
-                                <div className="flex h-3 w-3 relative">
-                                    <span className="animate-ping absolute inline-flex h-full w-full bg-premium-blue opacity-75"></span>
-                                    <span className="relative inline-flex h-3 w-3 bg-premium-blue"></span>
-                                </div>
-                                GERADO POR IA
-                            </div>
-                        )}
+                    </motion.div>
+
+                    {/* Lightning Icon with Cyan Border */}
+                    <motion.div
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="relative"
+                    >
+                        <div className="w-40 h-40 bg-black border-8 border-cyan-400 shadow-[12px_12px_0_rgba(0,255,255,0.6)] flex items-center justify-center">
+                            <Zap className="w-24 h-24 text-cyan-400" fill="currentColor" />
+                        </div>
+                    </motion.div>
+
+                    {/* Main Title Section - Black with Shadow */}
+                    <div className="w-full max-w-2xl bg-black border-4 border-black p-8 shadow-[8px_8px_0_rgba(0,0,0,0.8)] text-center">
+                        <h3 className="text-5xl font-black text-white uppercase tracking-widest leading-tight">
+                            {topic}
+                        </h3>
+                        <p className="text-white font-black text-sm uppercase tracking-widest mt-4 leading-tight max-w-lg mx-auto">
+                            {questions.length} questões de múltipla escolha baseadas no guidorizzi
+                        </p>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-6 w-full max-w-md">
+                    {/* Difficulty Stats - 3 colored boxes */}
+                    <div className="grid grid-cols-3 gap-4 w-full max-w-xl px-4">
                         {[
-                            { label: 'Fáceis', count: 2, color: 'text-emerald-400', border: 'border-emerald-500', shadow: 'shadow-[6px_6px_0_theme(colors.emerald.500)]' },
-                            { label: 'Médias', count: 2, color: 'text-premium-blue', border: 'border-premium-blue', shadow: 'shadow-[6px_6px_0_theme(colors.premium-blue)]' },
-                            { label: 'Difíceis', count: 1, color: 'text-rose-400', border: 'border-rose-500', shadow: 'shadow-[6px_6px_0_theme(colors.rose.500)]' },
+                            { label: 'Fáceis', count: 2, color: 'lime', border: 'border-lime-400', bg: 'bg-black', text: 'text-white' },
+                            { label: 'Médias', count: 2, color: 'orange', border: 'border-orange-500', bg: 'bg-black', text: 'text-white' },
+                            { label: 'Difíceis', count: 1, color: 'red', border: 'border-red-500', bg: 'bg-black', text: 'text-white' },
                         ].map(d => (
-                            <div key={d.label} className={cn("p-5 bg-zinc-950 border-4 text-center rounded-none", d.border, d.shadow)}>
-                                <p className={cn("text-3xl font-black", d.color)}>{d.count}</p>
-                                <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest mt-2">{d.label}</p>
-                            </div>
+                            <motion.div
+                                key={d.label}
+                                initial={{ y: 10, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ delay: 0.2 }}
+                                className={cn(
+                                    "p-6 border-4 text-center shadow-[6px_6px_0_rgba(0,0,0,0.6)]",
+                                    d.bg,
+                                    d.border,
+                                    d.text
+                                )}
+                            >
+                                <p className="text-4xl font-black">{d.count}</p>
+                                <p className="text-xs font-black uppercase tracking-widest mt-2">{d.label}</p>
+                            </motion.div>
                         ))}
                     </div>
 
-                    <button
+                    {/* Start Button - Cyan */}
+                    <motion.button
+                        whileHover={{ y: -2 }}
+                        whileTap={{ y: 2, boxShadow: "0px 0px 0px transparent" }}
                         onClick={startQuiz}
-                        className="w-full max-w-md py-8 bg-premium-blue border-4 border-white text-white hover:bg-white hover:text-premium-blue font-black uppercase tracking-widest text-xl shadow-[12px_12px_0_rgba(255,255,255,0.2)] hover:shadow-[8px_8px_0_theme(colors.premium-blue)] transition-all flex items-center justify-center gap-4 active:translate-x-2 active:translate-y-2 active:shadow-none mt-4 rounded-none"
+                        className="w-full max-w-xl py-6 bg-cyan-400 border-4 border-black text-black hover:bg-cyan-300 font-black uppercase tracking-widest text-xl shadow-[8px_8px_0_rgba(0,0,0,0.6)] transition-all flex items-center justify-center gap-3"
                     >
-                        <Sparkles className="w-7 h-7" />
-                        INICIAR DESAFIO
-                    </button>
+                        <span>INICIAR DESAFIO</span>
+                        <Zap className="w-6 h-6" fill="currentColor" />
+                    </motion.button>
                 </motion.div>
             ) : (
                 <div className="flex-1 flex flex-col gap-8">
