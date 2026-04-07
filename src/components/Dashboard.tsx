@@ -137,27 +137,19 @@ const Dashboard = ({ onNavigate }) => {
             <div className="space-y-4 mt-2">
                 <Card
                     variants={itemVariants}
-                    title="Estude Conceitos"
-                    description="Material didático completo"
-                    icon={<BookCheck className="w-8 h-8" />}
-                    color="lime"
-                    onClick={() => onNavigate('material', currentTopic)}
-                />
-                <Card
-                    variants={itemVariants}
-                    title="Exercícios"
-                    description="Pratique resolvendo problemas"
-                    icon={<Trophy className="w-8 h-8" />}
-                    color="cyan"
-                    onClick={() => onNavigate('exercises', currentTopic)}
-                />
-                <Card
-                    variants={itemVariants}
                     title="Flashcards AI"
                     description="Reforce conceitos fundamentais"
-                    icon={<Presentation className="w-8 h-8" />}
+                    icon={<BookCheck className="w-8 h-8" />}
                     color="signal"
                     onClick={() => onNavigate('flashcards', currentTopic)}
+                />
+                <Card
+                    variants={itemVariants}
+                    title="Modo Aula"
+                    description="Apresentação em alta definição"
+                    icon={<Presentation className="w-8 h-8" />}
+                    color="cyan"
+                    onClick={() => onNavigate('presentation', currentTopic)}
                 />
                 <Card
                     variants={itemVariants}
@@ -166,6 +158,14 @@ const Dashboard = ({ onNavigate }) => {
                     icon={<MessageSquare className="w-8 h-8" />}
                     color="emerald"
                     onClick={() => onNavigate('chat')}
+                />
+                <Card
+                    variants={itemVariants}
+                    title="Desafio Guidorizzi"
+                    description="Teste seus conhecimentos"
+                    icon={<Trophy className="w-8 h-8" />}
+                    color="lime"
+                    onClick={() => onNavigate('quiz', currentTopic)}
                 />
             </div>
         </motion.div>
