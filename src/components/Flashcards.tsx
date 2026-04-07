@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, RotateCcw, BookCheck, Loader2, RefreshCw, CheckCircle2, BrainCircuit } from 'lucide-react';
+import { ChevronLeft, ChevronRight, RotateCcw, BookCheck, RefreshCw, CheckCircle2, BrainCircuit } from 'lucide-react';
 import { generateFlashcards } from '../services/api';
 import { useToast } from './Toast';
 import { cn } from '../lib/utils';
@@ -39,7 +39,7 @@ const Flashcards = ({ topic, onBack }) => {
             const data = await generateFlashcards(topic);
             if (data?.flashcards && data.flashcards.length > 0) {
                 setFlashcards(data.flashcards);
-                setSource(data.source || 'Guidorizzi API');
+                setSource(data.source || 'GROQ (LLAMA 3)');
                 toast.success(`${data.flashcards.length} flashcards gerados para "${topic}"!`);
             } else {
                 setFlashcards([]);
@@ -85,14 +85,15 @@ const Flashcards = ({ topic, onBack }) => {
 
     // Loading state
     if (loading) return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-zinc-950 p-8">
-            <div className="relative w-32 h-32 bg-zinc-900 border-8 border-premium-blue outline outline-8 outline-zinc-950 shadow-[16px_16px_0_theme(colors.premium-blue)] rounded-sm flex items-center justify-center animate-pulse mb-12 transform -rotate-6">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-[#2a2a2a] relative overflow-hidden"
+            style={{ backgroundImage: 'linear-gradient(#000 2px, transparent 2px), linear-gradient(90deg, #000 2px, transparent 2px)', backgroundSize: '40px 40px' }}>
+            <div className="relative w-32 h-32 bg-black border-4 border-white shadow-[12px_12px_0_black] flex items-center justify-center animate-pulse mb-8 transform -rotate-6 z-10">
                 <BrainCircuit className="w-16 h-16 text-white" />
             </div>
-            <div className="text-center bg-zinc-900 border-4 border-white p-8 shadow-[12px_12px_0_rgba(255,255,255,0.2)] transform rotate-2 max-w-lg">
-                <h3 className="text-3xl font-black text-white tracking-widest uppercase mb-4">Forjando Tiles</h3>
-                <p className="text-premium-blue font-bold uppercase text-lg tracking-widest">
-                    EXTRAINDO CONCEITOS DO GUIDORIZZI...
+            <div className="text-center bg-black border-4 border-white px-8 py-6 shadow-[8px_8px_0_black] transform rotate-2 z-10 max-w-sm w-full mx-4">
+                <h3 className="text-2xl font-black text-white tracking-widest uppercase mb-4">Gerando Cards</h3>
+                <p className="text-[#f97316] font-black uppercase text-sm tracking-widest">
+                    Aguarde o processamento...
                 </p>
             </div>
         </div>
@@ -100,198 +101,195 @@ const Flashcards = ({ topic, onBack }) => {
 
     // Error / Empty state
     if (flashcards.length === 0) return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-zinc-950 p-8">
-            <div className="w-32 h-32 bg-zinc-900 border-8 border-rose-500 shadow-[16px_16px_0_theme(colors.rose.500)] flex items-center justify-center mb-12 transform rotate-6">
-                <BookCheck className="w-16 h-16 text-rose-500" />
+        <div className="flex flex-col items-center justify-center min-h-screen bg-[#2a2a2a] relative overflow-hidden"
+            style={{ backgroundImage: 'linear-gradient(#000 2px, transparent 2px), linear-gradient(90deg, #000 2px, transparent 2px)', backgroundSize: '40px 40px' }}>
+            <div className="w-32 h-32 bg-black border-4 border-[#ef4444] shadow-[12px_12px_0_#ef4444] flex items-center justify-center mb-12 transform rotate-6 z-10">
+                <BookCheck className="w-16 h-16 text-[#ef4444]" />
             </div>
-            <div className="bg-zinc-900 border-4 border-white p-8 shadow-[12px_12px_0_rgba(255,255,255,0.2)] transform -rotate-2 max-w-lg text-center mb-12">
-                <h2 className="text-3xl font-black text-white uppercase tracking-tight mb-4">Processo Falhou</h2>
-                <p className="text-rose-500 font-black text-sm uppercase tracking-widest leading-relaxed">
-                    {error || 'Não foi possível extrair os blocos lógicos.'}
+            <div className="bg-black border-4 border-white p-8 shadow-[8px_8px_0_black] transform -rotate-2 max-w-sm w-full mx-4 text-center z-10 mb-8">
+                <h2 className="text-2xl font-black text-white uppercase tracking-tight mb-4">Processo Falhou</h2>
+                <p className="text-[#ef4444] font-black text-sm uppercase tracking-widest leading-relaxed">
+                    {error || 'Não foi possível extrair os cards.'}
                 </p>
             </div>
-            <div className="flex flex-col sm:flex-row gap-6 w-full max-w-lg">
+            <div className="flex flex-col gap-4 w-full max-w-sm mx-4 z-10">
                 <button
                     onClick={loadFlashcards}
-                    className="flex-1 py-6 bg-premium-blue border-4 border-premium-blue text-white font-black uppercase tracking-widest text-lg shadow-[8px_8px_0_rgba(255,255,255,0.2)] hover:bg-white hover:text-premium-blue hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0_rgba(255,255,255,0.2)] transition-all flex items-center justify-center gap-4"
+                    className="w-full py-4 bg-[#f97316] border-4 border-black text-black font-black uppercase tracking-widest text-lg shadow-[6px_6px_0_black] hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0_black] active:translate-x-2 active:translate-y-2 active:shadow-none transition-all flex items-center justify-center gap-3"
                 >
-                    <RefreshCw className="w-6 h-6" />
+                    <RefreshCw className="w-6 h-6" strokeWidth={3} />
                     TENTAR NOVAMENTE
                 </button>
                 <button
                     onClick={onBack}
-                    className="flex-1 py-6 bg-zinc-900 border-4 border-zinc-700 text-zinc-400 font-black uppercase tracking-widest text-lg shadow-[8px_8px_0_rgba(0,0,0,0.5)] hover:border-white hover:text-white hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0_rgba(0,0,0,0.5)] transition-all"
+                    className="w-full py-4 bg-black border-4 border-white text-white font-black uppercase tracking-widest text-lg shadow-[6px_6px_0_black] hover:bg-white hover:text-black hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0_black] active:translate-x-2 active:translate-y-2 active:shadow-none transition-all"
                 >
-                    ABORTAR
+                    VOLTAR
                 </button>
             </div>
         </div>
     );
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900 flex flex-col px-6 py-8 gap-6 overflow-hidden relative">
-            {/* Grid Background Pattern - more visible */}
-            <div className="absolute inset-0 pointer-events-none opacity-20" style={{ 
-                backgroundImage: 'linear-gradient(0deg, rgba(100,100,100,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(100,100,100,0.3) 1px, transparent 1px)', 
+        <div
+            className="min-h-screen bg-[#2a2a2a] flex flex-col justify-between overflow-hidden relative"
+            style={{
+                backgroundImage: 'linear-gradient(rgba(0,0,0,0.8) 2px, transparent 2px), linear-gradient(90deg, rgba(0,0,0,0.8) 2px, transparent 2px)',
                 backgroundSize: '40px 40px',
-                backgroundColor: 'rgba(50,50,50,0.1)'
-            }}></div>
-
-            {/* Top Bar: Back Button + Refresh */}
-            <div className="relative z-50 flex items-center justify-between">
+                backgroundPosition: 'center top'
+            }}
+        >
+            {/* Top Bar: Back Button */}
+            <div className="relative z-50 flex items-center p-4">
                 <button
                     onClick={onBack}
-                    className="flex items-center gap-2 px-4 py-2 bg-gray-900 border-3 border-white text-white font-black uppercase tracking-widest text-sm hover:bg-white hover:text-gray-900 transition-all"
+                    className="flex items-center gap-2 px-4 py-2 bg-black border-4 border-white text-white font-black uppercase tracking-widest text-sm hover:bg-white hover:text-black transition-colors"
                 >
-                    <ChevronLeft className="w-5 h-5" /> VOLTAR
-                </button>
-                <button
-                    onClick={loadFlashcards}
-                    className="p-2 bg-gray-900 border-2 border-gray-700 text-gray-400 hover:text-white hover:border-white transition-colors"
-                    title="Regenerar"
-                >
-                    <RefreshCw className="w-5 h-5" />
+                    <ChevronLeft className="w-5 h-5" strokeWidth={3} /> VOLTAR
                 </button>
             </div>
 
-            {/* Title Section */}
-            <div className="relative z-50 flex flex-col items-center gap-4">
-                <div className="border-4 border-white bg-gray-900 px-12 py-4">
-                    <h1 className="text-3xl font-black text-white uppercase tracking-widest">
+            {/* Title Section (Matching Reference Image) */}
+            <div className="relative z-50 flex flex-col items-center pt-2">
+                <div className="bg-black border-4 border-white px-8 py-2 z-10 w-fit shadow-[4px_4px_0_black]">
+                    <h1 className="text-4xl sm:text-5xl font-black text-white uppercase tracking-tighter">
                         FLASHCARDS
                     </h1>
                 </div>
-                <div className="border-4 border-white bg-gray-900 px-6 py-2">
-                    <p className="text-white font-black text-2xl tracking-widest">
-                        {currentIndex + 1}/{flashcards.length}
-                    </p>
+                {/* Counter overlay overlapping bottom */}
+                <div className="bg-black border-4 border-white px-6 py-1 -mt-3 z-20 shadow-[4px_4px_0_black]">
+                    <span className="text-xl font-black text-white tracking-widest">
+                        {currentIndex + 1} / {flashcards.length}
+                    </span>
                 </div>
             </div>
 
             {/* Main Flashcard Area */}
-            <div className="flex-1 flex flex-col items-center justify-center w-full max-w-2xl mx-auto">
-                <AnimatePresence mode="wait">
-                    <motion.div
-                        key={currentIndex}
-                        initial={{ x: 100, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        exit={{ x: -100, opacity: 0 }}
-                        transition={{ type: "spring", stiffness: 200, damping: 20 }}
-                        onClick={() => setIsFlipped(!isFlipped)}
-                        className="w-full"
-                    >
+            <div className="flex-1 flex flex-col items-center justify-center w-full px-4 sm:px-6 relative z-10">
+                {/* 3D Stacked Deck Container */}
+                <div className="relative w-full max-w-[340px] sm:max-w-sm aspect-[3/4] perspective-1000 my-6">
+                    {/* Shadow Layer (Black) */}
+                    <div className="absolute inset-0 bg-black translate-x-4 translate-y-4"></div>
+                    {/* Middle Layer (White) */}
+                    <div className="absolute inset-0 bg-white border-4 border-black translate-x-2 translate-y-2"></div>
+
+                    {/* Top Flipping Card */}
+                    <AnimatePresence mode="wait">
                         <motion.div
-                            animate={{ rotateY: isFlipped ? 180 : 0 }}
+                            key={currentIndex}
+                            initial={{ x: 100, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1, rotateY: isFlipped ? 180 : 0 }}
+                            exit={{ x: -100, opacity: 0 }}
                             transition={{ type: "spring", stiffness: 200, damping: 20 }}
-                            className="w-full relative"
+                            className="absolute inset-0 cursor-pointer"
+                            onClick={() => setIsFlipped(!isFlipped)}
+                            style={{ transformStyle: "preserve-3d" }}
                         >
-                            {/* Front - with normal text */}
                             <div className={cn(
-                                "relative min-h-96 border-8 border-white bg-gray-800 rounded-2xl p-12 flex flex-col items-center justify-center text-center cursor-pointer shadow-[12px_12px_0_rgba(0,0,0,0.6)] transition-colors",
-                                known.has(currentIndex) ? "bg-emerald-900/40 border-emerald-400" : "bg-gray-800 border-white"
-                            )}>
-                                {/* Text content - apply mirror only when flipped */}
-                                <div className="prose prose-invert prose-lg max-w-none w-full flex justify-center flex-1" style={isFlipped ? { transform: 'scaleX(-1)' } : {}}>
-                                    <ReactMarkdown
-                                        remarkPlugins={[remarkMath]}
-                                        rehypePlugins={[rehypeKatex]}
-                                        components={{
-                                            p: ({ children }) => <p className="text-white font-black text-xl leading-tight">{children}</p>,
-                                            strong: ({ children }) => <strong className="text-signal">{children}</strong>,
-                                            em: ({ children }) => <em className="text-cyan-300">{children}</em>,
-                                        }}
-                                    >
-                                        {isFlipped ? (flashcards[currentIndex]?.back || '') : preprocessMathContent(flashcards[currentIndex]?.front || '')}
-                                    </ReactMarkdown>
-                                </div>
+                                "w-full h-full border-4 border-white flex flex-col items-center justify-center p-6 sm:p-8 text-center",
+                                known.has(currentIndex) ? "bg-[#064e3b]" : "bg-[#2a2a2a]"
+                            )} style={isFlipped ? { transform: 'scaleX(-1)' } : {}}>
 
-                                {/* Label at bottom */}
-                                <div className="mt-8 text-white text-sm font-bold uppercase tracking-widest opacity-70">
-                                    {isFlipped ? 'RESPOSTA' : 'PERGUNTA'}
-                                </div>
+                                <div className="flex-1 flex flex-col items-center justify-center w-full relative">
+                                    <div className="prose prose-invert max-w-none w-full">
+                                        <ReactMarkdown
+                                            remarkPlugins={[remarkMath]}
+                                            rehypePlugins={[rehypeKatex]}
+                                            components={{
+                                                p: ({ children }) => <p className="text-white font-black text-2xl sm:text-3xl leading-tight tracking-tight">{children}</p>,
+                                                strong: ({ children }) => <strong className="text-[#f97316]">{children}</strong>,
+                                                em: ({ children }) => <em className="text-cyan-400">{children}</em>,
+                                            }}
+                                        >
+                                            {isFlipped ? (flashcards[currentIndex]?.back || '') : preprocessMathContent(flashcards[currentIndex]?.front || '')}
+                                        </ReactMarkdown>
+                                    </div>
 
-                                {/* "VER RESPOSTA" button when not flipped */}
-                                {!isFlipped && (
-                                    <button
-                                        onClick={() => setIsFlipped(true)}
-                                        className="mt-6 px-8 py-3 border-4 border-white bg-gray-800 text-white font-black uppercase tracking-widest text-sm hover:bg-white hover:text-gray-800 transition-all"
-                                    >
-                                        VER RESPOSTA
-                                    </button>
-                                )}
+                                    {/* Wireframe Button "VER RESPOSTA" on front face */}
+                                    {!isFlipped && (
+                                        <div className="mt-12 mb-4 w-full">
+                                            {/* Wireframe border effect */}
+                                            <div className="p-1 border-[1px] border-white/60 mx-auto w-fit">
+                                                <div className="border-2 border-white px-6 sm:px-8 py-3">
+                                                    <span className="text-white font-black uppercase tracking-widest text-sm sm:text-base">
+                                                        VER RESPOSTA
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Small label for Back face */}
+                                    {isFlipped && (
+                                        <div className="mt-8 text-white/50 text-xs font-black uppercase tracking-widest">
+                                            Vire para a pergunta
+                                        </div>
+                                    )}
+                                </div>
 
                                 {known.has(currentIndex) && (
-                                    <div className="absolute top-4 right-4 bg-emerald-500 border-3 border-white p-2">
-                                        <CheckCircle2 className="w-6 h-6 text-white" />
+                                    <div className="absolute top-4 right-4 bg-emerald-500 border-4 border-black p-1 shadow-[2px_2px_0_black]">
+                                        <CheckCircle2 className="w-5 h-5 text-black" strokeWidth={3} />
                                     </div>
                                 )}
                             </div>
                         </motion.div>
-                    </motion.div>
-                </AnimatePresence>
-            </div>
-
-            {/* Controls Base */}
-            <div className="relative z-50 flex gap-3 items-center justify-center pb-4">
-                {/* Previous */}
-                <button
-                    onClick={prevCard}
-                    className="w-14 h-14 border-4 border-white bg-gray-900 flex items-center justify-center text-white hover:bg-white hover:text-gray-900 transition-all font-black text-lg"
-                >
-                    &lt;
-                </button>
-
-                {/* Flip */}
-                <button
-                    onClick={() => setIsFlipped(!isFlipped)}
-                    className="px-6 py-3 border-4 border-white bg-gray-900 text-white font-black uppercase tracking-widest hover:bg-white hover:text-gray-900 transition-all text-sm"
-                >
-                    VIRAR
-                </button>
-
-                {/* Mark */}
-                <button
-                    onClick={toggleKnown}
-                    className={cn(
-                        "px-6 py-3 border-4 font-black uppercase tracking-widest transition-all text-sm",
-                        known.has(currentIndex)
-                            ? "border-emerald-400 bg-emerald-500 text-gray-900 hover:bg-emerald-400"
-                            : "border-signal bg-gray-900 text-signal hover:bg-signal hover:text-gray-900"
-                    )}
-                >
-                    MARCAR ✓
-                </button>
-
-                {/* Next */}
-                <button
-                    onClick={nextCard}
-                    className="w-14 h-14 border-4 border-white bg-gray-900 flex items-center justify-center text-white hover:bg-white hover:text-gray-900 transition-all font-black text-lg"
-                >
-                    &gt;
-                </button>
-
-                {/* Bot Icon */}
-                <div className="w-14 h-14 border-4 border-white bg-gray-900 flex items-center justify-center text-white">
-                    <BrainCircuit className="w-7 h-7" />
+                    </AnimatePresence>
                 </div>
             </div>
 
-            {/* Progress Bar */}
-            <div className="relative z-50 mt-2 pt-4 border-t-4 border-white">
-                <div className="flex items-center justify-between mb-2">
-                    <span className="text-white font-black text-sm uppercase tracking-widest">{topic}</span>
-                    <span className="text-signal font-black text-sm uppercase tracking-widest">
-                        {Math.round((known.size / flashcards.length) * 100)}%
-                    </span>
+            {/* Bottom Controls Area (Grid Aligned) */}
+            <div className="relative z-50 w-full max-w-[340px] sm:max-w-sm mx-auto mb-4">
+                <div className="grid grid-cols-[1fr_2fr_2fr_1fr] gap-2 mb-2">
+                    {/* Previous */}
+                    <button
+                        onClick={prevCard}
+                        className="h-12 border-4 border-white bg-black flex flex-col items-center justify-center text-white hover:bg-white hover:text-black active:scale-95 transition-all"
+                    >
+                        <ChevronLeft className="w-6 h-6" strokeWidth={4} />
+                    </button>
+
+                    {/* Flip */}
+                    <button
+                        onClick={() => setIsFlipped(!isFlipped)}
+                        className="h-12 border-4 border-white bg-black text-white font-black uppercase tracking-widest text-xs hover:bg-white hover:text-black active:scale-95 transition-all flex items-center justify-center gap-1"
+                    >
+                        VIRAR <RotateCcw className="w-4 h-4 ml-1" strokeWidth={3} />
+                    </button>
+
+                    {/* Mark */}
+                    <button
+                        onClick={toggleKnown}
+                        className={cn(
+                            "h-12 border-4 font-black uppercase tracking-widest text-xs transition-all active:scale-95 flex items-center justify-center gap-1",
+                            known.has(currentIndex)
+                                ? "border-emerald-400 bg-black text-emerald-400 hover:bg-emerald-400 hover:text-black"
+                                : "border-[#f97316] bg-black text-[#f97316] hover:bg-[#f97316] hover:text-black"
+                        )}
+                    >
+                        MARCAR {known.has(currentIndex) ? '✓' : ''}
+                    </button>
+
+                    {/* Next */}
+                    <button
+                        onClick={nextCard}
+                        className="h-12 border-4 border-white bg-black flex items-center justify-center text-white hover:bg-white hover:text-black active:scale-95 transition-all"
+                    >
+                        <ChevronRight className="w-6 h-6" strokeWidth={4} />
+                    </button>
                 </div>
-                <div className="w-full h-3 bg-gray-800 border-3 border-white overflow-hidden">
-                    <motion.div
-                        className="h-full bg-signal"
-                        initial={{ width: 0 }}
-                        animate={{ width: `${(known.size / flashcards.length) * 100}%` }}
-                        transition={{ type: 'spring', stiffness: 100, damping: 20 }}
-                    />
+
+                {/* Robot Icon Box (Aligned Right) */}
+                <div className="flex justify-end">
+                    <div className="w-12 h-12 border-4 border-white bg-black flex items-center justify-center text-white">
+                        <BrainCircuit className="w-6 h-6" />
+                    </div>
                 </div>
+            </div>
+
+            {/* Footer Source */}
+            <div className="relative z-50 text-center pb-2 pt-4 w-full">
+                <span className="text-white font-black tracking-widest text-xs sm:text-sm uppercase drop-shadow-md">FONTE: {source}</span>
             </div>
         </div>
     );
