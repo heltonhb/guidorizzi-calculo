@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BookOpen, ListTodo, Presentation, Search, Zap, ChevronRight, Sparkles, MessageSquare, Wand2, Trophy, BookCheck } from 'lucide-react';
+import { Presentation, Search, Zap, ChevronRight, Sparkles, MessageSquare, Wand2, Trophy, BookCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
 import contentData from '../data/content.json';
@@ -70,33 +70,33 @@ const Dashboard = ({ onNavigate }) => {
                             Guidorizzi
                             <span className="block text-signal text-xl sm:text-2xl md:text-3xl lg:text-4xl mt-1 tracking-tight">Cálculo Precision</span>
                         </motion.h1>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => onNavigate('profile')}
+                            className="w-10 h-10 flex items-center justify-center bg-zinc-950 border-2 border-amber-500/50 shadow-[2px_2px_0_rgba(255,255,255,0.2)] hover:border-amber-400 hover:shadow-[2px_2px_0_theme(colors.amber.400)] transition-all text-amber-400"
+                            title="Meu Perfil"
+                        >
+                            <Trophy className="w-5 h-5" />
+                        </button>
+                        <ThemeToggle />
+                    </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => onNavigate('profile')}
-                    className="w-10 h-10 flex items-center justify-center bg-zinc-950 border-2 border-amber-500/50 shadow-[2px_2px_0_rgba(255,255,255,0.2)] hover:border-amber-400 hover:shadow-[2px_2px_0_theme(colors.amber.400)] transition-all text-amber-400"
-                    title="Meu Perfil"
-                  >
-                    <Trophy className="w-5 h-5" />
-                  </button>
-                  <ThemeToggle />
-                </div>
-              </div>
 
-              {/* Gamification - Progress Bar */}
-              <div className="mt-4">
-                <ProgressBar 
-                  xp={xp} 
-                  level={level} 
-                  progressToNextLevel={progressToNextLevel} 
-                  nextLevelXP={nextLevelXP}
-                />
-                {streak > 0 && (
-                  <div className="flex items-center gap-2 mt-2 text-sm text-amber-400">
-                    <span className="🔥">{streak} dias seguidos!</span>
-                  </div>
-                )}
-              </div>
+                {/* Gamification - Progress Bar */}
+                <div className="mt-4">
+                    <ProgressBar
+                        xp={xp}
+                        level={level}
+                        progressToNextLevel={progressToNextLevel}
+                        nextLevelXP={nextLevelXP}
+                    />
+                    {streak > 0 && (
+                        <div className="flex items-center gap-2 mt-2 text-sm text-amber-400">
+                            <span className="🔥">{streak} dias seguidos!</span>
+                        </div>
+                    )}
+                </div>
             </header>
 
             <motion.div variants={itemVariants} className="relative z-50">
@@ -193,22 +193,7 @@ const Dashboard = ({ onNavigate }) => {
             )}
 
             <div className="grid gap-5 pr-2">
-                <Card
-                    variants={itemVariants}
-                    title="Estude Conceitos"
-                    description="Material didático completo"
-                    icon={<BookOpen className="w-6 h-6 text-[#22c55e]" />}
-                    color="emerald"
-                    onClick={() => onNavigate('study', currentTopic)}
-                />
-                <Card
-                    variants={itemVariants}
-                    title="Exercícios"
-                    description="Pratique resolvendo problemas"
-                    icon={<ListTodo className="w-6 h-6 text-[#00f0ff]" />}
-                    color="cyan"
-                    onClick={() => onNavigate('exercises', currentTopic)}
-                />
+
                 <Card
                     variants={itemVariants}
                     title="Flashcards AI"
