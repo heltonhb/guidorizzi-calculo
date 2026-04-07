@@ -1,5 +1,5 @@
 import React from 'react';
-import { Terminal, Zap } from 'lucide-react';
+import { Bot, Sparkles } from 'lucide-react';
 
 interface ChatInputProps {
   input: string;
@@ -18,62 +18,60 @@ const ChatInput: React.FC<ChatInputProps> = ({ input, setInput, onSend, loading,
   };
 
   return (
-    <div className="mt-auto border-t-[12px] border-zinc-900 bg-zinc-950 flex flex-col z-50 relative shadow-[0_-16px_32px_rgba(0,0,0,0.8)]">
-      {/* Suggestions block as raw terminal output */}
+    <div className="flex flex-col z-50 relative w-full pt-4">
+      {/* Suggestions block */}
       {suggestions.length > 0 && (
-        <div className="flex flex-wrap overflow-x-auto custom-scrollbar border-b-4 border-zinc-900 bg-zinc-950">
-          <div className="px-6 py-4 bg-zinc-900 text-zinc-500 font-mono text-[10px] font-black uppercase tracking-widest hidden sm:flex items-center">
-            SYS.SUGGESTIONS //
-          </div>
-          {suggestions.slice(0, 4).map((sug, i) => (
+        <div className="flex flex-wrap gap-2 mb-4 overflow-x-auto custom-scrollbar pb-2">
+          {suggestions.slice(0, 3).map((sug, i) => (
             <button
               key={i}
               onClick={() => onSuggestionClick(sug)}
-              className="flex-shrink-0 px-6 py-4 bg-zinc-950 border-r-4 border-zinc-900 text-xs font-mono font-black uppercase tracking-widest text-zinc-400 hover:bg-white hover:text-zinc-950 transition-colors whitespace-nowrap"
+              className="flex-shrink-0 px-4 py-2 bg-black border-2 border-[#f97316] text-xs font-mono font-black uppercase tracking-widest text-[#f97316] hover:bg-[#f97316] hover:text-black transition-colors shadow-[4px_4px_0_rgba(0,0,0,0.5)] active:translate-x-1 active:translate-y-1 active:shadow-none"
             >
-              &gt; {typeof sug === 'string' ? (sug.length > 40 ? sug.substring(0, 40) + '...' : sug) : sug}
+              &gt; {typeof sug === 'string' ? (sug.length > 30 ? sug.substring(0, 30) + '...' : sug) : sug}
             </button>
           ))}
         </div>
       )}
 
-      <div className="flex flex-col sm:flex-row bg-zinc-950">
-        {/* Terminal Prefix Indicator */}
-        <div className="hidden sm:flex items-center justify-center px-8 bg-zinc-900 border-r-4 border-zinc-900 text-white">
-          <Terminal className="w-8 h-8 stroke-2 text-premium-blue" />
-        </div>
-
+      <div className="flex flex-col gap-6">
         {/* Input Area */}
-        <div className="flex-1 flex items-center relative py-2 sm:py-0">
-          <span className="absolute left-4 sm:left-8 text-emerald-500 font-mono font-black text-2xl select-none animate-pulse">$&gt;</span>
+        <div className="w-full relative border-4 border-[#f97316] bg-black p-2 sm:p-4 shadow-[8px_8px_0_rgba(0,0,0,0.5)] flex items-center">
+          {/* Subtle cut corner effect using pseudo-elements could go here, but a strict border performs the task cleanly */}
+          <span className="ml-2 text-[#f97316] font-mono font-black text-2xl select-none animate-pulse">█</span>
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="AWAITING CALC QUERY..."
-            className="w-full bg-zinc-950 border-none px-4 sm:px-8 pl-12 sm:pl-20 py-6 sm:py-10 focus:outline-none text-white placeholder:text-zinc-700 font-mono text-base sm:text-xl font-bold tracking-widest uppercase rounded-none"
+            className="w-full bg-transparent border-none px-4 py-4 sm:py-6 focus:outline-none text-white placeholder:text-zinc-600 font-mono text-base sm:text-xl font-bold tracking-widest rounded-none"
+            spellCheck={false}
           />
         </div>
 
-        {/* Submit Button */}
-        <button
-          onClick={onSend}
-          disabled={!input.trim() || loading}
-          className="px-12 py-6 sm:py-0 bg-premium-blue border-l-4 border-zinc-950 flex flex-col items-center justify-center disabled:opacity-50 disabled:bg-zinc-900 disabled:text-zinc-600 transition-colors text-white font-mono font-black tracking-widest hover:bg-white hover:text-zinc-950 uppercase group"
-        >
-          <span className="text-xl">EXECUTE</span>
-          <span className="text-[10px] text-zinc-950/50 group-hover:text-zinc-500 mt-1">CTRL+ENTER</span>
-        </button>
-      </div>
+        {/* Bottom Actions Row */}
+        <div className="flex items-center justify-between w-full h-16">
+          {/* Left Icon */}
+          <div className="flex flex-col items-center justify-center opacity-70">
+            <Sparkles className="w-8 h-8 text-white" strokeWidth={1} />
+            <span className="text-white text-[8px] font-black tracking-widest uppercase mt-1">GUIDORIZZI SUBSYSTEM</span>
+          </div>
 
-      {/* Footer Meta */}
-      <div className="border-t-4 border-zinc-900 bg-zinc-950 py-3 flex items-center justify-between px-6">
-        <div className="flex items-center gap-3 text-xs font-mono">
-          <Zap className="w-4 h-4 text-emerald-500" />
-          <span className="text-emerald-500 font-black uppercase tracking-widest">Guidorizzi Neural Subsystem // ACTIVE</span>
+          {/* Submit Button */}
+          <button
+            onClick={onSend}
+            disabled={!input.trim() || loading}
+            className="h-full px-8 sm:px-16 bg-black border-4 border-[#f97316] text-white hover:bg-white hover:border-white hover:text-black text-2xl font-black tracking-widest uppercase shadow-[6px_6px_0_#f97316] transition-all disabled:opacity-50 disabled:border-zinc-700 disabled:text-zinc-500 disabled:shadow-none active:translate-x-1 active:translate-y-1 active:shadow-none"
+          >
+            EXECUTE
+          </button>
+
+          {/* Right Icon */}
+          <div className="flex items-center justify-center opacity-70">
+            <Bot className="w-10 h-10 text-white" strokeWidth={1.5} />
+          </div>
         </div>
-        <span className="text-zinc-600 font-mono text-xs uppercase font-black tracking-widest hidden sm:inline-block">CALC_V2.0_ENG_TERMINAL</span>
       </div>
     </div>
   );

@@ -46,7 +46,7 @@ const ChatGuidorizzi: React.FC<ChatGuidorizziProps> = ({ onBack, currentTopic = 
   useEffect(() => {
     const initTimer = setTimeout(() => {
       setMessages([
-        { id: 'init-1', role: 'assistant', content: 'SISTEMA INICIALIZADO.\nMÓDULO DE INTELIGÊNCIA GUIDORIZZI ATIVO.\n\nComo posso processar seus dados de cálculo hoje?' }
+        { id: 'init-1', role: 'assistant', content: 'Olá! Sou o assistente inteligente baseado no Guidorizzi. Como posso ajudar em seus estudos de Cálculo hoje?' }
       ]);
     }, 800);
     return () => clearTimeout(initTimer);
@@ -85,9 +85,9 @@ const ChatGuidorizzi: React.FC<ChatGuidorizziProps> = ({ onBack, currentTopic = 
       // Extrair mensagem de erro
       let errorMessage = 'Houve um erro ao processar sua pergunta.';
       if (errorMessage_safe?.includes('expirou')) {
-        errorMessage = '⏳ A requisição expirou (timeout). O servidor pode estar lento ou indisponível. Estamos re-tentando automaticamente (até 3 tentativas).';
+        errorMessage = 'A requisição expirou (timeout). O servidor pode estar lento ou indisponível.';
       } else if (errorMessage_safe?.includes('localhost:3001')) {
-        errorMessage = '🔌 Não foi possível conectar com o servidor da API. Certifique-se de que ele está rodando:\n\n```bash\nnpm run bridge\n```';
+        errorMessage = 'Não foi possível conectar com o servidor da API.';
       } else {
         errorMessage = `${errorMessage_safe || 'Erro desconhecido ao consultar o assistente.'}`;
       }
@@ -116,17 +116,25 @@ const ChatGuidorizzi: React.FC<ChatGuidorizziProps> = ({ onBack, currentTopic = 
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="flex flex-col h-[85vh] gap-0 md:flex-row md:p-6 bg-zinc-950"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      className="flex flex-col h-screen md:h-screen w-full overflow-hidden"
+      style={{
+        backgroundColor: '#1a1a1a',
+        backgroundImage: 'linear-gradient(rgba(249,115,22,0.2) 2px, transparent 2px), linear-gradient(90deg, rgba(249,115,22,0.2) 2px, transparent 2px)',
+        backgroundSize: '60px 60px',
+        backgroundPosition: 'center top'
+      }}
     >
-      <div className="flex-1 flex flex-col h-full bg-zinc-950 relative border-4 md:border-8 border-zinc-900 shadow-[8px_8px_0_rgba(0,0,0,1)] md:shadow-[16px_16px_0_rgba(0,0,0,1)] overflow-hidden">
+      <div className="flex flex-col h-full w-full max-w-4xl mx-auto shadow-2xl relative bg-transparent overflow-hidden">
         <ChatHeader onBack={onBack} />
 
-        <div className="flex-1 flex flex-col overflow-hidden relative z-10 w-full h-full pb-4">
+        <div className="flex-1 flex flex-col overflow-hidden relative z-10 w-full h-full pb-0">
           <ChatMessages messages={messages} loading={loading} onRetry={handleRetry} />
-          <div className="w-full max-w-5xl mx-auto px-0 mt-auto">
+
+          <div className="w-full mt-auto px-4 pb-4">
             <ChatInput
               input={input}
               setInput={setInput}
@@ -138,22 +146,6 @@ const ChatGuidorizzi: React.FC<ChatGuidorizziProps> = ({ onBack, currentTopic = 
           </div>
         </div>
       </div>
-
-      {/* Sidebar with Suggestions */}
-      <motion.div
-        initial={{ opacity: 0, x: 40 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-        className="hidden md:flex md:w-96 flex-col ml-8 border-4 border-zinc-900 bg-zinc-950 shadow-[12px_12px_0_rgba(0,0,0,1)] h-full overflow-y-auto custom-scrollbar"
-      >
-        <IntelligentSuggestions
-          suggestions={suggestions}
-          isLoading={isGeneratingSuggestions}
-          chatContext={chatContext}
-          onSuggestionClick={handleSuggestionClick}
-        />
-      </motion.div>
-
     </motion.div>
   );
 };
