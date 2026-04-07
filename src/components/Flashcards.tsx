@@ -129,21 +129,25 @@ const Flashcards = ({ topic, onBack }) => {
     );
 
     return (
-        <div className="min-h-screen bg-zinc-950 flex flex-col px-6 py-8 gap-6 overflow-hidden relative">
-            {/* Grid Background */}
-            <div className="absolute inset-0 pointer-events-none opacity-10" style={{ backgroundImage: 'linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+        <div className="min-h-screen bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900 flex flex-col px-6 py-8 gap-6 overflow-hidden relative">
+            {/* Grid Background Pattern - more visible */}
+            <div className="absolute inset-0 pointer-events-none opacity-20" style={{ 
+                backgroundImage: 'linear-gradient(0deg, rgba(100,100,100,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(100,100,100,0.3) 1px, transparent 1px)', 
+                backgroundSize: '40px 40px',
+                backgroundColor: 'rgba(50,50,50,0.1)'
+            }}></div>
 
             {/* Top Bar: Back Button + Refresh */}
             <div className="relative z-50 flex items-center justify-between">
                 <button
                     onClick={onBack}
-                    className="flex items-center gap-2 px-4 py-2 bg-zinc-950 border-3 border-white text-white font-black uppercase tracking-widest text-sm hover:bg-white hover:text-zinc-950 transition-all"
+                    className="flex items-center gap-2 px-4 py-2 bg-gray-900 border-3 border-white text-white font-black uppercase tracking-widest text-sm hover:bg-white hover:text-gray-900 transition-all"
                 >
                     <ChevronLeft className="w-5 h-5" /> VOLTAR
                 </button>
                 <button
                     onClick={loadFlashcards}
-                    className="p-2 bg-zinc-950 border-2 border-zinc-700 text-zinc-400 hover:text-white hover:border-white transition-colors"
+                    className="p-2 bg-gray-900 border-2 border-gray-700 text-gray-400 hover:text-white hover:border-white transition-colors"
                     title="Regenerar"
                 >
                     <RefreshCw className="w-5 h-5" />
@@ -152,12 +156,12 @@ const Flashcards = ({ topic, onBack }) => {
 
             {/* Title Section */}
             <div className="relative z-50 flex flex-col items-center gap-4">
-                <div className="border-4 border-white bg-zinc-950 px-12 py-4">
+                <div className="border-4 border-white bg-gray-900 px-12 py-4">
                     <h1 className="text-3xl font-black text-white uppercase tracking-widest">
                         FLASHCARDS
                     </h1>
                 </div>
-                <div className="border-4 border-white bg-zinc-950 px-6 py-2">
+                <div className="border-4 border-white bg-gray-900 px-6 py-2">
                     <p className="text-white font-black text-2xl tracking-widest">
                         {currentIndex + 1}/{flashcards.length}
                     </p>
@@ -183,8 +187,8 @@ const Flashcards = ({ topic, onBack }) => {
                         >
                             {/* Front - with normal text */}
                             <div className={cn(
-                                "relative min-h-96 border-8 border-white bg-zinc-900 rounded-2xl p-12 flex flex-col items-center justify-center text-center cursor-pointer shadow-[12px_12px_0_rgba(0,0,0,0.6)] transition-colors",
-                                known.has(currentIndex) ? "bg-emerald-900/40 border-emerald-400" : "bg-zinc-900 border-white"
+                                "relative min-h-96 border-8 border-white bg-gray-800 rounded-2xl p-12 flex flex-col items-center justify-center text-center cursor-pointer shadow-[12px_12px_0_rgba(0,0,0,0.6)] transition-colors",
+                                known.has(currentIndex) ? "bg-emerald-900/40 border-emerald-400" : "bg-gray-800 border-white"
                             )}>
                                 {/* Text content - apply mirror only when flipped */}
                                 <div className="prose prose-invert prose-lg max-w-none w-full flex justify-center flex-1" style={isFlipped ? { transform: 'scaleX(-1)' } : {}}>
@@ -206,6 +210,16 @@ const Flashcards = ({ topic, onBack }) => {
                                     {isFlipped ? 'RESPOSTA' : 'PERGUNTA'}
                                 </div>
 
+                                {/* "VER RESPOSTA" button when not flipped */}
+                                {!isFlipped && (
+                                    <button
+                                        onClick={() => setIsFlipped(true)}
+                                        className="mt-6 px-8 py-3 border-4 border-white bg-gray-800 text-white font-black uppercase tracking-widest text-sm hover:bg-white hover:text-gray-800 transition-all"
+                                    >
+                                        VER RESPOSTA
+                                    </button>
+                                )}
+
                                 {known.has(currentIndex) && (
                                     <div className="absolute top-4 right-4 bg-emerald-500 border-3 border-white p-2">
                                         <CheckCircle2 className="w-6 h-6 text-white" />
@@ -222,7 +236,7 @@ const Flashcards = ({ topic, onBack }) => {
                 {/* Previous */}
                 <button
                     onClick={prevCard}
-                    className="w-14 h-14 border-4 border-white bg-zinc-950 flex items-center justify-center text-white hover:bg-white hover:text-zinc-950 transition-all font-black text-lg"
+                    className="w-14 h-14 border-4 border-white bg-gray-900 flex items-center justify-center text-white hover:bg-white hover:text-gray-900 transition-all font-black text-lg"
                 >
                     &lt;
                 </button>
@@ -230,7 +244,7 @@ const Flashcards = ({ topic, onBack }) => {
                 {/* Flip */}
                 <button
                     onClick={() => setIsFlipped(!isFlipped)}
-                    className="px-6 py-3 border-4 border-white bg-zinc-950 text-white font-black uppercase tracking-widest hover:bg-white hover:text-zinc-950 transition-all text-sm"
+                    className="px-6 py-3 border-4 border-white bg-gray-900 text-white font-black uppercase tracking-widest hover:bg-white hover:text-gray-900 transition-all text-sm"
                 >
                     VIRAR
                 </button>
@@ -241,8 +255,8 @@ const Flashcards = ({ topic, onBack }) => {
                     className={cn(
                         "px-6 py-3 border-4 font-black uppercase tracking-widest transition-all text-sm",
                         known.has(currentIndex)
-                            ? "border-emerald-400 bg-emerald-500 text-zinc-950 hover:bg-emerald-400"
-                            : "border-signal bg-zinc-950 text-signal hover:bg-signal hover:text-zinc-950"
+                            ? "border-emerald-400 bg-emerald-500 text-gray-900 hover:bg-emerald-400"
+                            : "border-signal bg-gray-900 text-signal hover:bg-signal hover:text-gray-900"
                     )}
                 >
                     MARCAR ✓
@@ -251,13 +265,13 @@ const Flashcards = ({ topic, onBack }) => {
                 {/* Next */}
                 <button
                     onClick={nextCard}
-                    className="w-14 h-14 border-4 border-white bg-zinc-950 flex items-center justify-center text-white hover:bg-white hover:text-zinc-950 transition-all font-black text-lg"
+                    className="w-14 h-14 border-4 border-white bg-gray-900 flex items-center justify-center text-white hover:bg-white hover:text-gray-900 transition-all font-black text-lg"
                 >
                     &gt;
                 </button>
 
                 {/* Bot Icon */}
-                <div className="w-14 h-14 border-4 border-white bg-zinc-950 flex items-center justify-center text-white">
+                <div className="w-14 h-14 border-4 border-white bg-gray-900 flex items-center justify-center text-white">
                     <BrainCircuit className="w-7 h-7" />
                 </div>
             </div>
@@ -270,7 +284,7 @@ const Flashcards = ({ topic, onBack }) => {
                         {Math.round((known.size / flashcards.length) * 100)}%
                     </span>
                 </div>
-                <div className="w-full h-3 bg-zinc-900 border-3 border-white overflow-hidden">
+                <div className="w-full h-3 bg-gray-800 border-3 border-white overflow-hidden">
                     <motion.div
                         className="h-full bg-signal"
                         initial={{ width: 0 }}
