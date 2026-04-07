@@ -1,10 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronLeft, Loader2, CheckCircle2, XCircle, Trophy, RefreshCw, Zap, Lightbulb, BrainCircuit } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { generateQuizQuestions } from '../services/api';
 import { useToast } from './Toast';
 import { cn } from '../lib/utils';
-import MathDisplay from './MathDisplay';
+import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
+import { preprocessMathContent } from '../utils/mathPreprocessor';
 import LearningObjectives from './LearningObjectives';
 import { useLearningPath } from '../hooks/useLearningPath';
 import { useAppContext } from '../hooks/useAppContext';
@@ -329,10 +333,18 @@ const QuizMode = ({ topic, onBack }) => {
                             >
                                 {/* Question Block */}
                                 <div className="p-10 bg-zinc-900 border-4 border-white shadow-[16px_16px_0_rgba(255,255,255,0.2)] min-h-[160px] flex items-center justify-center text-center rounded-none">
-                                    <MathDisplay
-                                        content={questions[currentQuestionIndex].text}
-                                        className="prose prose-invert prose-xl prose-headings:font-black prose-headings:uppercase prose-p:font-bold max-w-none"
-                                    />
+                                    <div className="prose prose-invert prose-xl prose-headings:font-black prose-headings:uppercase prose-p:font-bold max-w-none w-full">
+                                        <ReactMarkdown
+                                            remarkPlugins={[remarkMath]}
+                                            rehypePlugins={[rehypeKatex]}
+                                            components={{
+                                                p: ({ children }) => <p className="text-white font-bold">{children}</p>,
+                                                strong: ({ children }) => <strong className="text-signal">{children}</strong>,
+                                            }}
+                                        >
+                                            {preprocessMathContent(questions[currentQuestionIndex].text)}
+                                        </ReactMarkdown>
+                                    </div>
                                 </div>
 
                                 {/* Hint System */}
@@ -409,11 +421,17 @@ const QuizMode = ({ topic, onBack }) => {
                                                         showFeedback && isSelected && !isCorrect ? <XCircle className="w-6 h-6" /> :
                                                             String.fromCharCode(65 + i)}
                                                 </div>
-                                                <div className="flex-1">
-                                                    <MathDisplay
-                                                        content={opt}
-                                                        className="prose prose-invert prose-base max-w-none"
-                                                    />
+                                                <div className="flex-1 prose prose-invert prose-base max-w-none">
+                                                    <ReactMarkdown
+                                                        remarkPlugins={[remarkMath]}
+                                                        rehypePlugins={[rehypeKatex]}
+                                                        components={{
+                                                            p: ({ children }) => <p className="text-inherit">{children}</p>,
+                                                            strong: ({ children }) => <strong>{children}</strong>,
+                                                        }}
+                                                    >
+                                                        {preprocessMathContent(opt)}
+                                                    </ReactMarkdown>
                                                 </div>
                                             </motion.button>
                                         );
@@ -444,10 +462,16 @@ const QuizMode = ({ topic, onBack }) => {
                                                     </span>
                                                 </div>
                                                 <div className="prose prose-invert prose-base max-w-none text-white font-medium">
-                                                    <MathDisplay
-                                                        content={questions[currentQuestionIndex].explanation}
-                                                        className="prose prose-invert prose-base max-w-none text-white font-medium"
-                                                    />
+                                                    <ReactMarkdown
+                                                        remarkPlugins={[remarkMath]}
+                                                        rehypePlugins={[rehypeKatex]}
+                                                        components={{
+                                                            p: ({ children }) => <p className="text-white font-medium">{children}</p>,
+                                                            strong: ({ children }) => <strong className="text-white font-bold">{children}</strong>,
+                                                        }}
+                                                    >
+                                                        {preprocessMathContent(questions[currentQuestionIndex].explanation)}
+                                                    </ReactMarkdown>
                                                 </div>
                                             </div>
                                             <button
