@@ -181,13 +181,13 @@ const Flashcards = ({ topic, onBack }) => {
                             transition={{ type: "spring", stiffness: 200, damping: 20 }}
                             className="w-full relative"
                         >
-                            {/* Front - with mirrored text */}
+                            {/* Front - with normal text */}
                             <div className={cn(
                                 "relative min-h-96 border-8 border-white bg-zinc-900 rounded-2xl p-12 flex flex-col items-center justify-center text-center cursor-pointer shadow-[12px_12px_0_rgba(0,0,0,0.6)] transition-colors",
                                 known.has(currentIndex) ? "bg-emerald-900/40 border-emerald-400" : "bg-zinc-900 border-white"
                             )}>
-                                {/* Mirrored text content */}
-                                <div className="prose prose-invert prose-lg max-w-none w-full flex justify-center flex-1" style={{ transform: 'scaleX(-1)' }}>
+                                {/* Text content - NORMAL (not mirrored) */}
+                                <div className="prose prose-invert prose-lg max-w-none w-full flex justify-center flex-1">
                                     <ReactMarkdown
                                         remarkPlugins={[remarkMath]}
                                         rehypePlugins={[rehypeKatex]}
