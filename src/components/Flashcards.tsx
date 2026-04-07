@@ -129,48 +129,43 @@ const Flashcards = ({ topic, onBack }) => {
     );
 
     return (
-        <div className="min-h-screen bg-zinc-950 flex flex-col px-4 py-8 gap-8 overflow-hidden relative">
+        <div className="min-h-screen bg-zinc-950 flex flex-col px-6 py-8 gap-6 overflow-hidden relative">
             {/* Grid Background */}
             <div className="absolute inset-0 pointer-events-none opacity-10" style={{ backgroundImage: 'linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 
-            {/* Header with Back Button */}
+            {/* Top Bar: Back Button + Refresh */}
             <div className="relative z-50 flex items-center justify-between">
                 <button
                     onClick={onBack}
-                    className="flex items-center gap-2 px-4 py-2 bg-zinc-900 border-3 border-white text-white font-black uppercase tracking-widest text-sm hover:bg-white hover:text-zinc-950 transition-all shadow-[4px_4px_0_rgba(0,0,0,0.5)]"
+                    className="flex items-center gap-2 px-4 py-2 bg-zinc-950 border-3 border-white text-white font-black uppercase tracking-widest text-sm hover:bg-white hover:text-zinc-950 transition-all"
                 >
-                    <ChevronLeft className="w-5 h-5" /> Voltar
+                    <ChevronLeft className="w-5 h-5" /> VOLTAR
                 </button>
                 <button
                     onClick={loadFlashcards}
-                    className="p-2 bg-zinc-900 border-2 border-zinc-700 text-zinc-400 hover:text-white hover:border-white transition-colors"
+                    className="p-2 bg-zinc-950 border-2 border-zinc-700 text-zinc-400 hover:text-white hover:border-white transition-colors"
                     title="Regenerar"
                 >
                     <RefreshCw className="w-5 h-5" />
                 </button>
             </div>
 
-            {/* Main Content Area */}
-            <div className="flex-1 flex flex-col items-center justify-center w-full max-w-2xl mx-auto gap-8">
-                {/* Title Section */}
-                <motion.div
-                    initial={{ y: -20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    className="w-full text-center space-y-4"
-                >
-                    <div className="border-4 border-white bg-zinc-950 px-8 py-4 shadow-[6px_6px_0_rgba(0,0,0,0.5)]">
-                        <h1 className="text-3xl sm:text-4xl font-black text-white uppercase tracking-widest">
-                            FLASHCARDS
-                        </h1>
-                    </div>
-                    <div className="border-4 border-white bg-zinc-950 px-6 py-3 inline-block shadow-[4px_4px_0_rgba(0,0,0,0.5)]">
-                        <p className="text-white font-black text-2xl tracking-widest">
-                            {currentIndex + 1}/{flashcards.length}
-                        </p>
-                    </div>
-                </motion.div>
+            {/* Title Section */}
+            <div className="relative z-50 flex flex-col items-center gap-4">
+                <div className="border-4 border-white bg-zinc-950 px-12 py-4">
+                    <h1 className="text-3xl font-black text-white uppercase tracking-widest">
+                        FLASHCARDS
+                    </h1>
+                </div>
+                <div className="border-4 border-white bg-zinc-950 px-6 py-2">
+                    <p className="text-white font-black text-2xl tracking-widest">
+                        {currentIndex + 1}/{flashcards.length}
+                    </p>
+                </div>
+            </div>
 
-                {/* Flashcard */}
+            {/* Main Flashcard Area */}
+            <div className="flex-1 flex flex-col items-center justify-center w-full max-w-2xl mx-auto">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={currentIndex}
@@ -186,17 +181,18 @@ const Flashcards = ({ topic, onBack }) => {
                             transition={{ type: "spring", stiffness: 200, damping: 20 }}
                             className="w-full relative"
                         >
-                            {/* Front */}
+                            {/* Front - with mirrored text */}
                             <div className={cn(
-                                "relative min-h-80 border-8 border-white bg-zinc-900 rounded-2xl p-8 sm:p-12 flex items-center justify-center text-center cursor-pointer shadow-[12px_12px_0_rgba(0,0,0,0.6)] transition-colors",
+                                "relative min-h-96 border-8 border-white bg-zinc-900 rounded-2xl p-12 flex flex-col items-center justify-center text-center cursor-pointer shadow-[12px_12px_0_rgba(0,0,0,0.6)] transition-colors",
                                 known.has(currentIndex) ? "bg-emerald-900/40 border-emerald-400" : "bg-zinc-900 border-white"
                             )}>
-                                <div className="prose prose-invert prose-lg max-w-none w-full flex justify-center" style={{ transform: 'scaleX(-1)' }}>
+                                {/* Mirrored text content */}
+                                <div className="prose prose-invert prose-lg max-w-none w-full flex justify-center flex-1" style={{ transform: 'scaleX(-1)' }}>
                                     <ReactMarkdown
                                         remarkPlugins={[remarkMath]}
                                         rehypePlugins={[rehypeKatex]}
                                         components={{
-                                            p: ({ children }) => <p className="text-white font-black text-lg sm:text-2xl leading-tight">{children}</p>,
+                                            p: ({ children }) => <p className="text-white font-black text-xl leading-tight">{children}</p>,
                                             strong: ({ children }) => <strong className="text-signal">{children}</strong>,
                                             em: ({ children }) => <em className="text-cyan-300">{children}</em>,
                                         }}
@@ -205,73 +201,76 @@ const Flashcards = ({ topic, onBack }) => {
                                     </ReactMarkdown>
                                 </div>
 
+                                {/* Label at bottom */}
+                                <div className="mt-8 text-white text-sm font-bold uppercase tracking-widest opacity-70">
+                                    {isFlipped ? 'RESPOSTA' : 'PERGUNTA'}
+                                </div>
+
                                 {known.has(currentIndex) && (
-                                    <div className="absolute top-4 right-4 bg-emerald-500 border-3 border-white p-2 shadow-[4px_4px_0_rgba(0,0,0,0.5)]">
+                                    <div className="absolute top-4 right-4 bg-emerald-500 border-3 border-white p-2">
                                         <CheckCircle2 className="w-6 h-6 text-white" />
                                     </div>
                                 )}
-
-                                <div className="absolute bottom-4 text-white text-xs font-bold uppercase tracking-widest opacity-60">
-                                    {isFlipped ? 'RESPOSTA' : 'PERGUNTA'}
-                                </div>
                             </div>
                         </motion.div>
                     </motion.div>
                 </AnimatePresence>
+            </div>
 
-                {/* Controls */}
-                <div className="w-full flex gap-4 items-center justify-center pb-4">
-                    {/* Previous */}
-                    <button
-                        onClick={prevCard}
-                        className="w-16 h-16 border-4 border-white bg-zinc-950 flex items-center justify-center text-white hover:bg-white hover:text-zinc-950 transition-all shadow-[4px_4px_0_rgba(0,0,0,0.5)] font-black text-xl"
-                    >
-                        &lt;
-                    </button>
+            {/* Controls Base */}
+            <div className="relative z-50 flex gap-3 items-center justify-center pb-4">
+                {/* Previous */}
+                <button
+                    onClick={prevCard}
+                    className="w-14 h-14 border-4 border-white bg-zinc-950 flex items-center justify-center text-white hover:bg-white hover:text-zinc-950 transition-all font-black text-lg"
+                >
+                    &lt;
+                </button>
 
-                    {/* Flip */}
-                    <button
-                        onClick={() => setIsFlipped(!isFlipped)}
-                        className="flex-1 py-4 border-4 border-white bg-zinc-950 text-white font-black uppercase tracking-widest hover:bg-white hover:text-zinc-950 transition-all shadow-[4px_4px_0_rgba(0,0,0,0.5)]"
-                    >
-                        Virar
-                    </button>
+                {/* Flip */}
+                <button
+                    onClick={() => setIsFlipped(!isFlipped)}
+                    className="px-6 py-3 border-4 border-white bg-zinc-950 text-white font-black uppercase tracking-widest hover:bg-white hover:text-zinc-950 transition-all text-sm"
+                >
+                    VIRAR
+                </button>
 
-                    {/* Mark */}
-                    <button
-                        onClick={toggleKnown}
-                        className={cn(
-                            "flex-1 py-4 border-4 font-black uppercase tracking-widest transition-all shadow-[4px_4px_0_rgba(0,0,0,0.5)]",
-                            known.has(currentIndex)
-                                ? "border-emerald-400 bg-emerald-500 text-zinc-950 hover:bg-emerald-400"
-                                : "border-signal bg-zinc-950 text-signal hover:bg-signal hover:text-zinc-950"
-                        )}
-                    >
-                        MARCAR ✓
-                    </button>
+                {/* Mark */}
+                <button
+                    onClick={toggleKnown}
+                    className={cn(
+                        "px-6 py-3 border-4 font-black uppercase tracking-widest transition-all text-sm",
+                        known.has(currentIndex)
+                            ? "border-emerald-400 bg-emerald-500 text-zinc-950 hover:bg-emerald-400"
+                            : "border-signal bg-zinc-950 text-signal hover:bg-signal hover:text-zinc-950"
+                    )}
+                >
+                    MARCAR ✓
+                </button>
 
-                    {/* Next */}
-                    <button
-                        onClick={nextCard}
-                        className="w-16 h-16 border-4 border-white bg-zinc-950 flex items-center justify-center text-white hover:bg-white hover:text-zinc-950 transition-all shadow-[4px_4px_0_rgba(0,0,0,0.5)] font-black text-xl"
-                    >
-                        &gt;
-                    </button>
+                {/* Next */}
+                <button
+                    onClick={nextCard}
+                    className="w-14 h-14 border-4 border-white bg-zinc-950 flex items-center justify-center text-white hover:bg-white hover:text-zinc-950 transition-all font-black text-lg"
+                >
+                    &gt;
+                </button>
 
-                    {/* Bot Icon */}
-                    <div className="w-16 h-16 border-4 border-white bg-zinc-950 flex items-center justify-center text-white shadow-[4px_4px_0_rgba(0,0,0,0.5)]">
-                        <BrainCircuit className="w-8 h-8" />
-                    </div>
+                {/* Bot Icon */}
+                <div className="w-14 h-14 border-4 border-white bg-zinc-950 flex items-center justify-center text-white">
+                    <BrainCircuit className="w-7 h-7" />
                 </div>
             </div>
 
-            {/* Progress Bar Bottom */}
-            <div className="relative z-50 mt-auto pt-4 border-t-4 border-white">
+            {/* Progress Bar */}
+            <div className="relative z-50 mt-2 pt-4 border-t-4 border-white">
                 <div className="flex items-center justify-between mb-2">
                     <span className="text-white font-black text-sm uppercase tracking-widest">{topic}</span>
-                    <span className="text-signal font-black text-sm uppercase tracking-widest">{Math.round((known.size / flashcards.length) * 100)}%</span>
+                    <span className="text-signal font-black text-sm uppercase tracking-widest">
+                        {Math.round((known.size / flashcards.length) * 100)}%
+                    </span>
                 </div>
-                <div className="w-full h-4 bg-zinc-900 border-3 border-white overflow-hidden">
+                <div className="w-full h-3 bg-zinc-900 border-3 border-white overflow-hidden">
                     <motion.div
                         className="h-full bg-signal"
                         initial={{ width: 0 }}
