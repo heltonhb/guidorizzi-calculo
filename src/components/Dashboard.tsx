@@ -178,21 +178,25 @@ const Card = ({ title, description, icon, color, onClick, variants }) => {
             border: "border-cyan-400",
             text: "text-cyan-400",
             iconColor: "text-cyan-400",
+            shadowColor: "#22d3ee", // cyan-400
         },
         signal: {
             border: "border-orange-500",
             text: "text-orange-500",
             iconColor: "text-orange-500",
+            shadowColor: "#f97316", // orange-500
         },
         lime: {
             border: "border-lime-400",
             text: "text-lime-400",
             iconColor: "text-lime-400",
+            shadowColor: "#a3e635", // lime-400
         },
         emerald: {
             border: "border-emerald-400",
             text: "text-emerald-400",
             iconColor: "text-emerald-400",
+            shadowColor: "#34d399", // emerald-400
         }
     };
 
@@ -201,15 +205,24 @@ const Card = ({ title, description, icon, color, onClick, variants }) => {
     return (
         <motion.button
             variants={variants}
-            whileHover={{ x: -2, y: -2 }}
-            whileTap={{ x: 4, y: 4, boxShadow: "0px 0px 0px transparent" }}
+            whileHover={{ x: -4, y: -4 }}
+            whileTap={{ x: 2, y: 2 }}
             onClick={onClick}
             className={cn(
-                "group relative w-full p-4 sm:p-5 text-left transition-all bg-zinc-900 overflow-hidden",
+                "group relative w-full p-4 sm:p-5 text-left transition-all bg-zinc-900 overflow-visible",
                 "border-4 rounded-none outline-none focus:ring-4 focus:ring-offset-2 focus:ring-offset-black focus:ring-white",
-                "shadow-[6px_6px_0_#000000] hover:shadow-[8px_8px_0_#000000]",
                 colors.border
             )}
+            style={{
+                // Stacked shadow effect to simulate 3D depth
+                boxShadow: `
+                    2px 2px 0px 0px #000,
+                    4px 4px 0px 0px #000,
+                    6px 6px 0px 0px #000,
+                    8px 8px 0px 0px #000,
+                    10px 10px 0px 0px #000
+                `
+            }}
         >
             <div className="flex items-center gap-4 sm:gap-6 relative z-10">
                 {/* Icon Box */}
