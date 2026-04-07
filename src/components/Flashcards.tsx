@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, RotateCcw, BookCheck, Loader2, Sparkles, RefreshCw, CheckCircle2, Eye, BrainCircuit } from 'lucide-react';
+import { ChevronLeft, ChevronRight, RotateCcw, BookCheck, Loader2, RefreshCw, CheckCircle2, BrainCircuit } from 'lucide-react';
 import { generateFlashcards } from '../services/api';
 import { useToast } from './Toast';
 import { cn } from '../lib/utils';
@@ -128,184 +128,158 @@ const Flashcards = ({ topic, onBack }) => {
         </div>
     );
 
-    const knownCount = known.size;
-    const progress = Math.round((knownCount / flashcards.length) * 100);
-
     return (
-        <div className="min-h-screen bg-zinc-950 flex flex-col px-4 py-8 sm:p-12 overflow-hidden relative">
+        <div className="min-h-screen bg-zinc-950 flex flex-col px-4 py-8 gap-8 overflow-hidden relative">
+            {/* Grid Background */}
+            <div className="absolute inset-0 pointer-events-none opacity-10" style={{ backgroundImage: 'linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 
-            {/* Ambient Background Grid */}
-            <div className="absolute inset-0 pointer-events-none opacity-20" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
-
-            <header className="relative z-50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8 mb-16">
+            {/* Header with Back Button */}
+            <div className="relative z-50 flex items-center justify-between">
                 <button
                     onClick={onBack}
-                    className="group flex items-center gap-4 py-4 px-6 bg-zinc-900 border-4 border-white text-white font-black uppercase tracking-widest shadow-[8px_8px_0_theme(colors.premium-blue)] hover:bg-premium-blue hover:shadow-[12px_12px_0_rgba(255,255,255,0.2)] transition-all active:translate-x-2 active:translate-y-2 active:shadow-none"
+                    className="flex items-center gap-2 px-4 py-2 bg-zinc-900 border-3 border-white text-white font-black uppercase tracking-widest text-sm hover:bg-white hover:text-zinc-950 transition-all shadow-[4px_4px_0_rgba(0,0,0,0.5)]"
                 >
-                    <ChevronLeft className="w-8 h-8 group-hover:-translate-x-2 transition-transform" />
-                    Voltar
+                    <ChevronLeft className="w-5 h-5" /> Voltar
                 </button>
+                <button
+                    onClick={loadFlashcards}
+                    className="p-2 bg-zinc-900 border-2 border-zinc-700 text-zinc-400 hover:text-white hover:border-white transition-colors"
+                    title="Regenerar"
+                >
+                    <RefreshCw className="w-5 h-5" />
+                </button>
+            </div>
 
-                <div className="flex flex-col items-start sm:items-end">
-                    <h2 className="text-4xl sm:text-6xl font-black text-white uppercase tracking-tighter mix-blend-difference">Flashcards</h2>
-                    <div className="flex items-center gap-4 mt-2">
-                        <div className="px-4 py-1 bg-premium-blue border-2 border-white text-white font-black text-sm uppercase tracking-widest shadow-[4px_4px_0_rgba(255,255,255,0.2)]">
-                            {currentIndex + 1} / {flashcards.length}
-                        </div>
-                        <button
-                            onClick={loadFlashcards}
-                            className="p-2 bg-zinc-900 border-2 border-zinc-700 text-zinc-400 hover:text-white hover:border-white transition-colors"
-                            title="Regerar"
-                        >
-                            <RefreshCw className="w-5 h-5" />
-                        </button>
+            {/* Main Content Area */}
+            <div className="flex-1 flex flex-col items-center justify-center w-full max-w-2xl mx-auto gap-8">
+                {/* Title Section */}
+                <motion.div
+                    initial={{ y: -20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    className="w-full text-center space-y-4"
+                >
+                    <div className="border-4 border-white bg-zinc-950 px-8 py-4 shadow-[6px_6px_0_rgba(0,0,0,0.5)]">
+                        <h1 className="text-3xl sm:text-4xl font-black text-white uppercase tracking-widest">
+                            FLASHCARDS
+                        </h1>
                     </div>
-                </div>
-            </header>
+                    <div className="border-4 border-white bg-zinc-950 px-6 py-3 inline-block shadow-[4px_4px_0_rgba(0,0,0,0.5)]">
+                        <p className="text-white font-black text-2xl tracking-widest">
+                            {currentIndex + 1}/{flashcards.length}
+                        </p>
+                    </div>
+                </motion.div>
 
-            {/* Core Interaction Area */}
-            <div className="relative z-40 flex-1 flex flex-col items-center justify-center w-full max-w-4xl mx-auto mt-8 sm:mt-0 pb-32">
-
-                {/* Physical Tile Stack Effect */}
-                <div className="relative w-full max-w-2xl h-[450px] sm:h-[500px] perspective-1000">
-
-                    {/* Underlying physical cards */}
-                    <div className="absolute inset-0 bg-zinc-900 border-4 sm:border-8 border-zinc-800 rounded-sm translate-x-8 translate-y-8 rotate-6 z-0 shadow-[16px_16px_0_rgba(0,0,0,0.8)]" />
-                    <div className="absolute inset-0 bg-zinc-800 border-4 sm:border-8 border-zinc-700 rounded-sm translate-x-4 translate-y-4 -rotate-2 z-10 shadow-[16px_16px_0_rgba(0,0,0,0.6)]" />
-
-                    {/* Active Flapping Card */}
-                    <AnimatePresence mode="wait">
+                {/* Flashcard */}
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={currentIndex}
+                        initial={{ x: 100, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        exit={{ x: -100, opacity: 0 }}
+                        transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                        onClick={() => setIsFlipped(!isFlipped)}
+                        className="w-full"
+                    >
                         <motion.div
-                            key={currentIndex}
-                            initial={{ x: 100, opacity: 0, rotate: 10 }}
-                            animate={{ x: 0, opacity: 1, rotate: 0 }}
-                            exit={{ x: -100, opacity: 0, rotate: -10 }}
+                            animate={{ rotateY: isFlipped ? 180 : 0 }}
                             transition={{ type: "spring", stiffness: 200, damping: 20 }}
-                            className="absolute inset-0 z-20 cursor-pointer"
-                            onClick={() => setIsFlipped(!isFlipped)}
+                            className="w-full relative"
                         >
-                            <motion.div
-                                animate={{ rotateY: isFlipped ? 180 : 0 }}
-                                transition={{ type: "spring", stiffness: 200, damping: 20 }}
-                                className="w-full h-full relative preserve-3d"
-                            >
-                                {/* Front Face */}
-                                <div className={cn(
-                                    "absolute inset-0 backface-hidden rounded-sm p-8 sm:p-12 flex flex-col items-center justify-center text-center border-4 sm:border-8 transition-colors shadow-[16px_16px_0_theme(colors.premium-blue)]",
-                                    known.has(currentIndex)
-                                        ? "bg-emerald-950 border-emerald-500 text-emerald-50"
-                                        : "bg-zinc-950 border-white text-white"
-                                )}>
-                                    <div className="absolute top-6 left-6 text-premium-blue opacity-50">
-                                        <BrainCircuit className="w-12 h-12" />
-                                    </div>
-                                    {known.has(currentIndex) && (
-                                        <div className="absolute top-6 right-6 bg-emerald-500 rounded-none border-4 border-emerald-950 p-2 shadow-[4px_4px_0_rgba(0,0,0,0.5)] transform rotate-12">
-                                            <CheckCircle2 className="w-8 h-8 text-zinc-950" />
-                                        </div>
-                                    )}
-
-                                    <div className="prose prose-invert prose-xl sm:prose-2xl max-w-none w-full prose-headings:font-black prose-headings:uppercase prose-p:font-bold prose-p:tracking-tight prose-strong:text-premium-blue leading-tight mb-12 flex justify-center">
-                                        <ReactMarkdown
-                                            remarkPlugins={[remarkMath]}
-                                            rehypePlugins={[rehypeKatex]}
-                                        >
-                                            {preprocessMathContent(flashcards[currentIndex]?.front || '')}
-                                        </ReactMarkdown>
-                                    </div>
-
-                                    <div className="absolute bottom-0 left-0 w-full p-6 flex justify-center">
-                                        <div className="px-6 py-3 bg-zinc-900 border-4 border-zinc-800 text-xs font-black uppercase tracking-widest text-zinc-500 flex items-center gap-3 shadow-[4px_4px_0_rgba(0,0,0,0.5)]">
-                                            <RotateCcw className="w-4 h-4" /> Tap to Flip
-                                        </div>
-                                    </div>
+                            {/* Front */}
+                            <div className={cn(
+                                "relative min-h-80 border-8 border-white bg-zinc-900 rounded-2xl p-8 sm:p-12 flex items-center justify-center text-center cursor-pointer shadow-[12px_12px_0_rgba(0,0,0,0.6)] transition-colors",
+                                known.has(currentIndex) ? "bg-emerald-900/40 border-emerald-400" : "bg-zinc-900 border-white"
+                            )}>
+                                <div className="prose prose-invert prose-lg max-w-none w-full flex justify-center">
+                                    <ReactMarkdown
+                                        remarkPlugins={[remarkMath]}
+                                        rehypePlugins={[rehypeKatex]}
+                                        components={{
+                                            p: ({ children }) => <p className="text-white font-black text-lg sm:text-2xl leading-tight">{children}</p>,
+                                            strong: ({ children }) => <strong className="text-signal">{children}</strong>,
+                                            em: ({ children }) => <em className="text-cyan-300">{children}</em>,
+                                        }}
+                                    >
+                                        {isFlipped ? (flashcards[currentIndex]?.back || '') : preprocessMathContent(flashcards[currentIndex]?.front || '')}
+                                    </ReactMarkdown>
                                 </div>
 
-                                {/* Back Face */}
-                                <div className="absolute inset-0 backface-hidden rounded-sm bg-premium-blue text-white border-4 sm:border-8 border-white shadow-[16px_16px_0_rgba(255,255,255,0.2)] p-8 sm:p-12 flex flex-col items-center justify-center text-center transform rotate-y-180 overflow-y-auto">
-                                    <div className="prose prose-invert prose-lg sm:prose-xl max-w-none w-full prose-headings:font-black prose-headings:uppercase font-bold text-left prose-p:leading-[1.8] prose-strong:text-zinc-900 border-l-8 pl-6 border-zinc-900">
-                                        <ReactMarkdown
-                                            remarkPlugins={[remarkMath]}
-                                            rehypePlugins={[rehypeKatex]}
-                                        >
-                                            {preprocessMathContent(flashcards[currentIndex]?.back || '')}
-                                        </ReactMarkdown>
+                                {known.has(currentIndex) && (
+                                    <div className="absolute top-4 right-4 bg-emerald-500 border-3 border-white p-2 shadow-[4px_4px_0_rgba(0,0,0,0.5)]">
+                                        <CheckCircle2 className="w-6 h-6 text-white" />
                                     </div>
+                                )}
+
+                                <div className="absolute bottom-4 text-white text-xs font-bold uppercase tracking-widest opacity-60">
+                                    {isFlipped ? 'RESPOSTA' : 'PERGUNTA'}
                                 </div>
-                            </motion.div>
+                            </div>
                         </motion.div>
-                    </AnimatePresence>
-                </div>
+                    </motion.div>
+                </AnimatePresence>
 
-                {/* Massive Controls */}
-                <div className="w-full max-w-2xl mt-16 sm:mt-24 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8 z-30 relative px-4 sm:px-0">
+                {/* Controls */}
+                <div className="w-full flex gap-4 items-center justify-center pb-4">
+                    {/* Previous */}
                     <button
                         onClick={prevCard}
-                        className="py-6 sm:py-8 bg-zinc-900 border-4 border-zinc-700 shadow-[8px_8px_0_rgba(0,0,0,0.5)] flex items-center justify-center text-zinc-400 hover:text-white hover:border-white hover:shadow-[12px_12px_0_rgba(255,255,255,0.2)] transition-all active:translate-x-2 active:translate-y-2 active:shadow-none font-black uppercase tracking-widest text-sm sm:text-xl"
+                        className="w-16 h-16 border-4 border-white bg-zinc-950 flex items-center justify-center text-white hover:bg-white hover:text-zinc-950 transition-all shadow-[4px_4px_0_rgba(0,0,0,0.5)] font-black text-xl"
                     >
-                        <ChevronLeft className="w-8 h-8 mr-2 hidden sm:block" /> Anterior
+                        &lt;
                     </button>
 
+                    {/* Flip */}
+                    <button
+                        onClick={() => setIsFlipped(!isFlipped)}
+                        className="flex-1 py-4 border-4 border-white bg-zinc-950 text-white font-black uppercase tracking-widest hover:bg-white hover:text-zinc-950 transition-all shadow-[4px_4px_0_rgba(0,0,0,0.5)]"
+                    >
+                        Virar
+                    </button>
+
+                    {/* Mark */}
                     <button
                         onClick={toggleKnown}
                         className={cn(
-                            "py-6 sm:py-8 border-4 shadow-[8px_8px_0_rgba(0,0,0,0.5)] flex items-center justify-center transition-all active:translate-x-2 active:translate-y-2 active:shadow-none font-black uppercase tracking-widest text-sm sm:text-xl gap-3",
+                            "flex-1 py-4 border-4 font-black uppercase tracking-widest transition-all shadow-[4px_4px_0_rgba(0,0,0,0.5)]",
                             known.has(currentIndex)
-                                ? "bg-emerald-500 border-white text-zinc-950 hover:shadow-[12px_12px_0_rgba(255,255,255,0.5)]"
-                                : "bg-premium-blue border-white text-white hover:bg-white hover:text-premium-blue hover:border-premium-blue hover:shadow-[12px_12px_0_theme(colors.premium-blue)]"
+                                ? "border-emerald-400 bg-emerald-500 text-zinc-950 hover:bg-emerald-400"
+                                : "border-signal bg-zinc-950 text-signal hover:bg-signal hover:text-zinc-950"
                         )}
                     >
-                        <CheckCircle2 className="w-6 h-6 sm:w-8 sm:h-8" />
-                        {known.has(currentIndex) ? 'Dominado' : 'Marcar'}
+                        MARCAR ✓
                     </button>
 
+                    {/* Next */}
                     <button
                         onClick={nextCard}
-                        className="sm:col-span-2 py-6 sm:py-8 bg-zinc-950 border-4 border-white shadow-[12px_12px_0_rgba(255,255,255,0.2)] flex items-center justify-center text-white hover:bg-white hover:text-zinc-950 hover:shadow-[8px_8px_0_rgba(0,0,0,0.5)] transition-all active:translate-x-2 active:translate-y-2 active:shadow-none font-black uppercase tracking-widest text-lg sm:text-2xl"
+                        className="w-16 h-16 border-4 border-white bg-zinc-950 flex items-center justify-center text-white hover:bg-white hover:text-zinc-950 transition-all shadow-[4px_4px_0_rgba(0,0,0,0.5)] font-black text-xl"
                     >
-                        Próximo <ChevronRight className="w-8 h-8 ml-2 hidden sm:block" />
+                        &gt;
                     </button>
+
+                    {/* Bot Icon */}
+                    <div className="w-16 h-16 border-4 border-white bg-zinc-950 flex items-center justify-center text-white shadow-[4px_4px_0_rgba(0,0,0,0.5)]">
+                        <BrainCircuit className="w-8 h-8" />
+                    </div>
                 </div>
             </div>
 
-            {/* Global Progress Bar anchored to bottom */}
-            <div className="fixed bottom-0 left-0 w-full bg-zinc-950 border-t-8 border-zinc-900 p-6 z-50 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8">
-                <div className="text-xl font-black text-white uppercase tracking-widest w-full sm:w-64 truncate">
-                    {topic}
+            {/* Progress Bar Bottom */}
+            <div className="relative z-50 mt-auto pt-4 border-t-4 border-white">
+                <div className="flex items-center justify-between mb-2">
+                    <span className="text-white font-black text-sm uppercase tracking-widest">{topic}</span>
+                    <span className="text-signal font-black text-sm uppercase tracking-widest">{Math.round((known.size / flashcards.length) * 100)}%</span>
                 </div>
-                <div className="w-full sm:flex-1 h-6 bg-zinc-900 border-4 border-zinc-800 rounded-none overflow-hidden relative">
+                <div className="w-full h-4 bg-zinc-900 border-3 border-white overflow-hidden">
                     <motion.div
-                        className="absolute top-0 left-0 h-full bg-emerald-500"
+                        className="h-full bg-signal"
                         initial={{ width: 0 }}
-                        animate={{ width: `${progress}%` }}
+                        animate={{ width: `${(known.size / flashcards.length) * 100}%` }}
                         transition={{ type: 'spring', stiffness: 100, damping: 20 }}
                     />
                 </div>
-                <div className="hidden sm:block text-xl font-black text-emerald-500 uppercase tracking-widest min-w-[80px] text-right">
-                    {progress}%
-                </div>
             </div>
-
-            <style dangerouslySetInnerHTML={{
-                __html: `
-                .perspective-1000 { perspective: 1000px; }
-                .preserve-3d { transform-style: preserve-3d; }
-                .backface-hidden { backface-visibility: hidden; }
-                .rotate-y-180 { transform: rotateY(180deg); }
-                
-                /* Brutalist scrollbar overrides for the back of the card */
-                .overflow-y-auto::-webkit-scrollbar {
-                    width: 12px;
-                }
-                .overflow-y-auto::-webkit-scrollbar-track {
-                    background: transparent;
-                    border-left: 4px solid rgba(255,255,255,0.2);
-                }
-                .overflow-y-auto::-webkit-scrollbar-thumb {
-                    background: #fff;
-                    border: 2px solid #1152d4; /* premium-blue border to match backface */
-                }
-            `}} />
         </div>
     );
 };
