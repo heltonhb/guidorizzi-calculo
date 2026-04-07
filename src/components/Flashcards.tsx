@@ -191,7 +191,7 @@ const Flashcards = ({ topic, onBack }) => {
                                 "relative min-h-80 border-8 border-white bg-zinc-900 rounded-2xl p-8 sm:p-12 flex items-center justify-center text-center cursor-pointer shadow-[12px_12px_0_rgba(0,0,0,0.6)] transition-colors",
                                 known.has(currentIndex) ? "bg-emerald-900/40 border-emerald-400" : "bg-zinc-900 border-white"
                             )}>
-                                <div className="prose prose-invert prose-lg max-w-none w-full flex justify-center">
+                                <div className="prose prose-invert prose-lg max-w-none w-full flex justify-center" style={{ transform: 'scaleX(-1)' }}>
                                     <ReactMarkdown
                                         remarkPlugins={[remarkMath]}
                                         rehypePlugins={[rehypeKatex]}
