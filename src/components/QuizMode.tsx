@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, Loader2, Sparkles, CheckCircle2, XCircle, Trophy, RefreshCw, Zap, Lightbulb } from 'lucide-react';
+import { ChevronLeft, Loader2, Sparkles, CheckCircle2, XCircle, Trophy, RefreshCw, Zap, Lightbulb, BrainCircuit } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { generateQuizQuestions } from '../services/api';
 import { useToast } from './Toast';
@@ -41,10 +41,10 @@ const QuizMode = ({ topic, onBack }) => {
     const [currentHintLevel, setCurrentHintLevel] = useState(0);
     const [showLearningPath, setShowLearningPath] = useState(false);
     const toast = useToast();
-    
+
     // Hook de trilha de aprendizado
     const { getNextStudySuggestion, handleQuizCompletion, generateLearningPath } = useLearningPath(topic);
-    
+
     // Gamification
     const { onQuizComplete } = useAppContext();
 
@@ -72,7 +72,6 @@ const QuizMode = ({ topic, onBack }) => {
             }
         } catch (error) {
             console.error('Error loading quiz, falling back to local:', error);
-            // Fallback to local questions
             const localQ = LOCAL_QUESTIONS[topic] || LOCAL_QUESTIONS['default'];
             setQuestions(localQ);
             setSource('Banco Local (offline)');
@@ -95,7 +94,7 @@ const QuizMode = ({ topic, onBack }) => {
         if (showFeedback) return;
         setSelectedAnswer(index);
         setShowFeedback(true);
-        setCurrentHintLevel(0); // Reset hints após resposta
+        setCurrentHintLevel(0);
         if (index === questions[currentQuestionIndex].correct) {
             setScore(s => s + 1);
         }
@@ -104,8 +103,7 @@ const QuizMode = ({ topic, onBack }) => {
     // Sistema de hints progressivos
     const getHint = (question, hintLevel) => {
         const questionText = question.text.toLowerCase();
-        
-        // Hints genéricos baseados no conteúdo da questão
+
         const hintsByTopic = {
             'limite': [
                 'Dica: Pense em como a função se comporta conforme x se aproxima do ponto.',
@@ -127,16 +125,6 @@ const QuizMode = ({ topic, onBack }) => {
                 'Pense: Verifique as três condições: função definida, limite existe e são iguais.',
                 'Atenção: Use o Teorema do Valor Intermediário para verificar existência de raízes.'
             ],
-            'l\'hôpital': [
-                'Dica: A regra só se aplica a formas 0/0 ou ∞/∞.',
-                'Pense: Derive o numerador e denominador separadamente.',
-                'Atenção: Verifique se as hipóteses da regra são satisfeitas antes de aplicar.'
-            ],
-            'teorema do confronto': [
-                'Dica: O teorema "comprime" a função entre duas outras de limite conhecido.',
-                'Pense: Procure funções que limitam a função dada superior e inferiormente.',
-                'Atenção: As funções que limitam devem tender ao mesmo limite.'
-            ],
             'default': [
                 'Dica: Releia o enunciado com atenção e identifique os dados importantes.',
                 'Pense: Que conceitos do Guidorizzi são necessários para resolver?',
@@ -144,7 +132,6 @@ const QuizMode = ({ topic, onBack }) => {
             ]
         };
 
-        // Identificar o tópico da questão
         let relevantHints = hintsByTopic['default'];
         for (const [key, hints] of Object.entries(hintsByTopic)) {
             if (questionText.includes(key)) {
@@ -153,7 +140,6 @@ const QuizMode = ({ topic, onBack }) => {
             }
         }
 
-        // Retorn o hint do nível apropriado (0-indexed, então hintLevel - 1)
         const hintIndex = Math.min(hintLevel - 1, relevantHints.length - 1);
         return relevantHints[hintIndex];
     };
@@ -170,7 +156,6 @@ const QuizMode = ({ topic, onBack }) => {
         if (currentQuestionIndex < questions.length - 1) {
             setCurrentQuestionIndex(i => i + 1);
         } else {
-            // Gamification: adicionar XP ao completar quiz
             const pct = Math.round((score / questions.length) * 100);
             onQuizComplete(pct);
             setShowResults(true);
@@ -185,42 +170,45 @@ const QuizMode = ({ topic, onBack }) => {
         return { emoji: '📚', text: 'Continue Estudando!', sub: 'Releia o Guidorizzi e volte mais forte.' };
     };
 
+    // ===== LOADING STATE =====
     if (loading) return (
-        <div className="flex flex-col items-center justify-center min-h-[80vh] gap-8">
-            <div className="relative w-24 h-24 bg-zinc-950 border-2 border-[#00f0ff] shadow-[8px_8px_0_#00f0ff] flex items-center justify-center">
-                <Loader2 className="w-10 h-10 text-[#00f0ff] animate-spin" />
+        <div className="flex flex-col items-center justify-center min-h-[80vh] gap-8 px-4">
+            <div className="relative w-28 h-28 bg-zinc-900 border-8 border-premium-blue shadow-[16px_16px_0_theme(colors.premium-blue)] flex items-center justify-center transform -rotate-6">
+                <BrainCircuit className="w-12 h-12 text-white animate-pulse" />
             </div>
-            <div className="text-center space-y-3 bg-zinc-950 border-2 border-white/20 p-6 shadow-[4px_4px_0_rgba(255,255,255,0.2)]">
-                <span className="text-xl font-black text-white tracking-widest uppercase block">
-                    Gerando Questões com IA
-                </span>
-                <p className="text-zinc-400 font-bold max-w-[250px] leading-relaxed mx-auto uppercase text-xs tracking-wider">
+            <div className="text-center bg-zinc-900 border-4 border-white p-8 shadow-[12px_12px_0_rgba(255,255,255,0.2)] transform rotate-2 max-w-md">
+                <h3 className="text-2xl font-black text-white tracking-widest uppercase mb-3">
+                    Forjando Questões
+                </h3>
+                <p className="text-premium-blue font-bold uppercase text-sm tracking-widest">
                     CONSULTANDO O GUIDORIZZI SOBRE "{topic}"...
                 </p>
             </div>
         </div>
     );
 
+    // ===== MAIN QUIZ UI =====
     return (
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex flex-col gap-8 pb-20"
+            className="flex flex-col gap-8 pb-20 relative"
         >
-            <header className="flex items-center justify-between border-b-2 border-white/20 pb-4 mb-8">
+            {/* Header */}
+            <header className="flex items-center justify-between border-b-8 border-zinc-900 pb-6 mb-4">
                 <motion.button
-                    whileTap={{ scale: 0.9, x: 2, y: 2, boxShadow: "0px 0px 0px transparent" }}
+                    whileTap={{ scale: 0.95, x: 4, y: 4, boxShadow: "0px 0px 0px transparent" }}
                     onClick={quizStarted && !showResults ? () => setQuizStarted(false) : onBack}
-                    className="w-10 h-10 flex items-center justify-center bg-zinc-950 border-2 border-white/20 shadow-[2px_2px_0_rgba(255,255,255,0.2)] hover:border-[#00f0ff] hover:shadow-[2px_2px_0_#00f0ff] hover:text-[#00f0ff] transition-colors text-white"
+                    className="w-14 h-14 flex items-center justify-center bg-zinc-950 border-4 border-white shadow-[8px_8px_0_rgba(255,255,255,1)] hover:bg-white hover:text-zinc-950 transition-colors text-white rounded-none"
                 >
-                    <ChevronLeft className="w-5 h-5" />
+                    <ChevronLeft className="w-7 h-7" />
                 </motion.button>
                 <div className="flex-1 text-center">
-                    <h2 className="text-xl font-black uppercase tracking-tight text-white mt-1">
+                    <h2 className="text-2xl sm:text-4xl font-black uppercase tracking-widest text-white">
                         {quizStarted ? `Quiz: ${topic}` : 'Desafio Guidorizzi'}
                     </h2>
-                    <p className="text-zinc-500 text-[10px] uppercase font-black tracking-widest mt-1">
-                        <span className="border-2 border-white/10 bg-zinc-900 px-2 py-0.5 inline-block">
+                    <p className="text-zinc-500 text-xs uppercase font-black tracking-widest mt-2">
+                        <span className="border-4 border-zinc-800 bg-zinc-900 px-4 py-1 inline-block shadow-[4px_4px_0_rgba(0,0,0,0.5)]">
                             {quizStarted && !showResults
                                 ? `Questão ${currentQuestionIndex + 1} / ${questions.length}`
                                 : `${questions.length} Questões • ${source}`
@@ -230,58 +218,58 @@ const QuizMode = ({ topic, onBack }) => {
                 </div>
                 <button
                     onClick={loadQuiz}
-                    className="w-10 h-10 flex items-center justify-center bg-zinc-950 border-2 border-white/20 shadow-[2px_2px_0_rgba(255,255,255,0.2)] hover:border-orange-500 hover:shadow-[2px_2px_0_theme(colors.orange.500)] hover:text-orange-500 transition-colors text-zinc-400 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+                    className="w-14 h-14 flex items-center justify-center bg-zinc-950 border-4 border-zinc-700 shadow-[4px_4px_0_rgba(0,0,0,0.5)] hover:border-premium-blue hover:shadow-[8px_8px_0_theme(colors.premium-blue)] hover:text-premium-blue transition-all text-zinc-400 active:translate-x-1 active:translate-y-1 active:shadow-none rounded-none"
                     title="Gerar novas questões"
                 >
-                    <RefreshCw className="w-4 h-4" />
+                    <RefreshCw className="w-5 h-5" />
                 </button>
             </header>
 
             {!quizStarted ? (
-                /* Pre-quiz screen */
+                /* ===== PRE-QUIZ SCREEN ===== */
                 <motion.div
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    className="flex flex-col items-center gap-8 py-8"
+                    className="flex flex-col items-center gap-10 py-8"
                 >
-                    <div className="w-28 h-28 bg-zinc-950 border-4 border-[#00f0ff] shadow-[8px_8px_0_#00f0ff] flex items-center justify-center">
-                        <Zap className="w-12 h-12 text-[#00f0ff]" fill="currentColor" />
+                    <div className="w-32 h-32 bg-zinc-900 border-8 border-premium-blue shadow-[16px_16px_0_theme(colors.premium-blue)] flex items-center justify-center transform rotate-6">
+                        <Zap className="w-14 h-14 text-white" fill="currentColor" />
                     </div>
 
-                    <div className="text-center space-y-3 bg-zinc-950 border-2 border-white/20 p-6 shadow-[4px_4px_0_rgba(255,255,255,0.2)]">
-                        <h3 className="text-2xl font-black text-white uppercase tracking-tight">{topic}</h3>
-                        <p className="text-zinc-400 font-bold text-xs uppercase tracking-wider max-w-[280px] mx-auto">
+                    <div className="text-center bg-zinc-900 border-4 border-white p-8 shadow-[12px_12px_0_rgba(255,255,255,0.2)] max-w-md w-full">
+                        <h3 className="text-3xl font-black text-white uppercase tracking-widest">{topic}</h3>
+                        <p className="text-zinc-400 font-bold text-sm uppercase tracking-widest mt-4 max-w-[280px] mx-auto">
                             {questions.length} questões de múltipla escolha baseadas no Guidorizzi
                         </p>
                         {source.includes('LIVE') && (
-                            <div className="flex items-center gap-2 justify-center text-[9px] font-black uppercase tracking-widest text-orange-500 border-t-2 border-white/10 pt-3 mt-3">
-                                <div className="flex h-2 w-2 relative">
-                                    <span className="animate-ping absolute inline-flex h-full w-full bg-orange-400 opacity-75"></span>
-                                    <span className="relative inline-flex h-2 w-2 bg-orange-500 border border-orange-200"></span>
+                            <div className="flex items-center gap-3 justify-center text-xs font-black uppercase tracking-widest text-premium-blue border-t-4 border-zinc-800 pt-4 mt-4">
+                                <div className="flex h-3 w-3 relative">
+                                    <span className="animate-ping absolute inline-flex h-full w-full bg-premium-blue opacity-75"></span>
+                                    <span className="relative inline-flex h-3 w-3 bg-premium-blue"></span>
                                 </div>
                                 GERADO POR IA
                             </div>
                         )}
                     </div>
 
-                    <div className="grid grid-cols-3 gap-4 w-full max-w-md">
+                    <div className="grid grid-cols-3 gap-6 w-full max-w-md">
                         {[
-                            { label: 'Fáceis', count: 2, color: 'text-emerald-400', border: 'border-emerald-500' },
-                            { label: 'Médias', count: 2, color: 'text-amber-400', border: 'border-amber-500' },
-                            { label: 'Difíceis', count: 1, color: 'text-signal', border: 'border-signal' },
+                            { label: 'Fáceis', count: 2, color: 'text-emerald-400', border: 'border-emerald-500', shadow: 'shadow-[6px_6px_0_theme(colors.emerald.500)]' },
+                            { label: 'Médias', count: 2, color: 'text-premium-blue', border: 'border-premium-blue', shadow: 'shadow-[6px_6px_0_theme(colors.premium-blue)]' },
+                            { label: 'Difíceis', count: 1, color: 'text-rose-400', border: 'border-rose-500', shadow: 'shadow-[6px_6px_0_theme(colors.rose.500)]' },
                         ].map(d => (
-                            <div key={d.label} className={cn("p-4 bg-zinc-950 border-2 shadow-[2px_2px_0_rgba(255,255,255,0.1)] text-center", d.border)}>
-                                <p className={cn("text-2xl font-black", d.color)}>{d.count}</p>
-                                <p className="text-[9px] text-zinc-500 font-black uppercase tracking-widest mt-1">{d.label}</p>
+                            <div key={d.label} className={cn("p-5 bg-zinc-950 border-4 text-center rounded-none", d.border, d.shadow)}>
+                                <p className={cn("text-3xl font-black", d.color)}>{d.count}</p>
+                                <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest mt-2">{d.label}</p>
                             </div>
                         ))}
                     </div>
 
                     <button
                         onClick={startQuiz}
-                        className="w-full max-w-sm py-5 bg-[#00f0ff] border-2 border-[#00f0ff] text-zinc-950 hover:bg-zinc-950 hover:text-[#00f0ff] font-black uppercase tracking-widest text-sm shadow-[4px_4px_0_#00f0ff] hover:shadow-[0px_0px_0_transparent] transition-all flex items-center justify-center gap-3 active:translate-x-1 active:translate-y-1 mt-4"
+                        className="w-full max-w-md py-8 bg-premium-blue border-4 border-white text-white hover:bg-white hover:text-premium-blue font-black uppercase tracking-widest text-xl shadow-[12px_12px_0_rgba(255,255,255,0.2)] hover:shadow-[8px_8px_0_theme(colors.premium-blue)] transition-all flex items-center justify-center gap-4 active:translate-x-2 active:translate-y-2 active:shadow-none mt-4 rounded-none"
                     >
-                        <Sparkles className="w-5 h-5" />
+                        <Sparkles className="w-7 h-7" />
                         INICIAR DESAFIO
                     </button>
                 </motion.div>
@@ -294,9 +282,9 @@ const QuizMode = ({ topic, onBack }) => {
                                 <div
                                     key={i}
                                     className={cn(
-                                        "h-3 transition-all border-2",
-                                        i === currentQuestionIndex ? "bg-[#00f0ff] border-[#00f0ff] w-8 shadow-[2px_2px_0_#00f0ff]" :
-                                            i < currentQuestionIndex ? "bg-[#00f0ff]/20 border-[#00f0ff]/40 w-3" : "bg-transparent border-white/20 w-3"
+                                        "h-4 transition-all border-4 rounded-none",
+                                        i === currentQuestionIndex ? "bg-premium-blue border-premium-blue w-10 shadow-[4px_4px_0_theme(colors.premium-blue)]" :
+                                            i < currentQuestionIndex ? "bg-premium-blue/30 border-premium-blue/50 w-4" : "bg-transparent border-zinc-800 w-4"
                                     )}
                                 />
                             ))}
@@ -312,27 +300,28 @@ const QuizMode = ({ topic, onBack }) => {
                                 exit={{ x: -50, opacity: 0 }}
                                 className="space-y-6 max-w-2xl mx-auto w-full"
                             >
-                                <div className="p-8 bg-zinc-950 border-2 border-white/20 shadow-[8px_8px_0_rgba(255,255,255,0.2)] min-h-[160px] flex items-center justify-center text-center">
-                                    <MathDisplay 
+                                {/* Question Block */}
+                                <div className="p-10 bg-zinc-900 border-4 border-white shadow-[16px_16px_0_rgba(255,255,255,0.2)] min-h-[160px] flex items-center justify-center text-center rounded-none">
+                                    <MathDisplay
                                         content={questions[currentQuestionIndex].text}
-                                        className="prose prose-invert prose-lg prose-headings:font-black prose-headings:uppercase prose-p:font-bold max-w-none"
+                                        className="prose prose-invert prose-xl prose-headings:font-black prose-headings:uppercase prose-p:font-bold max-w-none"
                                     />
                                 </div>
 
-                                {/* Hint System - antes das opções */}
+                                {/* Hint System */}
                                 {!showFeedback && currentHintLevel > 0 && (
                                     <motion.div
                                         initial={{ opacity: 0, y: -10 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        className="p-4 bg-amber-950/30 border-2 border-amber-500/50"
+                                        className="p-6 bg-zinc-900 border-4 border-premium-blue shadow-[8px_8px_0_theme(colors.premium-blue)] rounded-none"
                                     >
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <Lightbulb className="w-4 h-4 text-amber-400" />
-                                            <span className="text-amber-400 text-xs font-black uppercase tracking-widest">
+                                        <div className="flex items-center gap-3 mb-3">
+                                            <Lightbulb className="w-5 h-5 text-premium-blue" />
+                                            <span className="text-premium-blue text-sm font-black uppercase tracking-widest">
                                                 Dica {currentHintLevel}/3
                                             </span>
                                         </div>
-                                        <p className="text-amber-200 text-sm font-medium">
+                                        <p className="text-white text-base font-medium">
                                             {getHint(questions[currentQuestionIndex], currentHintLevel)}
                                         </p>
                                     </motion.div>
@@ -341,100 +330,102 @@ const QuizMode = ({ topic, onBack }) => {
                                 {!showFeedback && currentHintLevel < 3 && (
                                     <button
                                         onClick={handleShowHint}
-                                        className="w-full py-3 bg-zinc-900 border-2 border-amber-500/50 text-amber-400 hover:bg-amber-950/30 font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-2 transition-colors"
+                                        className="w-full py-4 bg-zinc-950 border-4 border-zinc-800 text-zinc-400 hover:border-premium-blue hover:text-premium-blue hover:shadow-[8px_8px_0_theme(colors.premium-blue)] font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-3 transition-all rounded-none"
                                     >
-                                        <Lightbulb className="w-4 h-4" />
+                                        <Lightbulb className="w-5 h-5" />
                                         Preciso de uma dica ({currentHintLevel}/3)
                                     </button>
                                 )}
 
-                                <div className="grid gap-4">
+                                {/* Options */}
+                                <div className="grid gap-5">
                                     {questions[currentQuestionIndex].options.map((opt, i) => {
                                         const isCorrect = i === questions[currentQuestionIndex].correct;
                                         const isSelected = selectedAnswer === i;
-                                        let optionStyle = 'bg-zinc-950 border-white/20 text-zinc-300';
-                                        let shadowStyle = 'shadow-[4px_4px_0_rgba(255,255,255,0.1)]';
+                                        let optionStyle = 'bg-zinc-950 border-zinc-700 text-zinc-300';
+                                        let shadowStyle = 'shadow-[8px_8px_0_rgba(0,0,0,0.5)]';
 
                                         if (showFeedback) {
                                             if (isCorrect) {
                                                 optionStyle = 'bg-emerald-950 border-emerald-500 text-emerald-50';
-                                                shadowStyle = 'shadow-[4px_4px_0_theme(colors.emerald.500)]';
+                                                shadowStyle = 'shadow-[8px_8px_0_theme(colors.emerald.500)]';
                                             }
                                             else if (isSelected && !isCorrect) {
-                                                optionStyle = 'bg-rose-950 border-signal text-rose-50';
-                                                shadowStyle = 'shadow-[4px_4px_0_theme(colors.signal)]';
+                                                optionStyle = 'bg-rose-950 border-rose-500 text-rose-50';
+                                                shadowStyle = 'shadow-[8px_8px_0_theme(colors.rose.500)]';
                                             }
                                             else {
-                                                optionStyle = 'bg-zinc-900 border-white/5 text-zinc-600 opacity-50';
+                                                optionStyle = 'bg-zinc-900 border-zinc-800 text-zinc-600 opacity-50';
                                                 shadowStyle = 'shadow-none';
                                             }
                                         }
                                         return (
                                             <motion.button
                                                 key={i}
-                                                whileHover={!showFeedback ? { x: -2, y: -2, boxShadow: "4px 4px 0px 0px rgba(255,255,255,0.4)" } : {}}
-                                                whileTap={!showFeedback ? { x: 2, y: 2, boxShadow: "0px 0px 0px transparent" } : {}}
+                                                whileHover={!showFeedback ? { x: -4, y: -4, boxShadow: "12px 12px 0px 0px rgba(255,255,255,0.3)" } : {}}
+                                                whileTap={!showFeedback ? { x: 4, y: 4, boxShadow: "0px 0px 0px transparent" } : {}}
                                                 onClick={() => handleAnswer(i)}
                                                 disabled={showFeedback}
                                                 className={cn(
-                                                    `w-full p-6 border-2 text-left flex items-center gap-4 transition-all uppercase font-bold tracking-wide`,
+                                                    `w-full p-6 border-4 text-left flex items-center gap-5 transition-all uppercase font-bold tracking-wide rounded-none`,
                                                     optionStyle,
                                                     shadowStyle
                                                 )}
                                             >
                                                 <div className={cn(
-                                                    'w-8 h-8 flex items-center justify-center text-xs font-black transition-colors border-2',
+                                                    'w-10 h-10 flex items-center justify-center text-sm font-black transition-colors border-4 rounded-none',
                                                     showFeedback && isCorrect ? 'bg-emerald-500 text-zinc-950 border-emerald-500' :
-                                                        showFeedback && isSelected && !isCorrect ? 'bg-signal text-zinc-950 border-signal' :
-                                                            'bg-zinc-900 border-zinc-700 text-zinc-500 group-hover:bg-white group-hover:text-zinc-950 group-hover:border-white'
+                                                        showFeedback && isSelected && !isCorrect ? 'bg-rose-500 text-zinc-950 border-rose-500' :
+                                                            'bg-zinc-900 border-zinc-700 text-zinc-500'
                                                 )}>
-                                                    {showFeedback && isCorrect ? <CheckCircle2 className="w-5 h-5" /> :
-                                                        showFeedback && isSelected && !isCorrect ? <XCircle className="w-5 h-5" /> :
+                                                    {showFeedback && isCorrect ? <CheckCircle2 className="w-6 h-6" /> :
+                                                        showFeedback && isSelected && !isCorrect ? <XCircle className="w-6 h-6" /> :
                                                             String.fromCharCode(65 + i)}
                                                 </div>
                                                 <div className="flex-1">
-                                                    <MathDisplay 
+                                                    <MathDisplay
                                                         content={opt}
-                                                        className="prose prose-invert prose-sm max-w-none"
+                                                        className="prose prose-invert prose-base max-w-none"
                                                     />
                                                 </div>
                                             </motion.button>
                                         );
                                     })}
 
+                                    {/* Feedback Block */}
                                     {showFeedback && (
                                         <motion.div
                                             initial={{ opacity: 0, y: 10 }}
                                             animate={{ opacity: 1, y: 0 }}
-                                            className="space-y-4 mt-2"
+                                            className="space-y-6 mt-2"
                                         >
                                             <div className={cn(
-                                                'p-6 border-2 shadow-[4px_4px_0_rgba(255,255,255,0.1)]',
+                                                'p-8 border-4 rounded-none',
                                                 selectedAnswer === questions[currentQuestionIndex].correct
-                                                    ? 'bg-emerald-950 border-emerald-500'
-                                                    : 'bg-rose-950 border-signal'
+                                                    ? 'bg-emerald-950 border-emerald-500 shadow-[12px_12px_0_theme(colors.emerald.500)]'
+                                                    : 'bg-rose-950 border-rose-500 shadow-[12px_12px_0_theme(colors.rose.500)]'
                                             )}>
-                                                <div className="flex items-center gap-3 mb-4 border-b-2 border-white/10 pb-3">
+                                                <div className="flex items-center gap-4 mb-6 border-b-4 border-zinc-800 pb-4">
                                                     {selectedAnswer === questions[currentQuestionIndex].correct
-                                                        ? <CheckCircle2 className="w-6 h-6 text-emerald-400" />
-                                                        : <XCircle className="w-6 h-6 text-signal" />
+                                                        ? <CheckCircle2 className="w-8 h-8 text-emerald-400" />
+                                                        : <XCircle className="w-8 h-8 text-rose-400" />
                                                     }
-                                                    <span className={cn("font-black tracking-widest uppercase",
-                                                        selectedAnswer === questions[currentQuestionIndex].correct ? "text-emerald-400" : "text-signal"
+                                                    <span className={cn("text-xl font-black tracking-widest uppercase",
+                                                        selectedAnswer === questions[currentQuestionIndex].correct ? "text-emerald-400" : "text-rose-400"
                                                     )}>
                                                         {selectedAnswer === questions[currentQuestionIndex].correct ? 'CORRETO!' : 'INCORRETO!'}
                                                     </span>
                                                 </div>
-                                                <div className="prose prose-invert prose-sm max-w-none text-white font-medium">
-                                                    <MathDisplay 
+                                                <div className="prose prose-invert prose-base max-w-none text-white font-medium">
+                                                    <MathDisplay
                                                         content={questions[currentQuestionIndex].explanation}
-                                                        className="prose prose-invert prose-sm max-w-none text-white font-medium"
+                                                        className="prose prose-invert prose-base max-w-none text-white font-medium"
                                                     />
                                                 </div>
                                             </div>
                                             <button
                                                 onClick={handleNextQuestion}
-                                                className="w-full py-5 bg-white border-2 border-white text-zinc-950 hover:bg-zinc-950 hover:text-white font-black text-sm uppercase tracking-widest shadow-[4px_4px_0_rgba(255,255,255,0.5)] hover:shadow-[0px_0px_0_transparent] transition-all flex items-center justify-center gap-2 active:translate-x-1 active:translate-y-1"
+                                                className="w-full py-8 bg-white border-4 border-white text-zinc-950 hover:bg-zinc-950 hover:text-white hover:border-white font-black text-lg uppercase tracking-widest shadow-[12px_12px_0_rgba(255,255,255,0.5)] hover:shadow-[8px_8px_0_rgba(0,0,0,0.5)] transition-all flex items-center justify-center gap-3 active:translate-x-2 active:translate-y-2 active:shadow-none rounded-none"
                                             >
                                                 {currentQuestionIndex < questions.length - 1 ? 'PRÓXIMA QUESTÃO →' : 'VER RESULTADO'}
                                             </button>
@@ -443,11 +434,12 @@ const QuizMode = ({ topic, onBack }) => {
                                 </div>
                             </motion.div>
                         ) : (
+                            /* ===== RESULTS SCREEN ===== */
                             <motion.div
                                 key="results"
                                 initial={{ scale: 0.95, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
-                                className="flex-1 flex flex-col items-center justify-center gap-8 py-12 max-w-md mx-auto w-full"
+                                className="flex-1 flex flex-col items-center justify-center gap-10 py-12 max-w-md mx-auto w-full"
                             >
                                 {(() => {
                                     const result = getResultMessage();
@@ -455,107 +447,109 @@ const QuizMode = ({ topic, onBack }) => {
                                     return (
                                         <>
                                             <div className={cn(
-                                                "w-32 h-32 border-4 shadow-[8px_8px_0_rgba(255,255,255,0.1)] flex items-center justify-center mb-4 bg-zinc-950",
-                                                pct >= 60 ? "border-emerald-500" : "border-amber-500"
+                                                "w-36 h-36 border-8 flex items-center justify-center bg-zinc-900 transform rotate-6 rounded-none",
+                                                pct >= 60
+                                                    ? "border-emerald-500 shadow-[16px_16px_0_theme(colors.emerald.500)]"
+                                                    : "border-premium-blue shadow-[16px_16px_0_theme(colors.premium-blue)]"
                                             )}>
-                                                <span className="text-6xl">{result.emoji}</span>
+                                                <span className="text-7xl transform -rotate-6">{result.emoji}</span>
                                             </div>
-                                            <div className="text-center space-y-4 bg-zinc-950 border-2 border-white/20 p-8 shadow-[4px_4px_0_rgba(255,255,255,0.2)] w-full">
-                                                <h3 className="text-3xl font-black text-white uppercase tracking-tight">{result.text}</h3>
-                                                <div className="border-2 border-white/10 bg-zinc-900 p-3 mx-auto">
-                                                    <p className="text-white font-black tracking-widest uppercase">VOCÊ ACERTOU {score} DE {questions.length}</p>
-                                                    <p className="text-[#00f0ff] font-bold text-lg">{pct}% DE PRECISÃO</p>
+                                            <div className="text-center bg-zinc-900 border-4 border-white p-10 shadow-[12px_12px_0_rgba(255,255,255,0.2)] w-full rounded-none">
+                                                <h3 className="text-4xl font-black text-white uppercase tracking-widest">{result.text}</h3>
+                                                <div className="border-4 border-zinc-800 bg-zinc-950 p-4 mx-auto mt-6">
+                                                    <p className="text-white font-black tracking-widest uppercase text-lg">VOCÊ ACERTOU {score} DE {questions.length}</p>
+                                                    <p className="text-premium-blue font-black text-2xl mt-2">{pct}% DE PRECISÃO</p>
                                                 </div>
-                                                <p className="text-zinc-400 text-xs font-black uppercase tracking-widest">{result.sub}</p>
+                                                <p className="text-zinc-500 text-sm font-black uppercase tracking-widest mt-6">{result.sub}</p>
                                             </div>
                                         </>
                                     );
                                 })()}
-                                <div className="flex flex-col sm:flex-row gap-4 w-full">
+                                <div className="flex flex-col sm:flex-row gap-6 w-full">
                                     <button
                                         onClick={onBack}
-                                        className="flex-1 py-4 bg-zinc-950 border-2 border-white/20 text-white font-black uppercase tracking-widest text-[10px] shadow-[4px_4px_0_rgba(255,255,255,0.2)] hover:border-white hover:shadow-[0px_0px_0_transparent] transition-all active:translate-x-1 active:translate-y-1"
+                                        className="flex-1 py-6 bg-zinc-950 border-4 border-zinc-700 text-zinc-400 font-black uppercase tracking-widest text-sm shadow-[8px_8px_0_rgba(0,0,0,0.5)] hover:border-white hover:text-white hover:shadow-[8px_8px_0_rgba(255,255,255,0.2)] transition-all active:translate-x-2 active:translate-y-2 active:shadow-none rounded-none"
                                     >
                                         DASHBOARD
                                     </button>
-                                <button
-                                    onClick={loadQuiz}
-                                    className="flex-1 py-4 bg-zinc-950 border-2 border-[#00f0ff] text-[#00f0ff] font-black uppercase tracking-widest text-[10px] shadow-[4px_4px_0_#00f0ff] hover:bg-[#00f0ff] hover:text-zinc-950 hover:shadow-[0px_0px_0_transparent] transition-all flex items-center justify-center gap-2 active:translate-x-1 active:translate-y-1"
-                                >
-                                    <RefreshCw className="w-4 h-4" />
-                                    NOVAS
-                                </button>
-                            </div>
-                            
-                            {/* Botão para ver trilha personalizada */}
-                            {(() => {
-                                const pct = Math.round((score / questions.length) * 100);
-                                return pct < 70 ? (
                                     <button
-                                        onClick={() => {
-                                            handleQuizCompletion(topic, score, questions.length);
-                                            setShowLearningPath(true);
-                                        }}
-                                        className="w-full py-4 bg-amber-500 border-2 border-amber-500 text-zinc-950 font-black uppercase tracking-widest text-[10px] shadow-[4px_4px-0_theme(colors.amber.500)] hover:bg-zinc-950 hover:text-amber-500 transition-all flex items-center justify-center gap-2 mt-2"
+                                        onClick={loadQuiz}
+                                        className="flex-1 py-6 bg-zinc-950 border-4 border-premium-blue text-premium-blue font-black uppercase tracking-widest text-sm shadow-[8px_8px_0_theme(colors.premium-blue)] hover:bg-premium-blue hover:text-white transition-all flex items-center justify-center gap-3 active:translate-x-2 active:translate-y-2 active:shadow-none rounded-none"
                                     >
-                                        <Sparkles className="w-4 h-4" />
-                                        VER TRILHA PERSONALIZADA
+                                        <RefreshCw className="w-5 h-5" />
+                                        NOVAS
                                     </button>
-                                ) : null;
-                            })()}
-                            
-                            {/* Trilha de Aprendizado Personalizada */}
-                            {showLearningPath && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    className="w-full bg-zinc-900 border-2 border-amber-500 p-6 mt-4"
-                                >
-                                    <div className="flex items-center gap-3 mb-4">
-                                        <Sparkles className="w-5 h-5 text-amber-500" />
-                                        <h4 className="text-white font-black uppercase tracking-wider">
-                                            Sua Trilha de Estudo
-                                        </h4>
-                                    </div>
-                                    
-                                    <div className="space-y-3">
-                                        {generateLearningPath().slice(0, 3).map((item, index) => (
-                                            <div 
-                                                key={index}
-                                                className="flex items-center gap-3 p-3 bg-zinc-950 border border-white/10"
-                                            >
-                                                <div className={cn(
-                                                    "w-8 h-8 flex items-center justify-center font-black text-xs",
-                                                    item.priority === 'high' ? "bg-signal text-zinc-950" :
-                                                    item.priority === 'medium' ? "bg-amber-500 text-zinc-950" :
-                                                    "bg-zinc-700 text-white"
-                                                )}>
-                                                    {index + 1}
-                                                </div>
-                                                <div className="flex-1">
-                                                    <p className="text-white font-bold text-sm">{item.topic}</p>
-                                                    <p className="text-zinc-500 text-xs">{item.reason}</p>
-                                                </div>
-                                                {item.type === 'prerequisite' && (
-                                                    <span className="text-[8px] font-black uppercase text-orange-400 border border-orange-400 px-2 py-1">
-                                                        PRÉ-REQ
-                                                    </span>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
-                                    
-                                    <button
-                                        onClick={() => setShowLearningPath(false)}
-                                        className="w-full mt-4 py-2 text-zinc-500 text-xs font-black uppercase tracking-widest hover:text-white"
+                                </div>
+
+                                {/* Botão para ver trilha personalizada */}
+                                {(() => {
+                                    const pct = Math.round((score / questions.length) * 100);
+                                    return pct < 70 ? (
+                                        <button
+                                            onClick={() => {
+                                                handleQuizCompletion(topic, score, questions.length);
+                                                setShowLearningPath(true);
+                                            }}
+                                            className="w-full py-6 bg-premium-blue border-4 border-white text-white font-black uppercase tracking-widest text-sm shadow-[8px_8px_0_rgba(255,255,255,0.2)] hover:bg-white hover:text-premium-blue transition-all flex items-center justify-center gap-3 mt-2 rounded-none"
+                                        >
+                                            <Sparkles className="w-5 h-5" />
+                                            VER TRILHA PERSONALIZADA
+                                        </button>
+                                    ) : null;
+                                })()}
+
+                                {/* Trilha de Aprendizado Personalizada */}
+                                {showLearningPath && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="w-full bg-zinc-900 border-4 border-premium-blue p-8 mt-4 shadow-[12px_12px_0_theme(colors.premium-blue)] rounded-none"
                                     >
-                                        FECHAR
-                                    </button>
-                                </motion.div>
-                            )}
+                                        <div className="flex items-center gap-4 mb-6 border-b-4 border-zinc-800 pb-4">
+                                            <Sparkles className="w-6 h-6 text-premium-blue" />
+                                            <h4 className="text-white font-black uppercase tracking-widest text-lg">
+                                                Sua Trilha de Estudo
+                                            </h4>
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            {generateLearningPath().slice(0, 3).map((item, index) => (
+                                                <div
+                                                    key={index}
+                                                    className="flex items-center gap-4 p-4 bg-zinc-950 border-4 border-zinc-800 shadow-[4px_4px_0_rgba(0,0,0,0.5)] rounded-none"
+                                                >
+                                                    <div className={cn(
+                                                        "w-10 h-10 flex items-center justify-center font-black text-sm border-4 rounded-none",
+                                                        item.priority === 'high' ? "bg-rose-500 text-zinc-950 border-rose-500" :
+                                                            item.priority === 'medium' ? "bg-premium-blue text-white border-premium-blue" :
+                                                                "bg-zinc-800 text-white border-zinc-700"
+                                                    )}>
+                                                        {index + 1}
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <p className="text-white font-bold text-base">{item.topic}</p>
+                                                        <p className="text-zinc-500 text-sm">{item.reason}</p>
+                                                    </div>
+                                                    {item.type === 'prerequisite' && (
+                                                        <span className="text-[9px] font-black uppercase text-premium-blue border-2 border-premium-blue px-3 py-1">
+                                                            PRÉ-REQ
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        <button
+                                            onClick={() => setShowLearningPath(false)}
+                                            className="w-full mt-6 py-3 text-zinc-500 text-sm font-black uppercase tracking-widest hover:text-white border-4 border-zinc-800 hover:border-white transition-all rounded-none"
+                                        >
+                                            FECHAR
+                                        </button>
+                                    </motion.div>
+                                )}
                                 <button
                                     onClick={startQuiz}
-                                    className="w-full py-5 bg-emerald-500 border-2 border-emerald-500 text-zinc-950 hover:bg-zinc-950 hover:text-emerald-500 font-black uppercase tracking-widest text-[11px] shadow-[4px_4px_0_theme(colors.emerald.500)] hover:shadow-[0px_0px_0_transparent] transition-all active:translate-x-1 active:translate-y-1 mt-2"
+                                    className="w-full py-8 bg-emerald-500 border-4 border-white text-zinc-950 hover:bg-zinc-950 hover:text-emerald-500 hover:border-emerald-500 font-black uppercase tracking-widest text-base shadow-[12px_12px_0_theme(colors.emerald.500)] hover:shadow-[8px_8px_0_theme(colors.emerald.500)] transition-all active:translate-x-2 active:translate-y-2 active:shadow-none mt-2 rounded-none"
                                 >
                                     TENTAR NOVAMENTE (MESMAS QUESTÕES)
                                 </button>

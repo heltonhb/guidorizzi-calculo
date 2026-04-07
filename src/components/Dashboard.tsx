@@ -132,6 +132,19 @@ const Dashboard = ({ onNavigate }) => {
                         number="03"
                         icon={<MessageSquare className="w-12 h-12" />}
                         onClick={() => onNavigate('chat')}
+                    />
+                </motion.div>
+
+                {/* Mode: Quiz */}
+                <motion.div
+                    initial={{ x: 100, opacity: 0, rotate: 5 }} animate={{ x: 0, opacity: 1, rotate: 2 }}
+                    className="absolute sm:top-[700px] sm:right-24 right-4 top-[840px] w-[85%] sm:w-[50%] z-20 mb-32"
+                >
+                    <RadicalCard
+                        title="Quiz Guidorizzi"
+                        number="04"
+                        icon={<Sparkles className="w-12 h-12" />}
+                        onClick={() => onNavigate('quiz', currentTopic)}
                         accent
                     />
                 </motion.div>
