@@ -45,12 +45,12 @@ function AppContent(): JSX.Element {
   }, []);
 
   return (
-    <div 
-      className="min-h-screen text-zinc-100 font-sans selection:bg-cyber selection:text-zinc-950 relative max-w-[100vw]" 
-      style={{ 
+    <div
+      className="min-h-screen text-zinc-100 font-sans selection:bg-cyber selection:text-zinc-950 relative max-w-[100vw]"
+      style={{
         overflowX: 'clip',
-        background: isDashboard 
-          ? 'linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%)'
+        background: isDashboard
+          ? '#e4e4e7'
           : '#050505'
       }}
     >

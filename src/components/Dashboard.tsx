@@ -80,7 +80,7 @@ const Dashboard = ({ onNavigate }) => {
                     >
                         <div>
                             <p className="text-3xl font-black text-orange-500">{xp} <span className="text-lg">XP</span></p>
-                            <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider">{nextLevelXP - progressToNextLevel} para próximo nível</p>
+                            <p className="text-xs font-bold text-zinc-700 uppercase tracking-wider">{nextLevelXP - progressToNextLevel} para próximo nível</p>
                         </div>
                         <div className="bg-zinc-800 border-4 border-black p-1 shadow-[4px_4px_0_rgba(0,0,0,1)] flex items-center">
                             <div className="flex-1 h-6 bg-zinc-900 border-r-4 border-black overflow-hidden flex">
@@ -97,8 +97,8 @@ const Dashboard = ({ onNavigate }) => {
 
             <motion.div variants={itemVariants} className="relative z-50">
                 <div className={cn(
-                    "relative flex items-center bg-zinc-400 border-4 border-black transition-all duration-200 mt-2",
-                    isFocused ? "shadow-[8px_8px_0_theme(colors.black)] translate-x-[-2px] translate-y-[-2px]" : "shadow-[6px_6px_0_rgba(0,0,0,1)]"
+                    "relative flex items-center bg-white border-4 border-black transition-all duration-200 mt-2",
+                    isFocused ? "shadow-[8px_8px_0_#000]" : "shadow-[6px_6px_0_#000]"
                 )}>
                     <Search className="ml-4 w-6 h-6 text-black flex-shrink-0" strokeWidth={3} />
                     <input
@@ -177,30 +177,22 @@ const Card = ({ title, description, icon, color, onClick, variants }) => {
         cyan: {
             border: "border-cyan-400",
             text: "text-cyan-400",
-            iconColor: "text-cyan-400",
-            bevel: "#22d3ee", // cyan-400
-            gradient: "from-cyan-500/20",
+            iconColor: "text-cyan-400"
         },
         signal: {
             border: "border-orange-500",
             text: "text-orange-500",
-            iconColor: "text-orange-500",
-            bevel: "#f97316", // orange-500
-            gradient: "from-orange-500/20",
+            iconColor: "text-orange-500"
         },
         lime: {
             border: "border-lime-400",
             text: "text-lime-400",
-            iconColor: "text-lime-400",
-            bevel: "#a3e635", // lime-400
-            gradient: "from-lime-500/20",
+            iconColor: "text-lime-400"
         },
         emerald: {
             border: "border-emerald-400",
             text: "text-emerald-400",
-            iconColor: "text-emerald-400",
-            bevel: "#34d399", // emerald-400
-            gradient: "from-emerald-500/20",
+            iconColor: "text-emerald-400"
         }
     };
 
@@ -209,47 +201,23 @@ const Card = ({ title, description, icon, color, onClick, variants }) => {
     return (
         <motion.button
             variants={variants}
-            whileHover={{ 
-                y: -4,
-                transition: { duration: 0.15 }
-            }}
-            whileTap={{ 
-                y: 4,
+            whileTap={{
                 scale: 0.98,
                 transition: { duration: 0.1 }
             }}
             onClick={onClick}
             className={cn(
                 "group relative w-full p-4 sm:p-5 text-left transition-all overflow-visible",
-                "bg-zinc-800 border-4 border-black rounded-xl outline-none focus:ring-4 focus:ring-offset-2 focus:ring-offset-black focus:ring-white",
-                colors.border
+                "bg-zinc-800 border-4 border-black outline-none focus:ring-4 focus:ring-offset-2 focus:ring-offset-black focus:ring-white",
             )}
             style={{
-                // 3D effect com sombras negras profundas
-                boxShadow: `
-                    0px 8px 0px 0px ${colors.bevel},
-                    0px 12px 0px 0px #000,
-                    0px 16px 24px -4px rgba(0,0,0,0.8),
-                    inset 0px 1px 0px 0px rgba(255,255,255,0.1)
-                `
+                boxShadow: `8px 8px 0px 0px #000`
             }}
         >
-            {/* Gradiente interno para profundidade */}
-            <div className={cn(
-                "absolute inset-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-0",
-                "bg-gradient-to-b", colors.gradient, "to-transparent"
-            )} />
-
-            {/* Borda brilhante no hover */}
-            <div className={cn(
-                "absolute inset-[-2px] rounded-[14px] opacity-0 group-hover:opacity-40 transition-opacity duration-300 pointer-events-none",
-                "shadow-[0_0_20px]", colors.iconColor
-            )} style={{ filter: 'blur(8px)' }} />
-
             <div className="flex items-center gap-4 sm:gap-6 relative z-10">
                 {/* Icon Layout */}
                 <div className={cn(
-                    "flex-shrink-0 w-12 h-12 flex items-center justify-center transition-all duration-200 group-hover:scale-110 group-hover:drop-shadow-[0_0_12px]",
+                    "flex-shrink-0 w-12 h-12 flex items-center justify-center transition-transform duration-200 group-hover:scale-110",
                     colors.iconColor
                 )}>
                     {icon}
@@ -265,12 +233,6 @@ const Card = ({ title, description, icon, color, onClick, variants }) => {
                     </p>
                 </div>
             </div>
-
-            {/* Brilho sutil no canto */}
-            <div className={cn(
-                "absolute top-2 right-2 w-8 h-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none",
-                "bg-gradient-to-br", colors.gradient
-            )} style={{ filter: 'blur(8px)' }} />
         </motion.button>
     );
 };
