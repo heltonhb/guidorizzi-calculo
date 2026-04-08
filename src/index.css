@@ -229,3 +229,50 @@ html.light .hover\:bg-zinc-800:hover {
     background-color: #1f2937;
     color: #ffffff;
 }
+
+/* Flashcard Content Overflow Management */
+.flashcard-content {
+    overflow-y: auto;
+    max-height: calc(100% - 120px);
+    overflow-x: hidden;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.flashcard-content p,
+.flashcard-content strong,
+.flashcard-content em,
+.flashcard-content li,
+.flashcard-content code {
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+.flashcard-content .katex-display {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.flashcard-content .katex {
+    font-size: 0.95em;
+}
+
+/* Custom scrollbar for flashcard content */
+.flashcard-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.flashcard-content::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+
+.flashcard-content::-webkit-scrollbar-thumb {
+    background: rgba(0, 240, 255, 0.3);
+    border-radius: 3px;
+    transition: background 0.2s;
+}
+
+.flashcard-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 240, 255, 0.6);
+}

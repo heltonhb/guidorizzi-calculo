@@ -186,11 +186,11 @@ const Flashcards = ({ topic, onBack }) => {
                             style={{ transformStyle: "preserve-3d" }}
                         >
                             <div className={cn(
-                                "w-full h-full border-4 border-white flex flex-col items-center justify-center p-6 sm:p-8 text-center",
+                                "w-full h-full border-4 border-white flex flex-col items-center justify-center p-6 sm:p-8 text-center overflow-hidden",
                                 known.has(currentIndex) ? "bg-[#064e3b]" : "bg-[#2a2a2a]"
                             )} style={isFlipped ? { transform: 'scaleX(-1)' } : {}}>
 
-                                <div className="flex-1 flex flex-col items-center justify-center w-full relative">
+                                <div className="flashcard-content flex-1 flex flex-col items-center justify-center w-full relative">
                                     <div className="prose prose-invert max-w-none w-full">
                                         <ReactMarkdown
                                             remarkPlugins={[remarkMath]}
