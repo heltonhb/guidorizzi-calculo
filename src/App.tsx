@@ -7,7 +7,7 @@ import { AppContext } from './context/createAppContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { ErrorNotification } from './components/ErrorNotification';
 import { ToastProvider } from './components/Toast';
-import Dashboard from './components/Dashboard';
+import DashboardContainer from './components/DashboardContainer';
 import BottomNav from './components/BottomNav';
 import { installConsoleCommands } from './lib/notebookConsole';
 
@@ -96,7 +96,7 @@ function AppContent(): JSX.Element {
               exit={{ opacity: 0, y: -20, transition: { duration: 0.2 } }}
               transition={{ type: "spring", stiffness: 260, damping: 20 }}
             >
-              <Dashboard onNavigate={navigateTo} />
+              <DashboardContainer onNavigate={navigateTo} />
             </motion.div>
           )}
           {view === 'material' && (
