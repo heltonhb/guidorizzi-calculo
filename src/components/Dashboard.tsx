@@ -179,24 +179,28 @@ const Card = ({ title, description, icon, color, onClick, variants }) => {
             text: "text-cyan-400",
             iconColor: "text-cyan-400",
             bevel: "#22d3ee", // cyan-400
+            gradient: "from-cyan-500/20",
         },
         signal: {
             border: "border-orange-500",
             text: "text-orange-500",
             iconColor: "text-orange-500",
             bevel: "#f97316", // orange-500
+            gradient: "from-orange-500/20",
         },
         lime: {
             border: "border-lime-400",
             text: "text-lime-400",
             iconColor: "text-lime-400",
             bevel: "#a3e635", // lime-400
+            gradient: "from-lime-500/20",
         },
         emerald: {
             border: "border-emerald-400",
             text: "text-emerald-400",
             iconColor: "text-emerald-400",
             bevel: "#34d399", // emerald-400
+            gradient: "from-emerald-500/20",
         }
     };
 
@@ -205,24 +209,48 @@ const Card = ({ title, description, icon, color, onClick, variants }) => {
     return (
         <motion.button
             variants={variants}
-            // Add a slight hover lift and deepen the shadow to emphasize the 3D button press.
-            whileHover={{ y: -2 }}
-            whileTap={{ y: 6, boxShadow: `0px 2px 0px 0px ${colors.bevel}, 0px 4px 0px 0px #000` }}
+            whileHover={{ 
+                y: -4,
+                transition: { duration: 0.15 }
+            }}
+            whileTap={{ 
+                y: 4,
+                scale: 0.98,
+                transition: { duration: 0.1 }
+            }}
             onClick={onClick}
             className={cn(
                 "group relative w-full p-4 sm:p-5 text-left transition-all overflow-visible",
-                "bg-[#111] border-4 rounded-xl outline-none focus:ring-4 focus:ring-offset-2 focus:ring-offset-black focus:ring-white",
+                "bg-[#0a0a0a] border-4 rounded-xl outline-none focus:ring-4 focus:ring-offset-2 focus:ring-offset-black focus:ring-white",
                 colors.border
             )}
             style={{
-                // Stacked shadow: first layer creates the physical edge (bevel), second layer creates the drop shadow
-                boxShadow: `0px 6px 0px 0px ${colors.bevel}, 0px 12px 0px 0px #000`
+                // 3D stacked shadow effect - multiple layers for depth
+                boxShadow: `
+                    0px 1px 0px 0px rgba(255,255,255,0.05) inset,
+                    0px -2px 0px 0px rgba(0,0,0,0.5) inset,
+                    0px 8px 0px 0px ${colors.bevel},
+                    0px 16px 0px 0px #000,
+                    0px 24px 32px -8px rgba(0,0,0,0.6)
+                `
             }}
         >
+            {/* Gradiente interno para efeito 3D */}
+            <div className={cn(
+                "absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-0",
+                "bg-gradient-to-br", colors.gradient, "to-transparent"
+            )} />
+            
+            {/* Borda brilhante no hover */}
+            <div className={cn(
+                "absolute inset-[-1px] rounded-[14px] opacity-0 group-hover:opacity-50 transition-opacity duration-300 pointer-events-none",
+                "shadow-[0_0_20px]", colors.iconColor
+            )} style={{ filter: 'blur(6px)' }} />
+
             <div className="flex items-center gap-4 sm:gap-6 relative z-10">
                 {/* Icon Layout */}
                 <div className={cn(
-                    "flex-shrink-0 w-12 h-12 flex items-center justify-center transition-transform duration-200 group-hover:scale-110",
+                    "flex-shrink-0 w-12 h-12 flex items-center justify-center transition-all duration-200 group-hover:scale-110 group-hover:drop-shadow-[0_0_12px]",
                     colors.iconColor
                 )}>
                     {icon}
@@ -239,8 +267,11 @@ const Card = ({ title, description, icon, color, onClick, variants }) => {
                 </div>
             </div>
 
-            {/* Inner background highlight on hover matching brutalist principles */}
-            <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none z-0 rounded-lg" />
+            {/* Brilho sutil no canto */}
+            <div className={cn(
+                "absolute top-2 right-2 w-8 h-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none",
+                "bg-gradient-to-br", colors.gradient
+            )} style={{ filter: 'blur(8px)' }} />
         </motion.button>
     );
 };
