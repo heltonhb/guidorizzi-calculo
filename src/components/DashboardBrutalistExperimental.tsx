@@ -1,8 +1,7 @@
 import { useState, ReactNode } from 'react';
-import { BookCheck, MessageSquare, Presentation, Search, Trophy, Zap } from 'lucide-react';
+import { BookCheck, Trophy, Presentation, MessageSquare, Search, Zap } from 'lucide-react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { cn } from '../lib/utils';
-import contentData from '../data/content.json';
 import { useAppContext } from '../hooks/useAppContext';
 
 interface DashboardProps {
@@ -24,34 +23,29 @@ interface ExperimentalCardProps {
 }
 
 const DashboardBrutalistExperimental = ({ onNavigate }: DashboardProps) => {
-    const [search, setSearch] = useState('');
-    const [isFocused, setIsFocused] = useState(false);
-    const { xp, level, progressToNextLevel, nextLevelXP } = useAppContext();
+  const [search, setSearch] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
+  const { xp, level, progressToNextLevel, nextLevelXP } = useAppContext();
 
-    const topics = Object.keys(contentData);
-    const filteredTopics = topics.filter(t => t.toLowerCase().includes(search.toLowerCase()));
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.06,
+        delayChildren: 0.1
+      }
+    }
+  };
 
-    const currentTopic = search.trim() !== '' ? search : (filteredTopics[0] || 'Limites');
-
-    const containerVariants: Variants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.06,
-                delayChildren: 0.1
-            }
-        }
-    };
-
-    const itemVariants: Variants = {
-        hidden: { y: 25, opacity: 0 },
-        visible: { 
-            y: 0, 
-            opacity: 1, 
-            transition: { type: 'spring' as const, stiffness: 400, damping: 35 } 
-        }
-    };
+  const itemVariants: Variants = {
+    hidden: { y: 25, opacity: 0 },
+    visible: { 
+      y: 0, 
+      opacity: 1, 
+      transition: { type: 'spring' as const, stiffness: 400, damping: 35 } 
+    }
+  };
 
     return (
         <motion.div
@@ -195,19 +189,15 @@ const DashboardBrutalistExperimental = ({ onNavigate }: DashboardProps) => {
                                 boxShadow: '8px 8px 0px rgba(0, 240, 255, 0.5)'
                             }}
                         >
-                            {filteredTopics.map((t, idx) => (
-                                <button
-                                    key={t}
-                                    onClick={() => { setSearch(t); setIsFocused(false); }}
-                                    className={cn(
-                                        "w-full text-left px-5 py-4 font-black uppercase tracking-wider text-white transition-all font-mono",
-                                        idx < filteredTopics.length - 1 ? "border-b-2 border-zinc-800" : "",
-                                        "hover:bg-zinc-900 hover:text-[#00f0ff] hover:pl-7"
-                                    )}
-                                >
-                                    {t}
-                                </button>
-                            ))}
+                            <button
+                                onClick={() => { setIsFocused(false); }}
+                                className={cn(
+                                    "w-full text-left px-5 py-4 font-black uppercase tracking-wider text-white transition-all font-mono",
+                                    "hover:bg-zinc-900 hover:text-[#00f0ff] hover:pl-7"
+                                )}
+                            >
+                                {search}
+                            </button>
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -224,7 +214,7 @@ const DashboardBrutalistExperimental = ({ onNavigate }: DashboardProps) => {
                     icon={<BookCheck className="w-10 h-10" />}
                     accentColor="#00f0ff"
                     secondaryColor="#ff5500"
-                    onClick={() => onNavigate('study', currentTopic)}
+                    onClick={() => onNavigate('study')}
                     position="top-0 left-0"
                     className="lg:w-1/3"
                 />
@@ -238,7 +228,7 @@ const DashboardBrutalistExperimental = ({ onNavigate }: DashboardProps) => {
                     icon={<Trophy className="w-10 h-10" />}
                     accentColor="#ccff00"
                     secondaryColor="#00d084"
-                    onClick={() => onNavigate('quiz', currentTopic)}
+                    onClick={() => onNavigate('quiz')}
                     position="top-32 right-0 lg:top-0 lg:left-1/3"
                     className="lg:w-1/3"
                     delay={0.1}
@@ -253,7 +243,7 @@ const DashboardBrutalistExperimental = ({ onNavigate }: DashboardProps) => {
                     icon={<Presentation className="w-10 h-10" />}
                     accentColor="#ff5500"
                     secondaryColor="#ccff00"
-                    onClick={() => onNavigate('flashcards', currentTopic)}
+                    onClick={() => onNavigate('flashcards')}
                     position="top-64 left-0 lg:top-0 lg:left-2/3"
                     className="lg:w-1/3"
                     delay={0.2}

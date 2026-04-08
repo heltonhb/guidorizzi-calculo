@@ -186,19 +186,23 @@ const Flashcards = ({ topic, onBack }) => {
                             style={{ transformStyle: "preserve-3d" }}
                         >
                             <div className={cn(
-                                "w-full h-full border-4 border-white flex flex-col items-center justify-center p-6 sm:p-8 text-center overflow-hidden",
+                                "w-full h-full border-4 border-white flex flex-col items-center justify-center p-4 sm:p-6 text-center overflow-hidden",
                                 known.has(currentIndex) ? "bg-[#064e3b]" : "bg-[#2a2a2a]"
                             )} style={isFlipped ? { transform: 'scaleX(-1)' } : {}}>
 
-                                <div className="flashcard-content flex-1 flex flex-col items-center justify-center w-full relative">
-                                    <div className="prose prose-invert max-w-none w-full">
+                                <div className="flashcard-safe relative w-full">
+                                    <div className="flashcard-text-container">
                                         <ReactMarkdown
                                             remarkPlugins={[remarkMath]}
                                             rehypePlugins={[rehypeKatex]}
                                             components={{
-                                                p: ({ children }) => <p className="text-white font-black text-2xl sm:text-3xl leading-tight tracking-tight">{children}</p>,
+                                                p: ({ children }) => <p className="text-white font-black text-xl sm:text-2xl leading-snug tracking-tight break-words m-0">{children}</p>,
                                                 strong: ({ children }) => <strong className="text-[#f97316]">{children}</strong>,
                                                 em: ({ children }) => <em className="text-cyan-400">{children}</em>,
+                                                h1: ({ children }) => <h1 className="text-white font-black text-lg sm:text-xl break-words m-2 mt-0">{children}</h1>,
+                                                h2: ({ children }) => <h2 className="text-white font-black text-base sm:text-lg break-words m-2 mt-0">{children}</h2>,
+                                                ul: ({ children }) => <ul className="list-disc list-inside text-white break-words m-1">{children}</ul>,
+                                                li: ({ children }) => <li className="text-white text-sm sm:text-base break-words">{children}</li>,
                                             }}
                                         >
                                             {isFlipped ? (flashcards[currentIndex]?.back || '') : preprocessMathContent(flashcards[currentIndex]?.front || '')}

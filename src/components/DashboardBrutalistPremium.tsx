@@ -1,262 +1,269 @@
 import { useState, ReactNode } from 'react';
-import { BookCheck, MessageSquare, Presentation, Search, Trophy } from 'lucide-react';
-import { motion, AnimatePresence, Variants } from 'framer-motion';
-import { cn } from '../lib/utils';
-import contentData from '../data/content.json';
+import { BookOpen, ListTodo, Zap, MessageCircle } from 'lucide-react';
+import { motion, Variants } from 'framer-motion';
 import { useAppContext } from '../hooks/useAppContext';
 
 interface DashboardProps {
-    onNavigate: (view: string, topic?: string) => void;
+  onNavigate: (view: string, topic?: string) => void;
 }
 
-interface PremiumCardProps {
-    title: string;
-    description: string;
-    icon: ReactNode;
-    accentColor: string;
-    onClick: () => void;
-    variants: Variants;
+interface MenuItemProps {
+  title: string;
+  description: string;
+  icon: ReactNode;
+  color: string;
+  onClick: () => void;
+  variants: Variants;
 }
 
 const DashboardBrutalistPremium = ({ onNavigate }: DashboardProps) => {
-    const [search, setSearch] = useState('');
-    const [isFocused, setIsFocused] = useState(false);
-    const { xp, level, progressToNextLevel, nextLevelXP } = useAppContext();
+  const [search, setSearch] = useState('');
+  const { xp, level, progressToNextLevel, nextLevelXP } = useAppContext();
 
-    const topics = Object.keys(contentData);
-    const filteredTopics = topics.filter(t => t.toLowerCase().includes(search.toLowerCase()));
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.06,
+        delayChildren: 0.1
+      }
+    }
+  };
 
-    const currentTopic = search.trim() !== '' ? search : (filteredTopics[0] || 'Limites');
+  const itemVariants: Variants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: { type: 'spring' as const, stiffness: 350, damping: 30 }
+    }
+  };
 
-    const containerVariants: Variants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.08,
-                delayChildren: 0.15
-            }
-        }
-    };
+  const nextLevelXPRemaining = nextLevelXP - (nextLevelXP * progressToNextLevel / 100);
 
-    const itemVariants: Variants = {
-        hidden: { y: 20, opacity: 0 },
-        visible: { 
-            y: 0, 
-            opacity: 1, 
-            transition: { type: 'spring' as const, stiffness: 350, damping: 30 } 
-        }
-    };
-
-    return (
+  return (
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="min-h-screen flex flex-col bg-[#333333] max-w-md mx-auto relative pb-20"
+      style={{
+        backgroundImage: 'radial-gradient(circle at center, #444 1px, transparent 1px)',
+        backgroundSize: '20px 20px'
+      }}
+    >
+      {/* Header */}
+      <header className="p-4 pt-8">
         <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={containerVariants}
-            className="flex flex-col gap-8 pb-10 px-4 sm:px-6"
-            style={{
-                backgroundImage: `
-                    linear-gradient(0deg, transparent 24%, rgba(255, 200, 0, 0.03) 25%, rgba(255, 200, 0, 0.03) 26%, transparent 27%, transparent 74%, rgba(255, 200, 0, 0.03) 75%, rgba(255, 200, 0, 0.03) 76%, transparent 77%, transparent),
-                    linear-gradient(90deg, transparent 24%, rgba(255, 200, 0, 0.03) 25%, rgba(255, 200, 0, 0.03) 26%, transparent 27%, transparent 74%, rgba(255, 200, 0, 0.03) 75%, rgba(255, 200, 0, 0.03) 76%, transparent 77%, transparent)
-                `,
-                backgroundSize: '50px 50px',
-                backgroundColor: '#0a0a0a'
-            }}
+          variants={itemVariants}
+          className="bg-[#f89e13] text-black font-bold text-3xl text-center py-4 border-4 border-black rounded-lg shadow-precision uppercase tracking-wider"
         >
-            {/* HEADER: Level Badge + XP Progress */}
-            <header className="space-y-6">
-                {/* Level Badge - Brutalist Premium */}
-                <motion.div
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.1 }}
-                    className="inline-flex items-center gap-4"
-                >
-                    <div className="relative">
-                        <div className="absolute -inset-1 bg-gradient-to-r from-[#ccff00] to-[#00f0ff] opacity-0 group-hover:opacity-20 blur-lg transition-opacity duration-300" />
-                        <div className="relative w-32 h-32 rounded-none bg-zinc-950 border-4 border-[#ccff00] flex flex-col items-center justify-center shadow-[8px_8px_0_rgba(204,255,0,0.5)]">
-                            <p className="text-4xl font-black text-[#ccff00] font-mono">{level}</p>
-                            <p className="text-[11px] font-black text-[#ccff00] uppercase tracking-widest mt-1">LEVEL</p>
-                        </div>
-                    </div>
-
-                    {/* XP Stats Block */}
-                    <div className="flex-1 space-y-3">
-                        <div className="bg-zinc-950 border-3 border-[#ff5500] px-5 py-4 shadow-[6px_6px_0_rgba(255,85,0,0.6)]">
-                            <p className="text-3xl font-black text-[#ff5500] font-mono">{xp}</p>
-                            <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider mt-1">XP TOTAL</p>
-                        </div>
-                        <div className="bg-zinc-950 border-3 border-[#00f0ff] px-5 py-4 shadow-[6px_6px_0_rgba(0,240,255,0.6)]">
-                            <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider">PRÓXIMO NÍVEL</p>
-                            <p className="text-lg font-black text-[#00f0ff] font-mono mt-1">{nextLevelXP - progressToNextLevel} XP</p>
-                        </div>
-                    </div>
-                </motion.div>
-
-                {/* XP Progress Bar - Thick Brutalist */}
-                <motion.div
-                    variants={itemVariants}
-                    className="bg-zinc-950 border-4 border-[#ccff00] p-3 shadow-[6px_6px_0_rgba(204,255,0,0.5)]"
-                >
-                    <div className="flex items-center gap-4">
-                        <div className="flex-1">
-                            <div className="h-6 bg-zinc-900 border-2 border-[#ccff00] overflow-hidden">
-                                <div 
-                                    className="h-full bg-[#ccff00] transition-all duration-1000"
-                                    style={{ width: `${progressToNextLevel}%` }}
-                                />
-                            </div>
-                        </div>
-                        <p className="text-sm font-black text-[#ccff00] font-mono whitespace-nowrap">{progressToNextLevel}%</p>
-                    </div>
-                </motion.div>
-            </header>
-
-            {/* SEARCH BAR - Thick Borders, Sharp Shadow */}
-            <motion.div variants={itemVariants} className="relative">
-                <div className={cn(
-                    "relative flex items-center bg-zinc-950 border-4 transition-all duration-300",
-                    isFocused 
-                        ? "border-[#00f0ff] shadow-[6px_6px_0_rgba(0,240,255,0.8)]" 
-                        : "border-zinc-800 shadow-[6px_6px_0_rgba(0,0,0,0.8)]"
-                )}>
-                    <Search className={cn(
-                        "ml-5 w-6 h-6 transition-colors duration-300 font-bold",
-                        isFocused ? "text-[#00f0ff]" : "text-zinc-500"
-                    )} />
-                    <input
-                        type="text"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        onFocus={() => setIsFocused(true)}
-                        onBlur={() => setTimeout(() => setIsFocused(false), 200)}
-                        placeholder="BUSCAR CONCEITO"
-                        className="w-full min-w-0 bg-transparent px-5 py-6 focus:outline-none placeholder:text-zinc-600 text-white font-black uppercase tracking-wider text-base font-mono"
-                    />
-                </div>
-
-                {/* Dropdown Results */}
-                <AnimatePresence>
-                    {isFocused && search && (
-                        <motion.div
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 8 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            className="absolute top-full left-0 right-0 mt-2 bg-zinc-950 border-3 border-[#00f0ff] shadow-[6px_6px_0_rgba(0,240,255,0.6)] z-50"
-                        >
-                            {filteredTopics.map((t, idx) => (
-                                <button
-                                    key={t}
-                                    onClick={() => { setSearch(t); setIsFocused(false); }}
-                                    className={cn(
-                                        "w-full text-left px-5 py-4 font-black uppercase tracking-wider text-white transition-all font-mono",
-                                        idx < filteredTopics.length - 1 ? "border-b-2 border-zinc-800" : "",
-                                        "hover:bg-zinc-900 hover:text-[#00f0ff]"
-                                    )}
-                                >
-                                    {t}
-                                </button>
-                            ))}
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </motion.div>
-
-            {/* MENU BUTTONS - Large Blocky Cards */}
-            <div className="space-y-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <PremiumCard
-                    variants={itemVariants}
-                    title="ESTUDE CONCEITOS"
-                    description="Aprofunde-se nos tópicos"
-                    icon={<BookCheck className="w-8 h-8" />}
-                    accentColor="#00f0ff"
-                    onClick={() => onNavigate('study', currentTopic)}
-                />
-                <PremiumCard
-                    variants={itemVariants}
-                    title="EXERCÍCIOS"
-                    description="Resolva problemas práticos"
-                    icon={<Trophy className="w-8 h-8" />}
-                    accentColor="#ff5500"
-                    onClick={() => onNavigate('quiz', currentTopic)}
-                />
-                <PremiumCard
-                    variants={itemVariants}
-                    title="FLASHCARDS AI"
-                    description="Reforce com IA personalizadora"
-                    icon={<Presentation className="w-8 h-8" />}
-                    accentColor="#ccff00"
-                    onClick={() => onNavigate('flashcards', currentTopic)}
-                />
-                <PremiumCard
-                    variants={itemVariants}
-                    title="CHAT GUIDORIZZI"
-                    description="Converse com IA especializada"
-                    icon={<MessageSquare className="w-8 h-8" />}
-                    accentColor="#00d084"
-                    onClick={() => onNavigate('chat')}
-                />
-            </div>
-
-            {/* Bottom Navigation Spacer */}
-            <div className="h-20" />
+          Cálculo Precision
         </motion.div>
-    );
+      </header>
+
+      {/* Main Content */}
+      <main className="px-4 space-y-6 flex-grow">
+        {/* User Stats Section */}
+        <motion.section variants={itemVariants} className="flex items-center justify-between gap-4">
+          {/* Level Badge - Circular with partial border */}
+          <div className="relative w-32 h-32 rounded-full border-[6px] border-black bg-[#1a1a1a] shadow-precision flex flex-col items-center justify-center p-2 z-10">
+            {/* Partial neon-orange border using clip-path */}
+            <div
+              className="absolute inset-0 rounded-full border-8 border-[#ff8b22]"
+              style={{
+                clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%, 0 50%, 50% 50%, 50% 0)'
+              }}
+            />
+            <span className="text-[#ff8b22] text-sm relative z-20 font-bold">Level</span>
+            <span className="text-[#ff8b22] text-5xl font-bold leading-none relative z-20">{level}</span>
+            <span className="text-[#ff8b22] text-[10px] text-center mt-1 relative z-20 leading-tight font-bold">
+              Estudante de<br />Cálculo
+            </span>
+          </div>
+
+          {/* XP Info */}
+          <div className="flex-grow space-y-2">
+            <div className="flex items-baseline gap-2">
+              <span className="text-[#ff8b22] text-3xl font-bold">{xp}</span>
+              <span className="text-[#ff8b22] text-sm font-bold">XP</span>
+            </div>
+            <div className="text-gray-300 text-sm font-bold">
+              {Math.max(0, Math.round(nextLevelXPRemaining))} para próximo nível
+            </div>
+            {/* Progress Bar */}
+            <div className="relative h-8 border-4 border-black rounded-lg bg-[#1a1a1a] flex items-center overflow-hidden shadow-precision-sm">
+              <div
+                className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#92d000] to-[#ff8b22] border-r-4 border-black transition-all duration-500"
+                style={{ width: `${progressToNextLevel}%` }}
+              />
+              <span className="relative z-10 text-[#92d000] font-bold text-right w-full pr-2">
+                {progressToNextLevel}%
+              </span>
+            </div>
+          </div>
+        </motion.section>
+
+        {/* Search Bar */}
+        <motion.section variants={itemVariants} className="relative">
+          <div className="flex items-center bg-[#888888] border-4 border-black rounded-lg shadow-precision">
+            <svg
+              className="w-6 h-6 text-black ml-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="3"
+              />
+            </svg>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="O QUE VAMOS ESTUDAR HOJE?"
+              className="block w-full p-4 pl-4 text-black font-bold uppercase bg-transparent border-0 focus:outline-none placeholder-black text-lg"
+            />
+          </div>
+        </motion.section>
+
+        {/* Menu Items */}
+        <nav className="space-y-4">
+          <MenuItem
+            variants={itemVariants}
+            title="Estude Conceitos"
+            description="Material Didático Completo"
+            color="#92d000"
+            icon={<BookOpen className="w-8 h-8" />}
+            onClick={() => onNavigate('study')}
+          />
+          <MenuItem
+            variants={itemVariants}
+            title="Exercícios"
+            description="Pratique Resolvendo Problemas"
+            color="#00d2da"
+            icon={<ListTodo className="w-8 h-8" />}
+            onClick={() => onNavigate('quiz')}
+          />
+          <MenuItem
+            variants={itemVariants}
+            title="Flashcards AI"
+            description="Reforce Conceitos Fundamentais"
+            color="#ff8b22"
+            icon={<Zap className="w-8 h-8" />}
+            onClick={() => onNavigate('flashcards')}
+          />
+          <MenuItem
+            variants={itemVariants}
+            title="Chat Guidorizzi"
+            description="Converse com IA Especializada"
+            color="#00d084"
+            icon={<MessageCircle className="w-8 h-8" />}
+            onClick={() => onNavigate('chat')}
+          />
+        </nav>
+      </main>
+
+      {/* Bottom Navigation */}
+      <footer className="fixed bottom-0 w-full max-w-md bg-gray-400 border-t-4 border-black flex justify-around items-center p-4 z-50">
+        <button className="text-black hover:text-white transition-colors border-b-4 border-black pb-1 px-2">
+          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+            />
+          </svg>
+        </button>
+        <button className="text-black hover:text-white transition-colors">
+          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+            />
+          </svg>
+        </button>
+        <button className="text-black hover:text-white transition-colors">
+          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+            />
+          </svg>
+        </button>
+        <button className="text-black hover:text-white transition-colors">
+          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+            />
+          </svg>
+        </button>
+      </footer>
+    </motion.div>
+  );
 };
 
-const PremiumCard = ({ title, description, icon, accentColor, onClick, variants }: PremiumCardProps) => {
-    return (
-        <motion.button
-            variants={variants}
-            whileHover={{ x: -4, y: -4, boxShadow: `10px 10px 0px ${accentColor}80` }}
-            whileTap={{ x: 2, y: 2 }}
-            onClick={onClick}
-            className="group relative w-full p-8 text-left transition-all bg-zinc-950 overflow-hidden outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-950"
-            style={{
-                border: `4px solid ${accentColor}`,
-                boxShadow: `8px 8px 0px ${accentColor}66`,
-                backgroundColor: '#0a0a0a'
-            }}
-        >
-            <div className="relative z-10 flex items-start gap-6">
-                {/* Icon Box */}
-                <div 
-                    className="flex-shrink-0 w-20 h-20 flex items-center justify-center border-3 transition-transform duration-300 group-hover:scale-115"
-                    style={{
-                        borderColor: accentColor,
-                        backgroundColor: 'rgba(0, 0, 0, 0.5)'
-                    }}
-                >
-                    <div style={{ color: accentColor }}>
-                        {icon}
-                    </div>
-                </div>
+const MenuItem = ({
+  title,
+  description,
+  color,
+  icon,
+  onClick,
+  variants
+}: MenuItemProps) => {
+  return (
+    <motion.button
+      variants={variants}
+      whileHover={{ scale: 0.98 }}
+      whileTap={{ scale: 0.95 }}
+      onClick={onClick}
+      className="block w-full bg-[#1a1a1a] border-4 rounded-xl p-4 shadow-[6px_6px_0_black] flex items-center gap-4 relative overflow-hidden group text-left"
+      style={{ borderColor: color }}
+    >
+      {/* Background overlay on active */}
+      <div
+        className="absolute inset-0 opacity-0 group-active:opacity-20 transition-opacity"
+        style={{ backgroundColor: color }}
+      />
 
-                {/* Content */}
-                <div className="flex-1 min-w-0 text-left">
-                    <h3 
-                        className="font-black text-xl tracking-tight uppercase font-mono"
-                        style={{ color: accentColor }}
-                    >
-                        {title}
-                    </h3>
-                    <p className="text-zinc-400 text-sm font-bold uppercase tracking-wider mt-2 font-mono">
-                        {description}
-                    </p>
-                </div>
-            </div>
+      {/* Icon Box */}
+      <div
+        className="flex-shrink-0 bg-black p-2 rounded-lg border-2 flex items-center justify-center"
+        style={{
+          borderColor: color,
+          color: color
+        }}
+      >
+        {icon}
+      </div>
 
-            {/* Subtle grid texture overlay on hover */}
-            <div 
-                className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300"
-                style={{
-                    backgroundImage: `linear-gradient(0deg, transparent 24%, ${accentColor}20 25%, ${accentColor}20 26%, transparent 27%, transparent 74%, ${accentColor}20 75%, ${accentColor}20 76%, transparent 77%),
-                        linear-gradient(90deg, transparent 24%, ${accentColor}20 25%, ${accentColor}20 26%, transparent 27%, transparent 74%, ${accentColor}20 75%, ${accentColor}20 76%, transparent 77%)`,
-                    backgroundSize: '30px 30px'
-                }}
-            />
-        </motion.button>
-    );
+      {/* Text Content */}
+      <div>
+        <h2 className="text-2xl font-bold uppercase tracking-wider" style={{ color }}>
+          {title}
+        </h2>
+        <p className="text-white text-sm uppercase font-bold">{description}</p>
+      </div>
+
+      {/* Bottom accent line */}
+      <div
+        className="absolute inset-0 border-b-4 pointer-events-none rounded-xl rounded-b-none translate-y-[calc(100%-4px)]"
+        style={{ borderColor: color }}
+      />
+    </motion.button>
+  );
 };
 
 export default DashboardBrutalistPremium;

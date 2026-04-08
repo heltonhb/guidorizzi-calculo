@@ -14,6 +14,15 @@
   --color-brand-gray: #333333;
   --color-brand-light-gray: #4A4A4A;
 
+  /* Cálculo Precision Colors */
+  --color-precision-orange: #f89e13;
+  --color-neon-orange: #ff8b22;
+  --color-neon-yellow: #92d000;
+  --color-neon-cyan: #00d2da;
+  --color-precision-dark: #333333;
+  --color-panel-bg: #1a1a1a;
+  --color-search-gray: #888888;
+
   /* Preserve existing colors for backward compatibility */
   --color-ink: #050505;
   --color-technical: #f8f9fa;
@@ -59,6 +68,15 @@
     box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
   }
 
+  /* Cálculo Precision custom shadows */
+  .shadow-precision {
+    box-shadow: 6px 6px 0px 0px rgba(0,0,0,1);
+  }
+
+  .shadow-precision-sm {
+    box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
+  }
+
   .header-clip {
     clip-path: polygon(5% 0%, 95% 0%, 100% 20%, 100% 80%, 95% 100%, 5% 100%, 0% 80%, 0% 20%);
   }
@@ -66,6 +84,76 @@
   .btn-extruded {
     @apply relative border-4 border-black transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none;
     box-shadow: 6px 6px 0px 0px rgba(0,0,0,1);
+  }
+
+  /* Brutalist Card Styles with Text Containment */
+  .brutal-card {
+    @apply border-4 border-white bg-black flex flex-col items-center justify-center;
+    box-shadow: 6px 6px 0px 0px rgba(0,0,0,1);
+  }
+
+  .brutal-card-content {
+    @apply w-full h-full overflow-hidden flex flex-col items-center justify-center;
+    word-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+    overflow-wrap: break-word;
+  }
+
+  .brutal-text {
+    @apply text-white font-black uppercase tracking-tight;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    white-space: normal;
+    line-clamp: none;
+  }
+
+  /* Flashcard Safe Container */
+  .flashcard-safe {
+    @apply w-full h-full overflow-hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+  }
+
+  .flashcard-text-container {
+    @apply text-left sm:text-center break-words;
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 12;
+    line-clamp: 12;
+  }
+
+  .flashcard-text-container p {
+    @apply m-0 p-0;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .flashcard-text-container strong {
+    @apply text-[#f97316];
+  }
+
+  .flashcard-text-container em {
+    @apply text-cyan-400 not-italic;
+  }
+
+  /* Math content in flashcards */
+  .flashcard-text-container .katex {
+    font-size: 1.1em;
+  }
+
+  .flashcard-text-container .katex-display {
+    margin: 0.5rem 0;
   }
 }
 
