@@ -5,6 +5,25 @@ import { cn } from '../lib/utils';
 import contentData from '../data/content.json';
 import { useAppContext } from '../hooks/useAppContext';
 
+// Premium Brutalist Design System
+const BRUTALIST = {
+    colors: {
+        background: "#0a0a0a",
+        surface: "#141414",
+        surfaceElevated: "#1a1a1a",
+        border: "#000000",
+        accent: {
+            cyan: "#00f0ff",
+            orange: "#ff5500",
+            lime: "#ccff00",
+            yellow: "#facc15",
+            pink: "#ff0080"
+        }
+    },
+    shadow: (color = "#000") => `8px 8px 0px 0px ${color}`,
+    borderWidth: "4px"
+};
+
 const Dashboard = ({ onNavigate }) => {
     const [search, setSearch] = useState('');
     const [isFocused, setIsFocused] = useState(false);
@@ -12,8 +31,6 @@ const Dashboard = ({ onNavigate }) => {
 
     const topics = Object.keys(contentData);
     const filteredTopics = topics.filter(t => t.toLowerCase().includes(search.toLowerCase()));
-
-    // If no filtered topics, the search itself becomes the topic
     const currentTopic = search.trim() !== '' ? search : (filteredTopics[0] || 'Limites');
 
     const containerVariants = {
@@ -21,216 +38,303 @@ const Dashboard = ({ onNavigate }) => {
         visible: {
             opacity: 1,
             transition: {
-                staggerChildren: 0.1,
-                delayChildren: 0.2
+                staggerChildren: 0.08,
+                delayChildren: 0.15
             }
         }
     };
 
     const itemVariants = {
-        hidden: { y: 20, opacity: 0 },
-        visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 300, damping: 24 } }
+        hidden: { y: 30, opacity: 0 },
+        visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 400, damping: 30 } }
     };
 
     return (
-        <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={containerVariants}
-            className="flex flex-col gap-6 sm:gap-8 pb-10 px-2 sm:px-0"
-        >
-            <header className="space-y-8">
-                {/* Title */}
-                <motion.div
-                    initial={{ y: -20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    className="bg-orange-500 border-4 border-black text-black px-6 py-4 font-black text-2xl md:text-3xl tracking-widest uppercase shadow-[6px_6px_0_rgba(0,0,0,1)] text-center"
-                >
-                    Cálculo Precision
+        <div className="relative min-h-screen bg-[#0a0a0a] overflow-hidden">
+            {/* Technical Grid Background */}
+            <div 
+                className="absolute inset-0 opacity-[0.03] pointer-events-none"
+                style={{
+                    backgroundImage: `
+                        linear-gradient(${BRUTALIST.colors.accent.cyan} 1px, transparent 1px),
+                        linear-gradient(90deg, ${BRUTALIST.colors.accent.cyan} 1px, transparent 1px)
+                    `,
+                    backgroundSize: '40px 40px'
+                }}
+            />
+            
+            {/* Scanline Effect */}
+            <div className="absolute inset-0 pointer-events-none opacity-[0.02] bg-[linear-gradient(transparent_50%,rgba(0,240,255,0.1)_50%)] bg-[length:100%_4px]" />
+
+            <motion.div
+                initial="hidden"
+                animate="visible"
+                variants={containerVariants}
+                className="relative z-10 flex flex-col gap-5 sm:gap-6 pb-10 px-3 sm:px-0"
+            >
+                {/* Header Section - Terminal Style */}
+                <header className="space-y-6">
+                    <motion.div
+                        initial={{ y: -30, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        className="relative"
+                    >
+                        {/* Decorative corner accents */}
+                        <div className="absolute -top-2 -left-2 w-4 h-4 border-l-4 border-t-4 border-[#00f0ff]" />
+                        <div className="absolute -top-2 -right-2 w-4 h-4 border-r-4 border-t-4 border-[#ff5500]" />
+                        <div className="absolute -bottom-2 -left-2 w-4 h-4 border-l-4 border-b-4 border-[#ccff00]" />
+                        
+                        <div className="bg-[#141414] border-4 border-black px-6 py-5 text-center relative"
+                            style={{ boxShadow: BRUTALIST.shadow('#00f0ff') }}
+                        >
+                            <div className="absolute top-1 left-4 text-[10px] font-mono text-[#00f0ff] tracking-widest">
+                                &gt; SISTEMA_DE_CALCULO_V1.0
+                            </div>
+                            <h1 className="text-3xl md:text-4xl font-black tracking-[0.15em] uppercase text-white mt-2" style={{ textShadow: '2px 2px 0 #00f0ff' }}>
+                                Cálculo <span className="text-[#00f0ff]">Precision</span>
+                            </h1>
+                            <div className="absolute bottom-1 right-4 text-[8px] font-mono text-[#ff5500] tracking-widest">
+                                GUIDORIZZI_AI
+                            </div>
+                        </div>
+                    </motion.div>
+
+                    {/* Gamification Stats - Technical Display */}
+                    <motion.div
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="flex items-stretch gap-3"
+                    >
+                        {/* Level Indicator - Circular Technical */}
+                        <div className="relative flex-shrink-0 w-[100px] sm:w-[120px]">
+                            <div className="absolute inset-0 border-4 border-[#00f0ff] opacity-20" />
+                            <div 
+                                className="w-full aspect-square bg-[#141414] border-4 border-black flex items-center justify-center relative overflow-hidden"
+                                style={{ boxShadow: BRUTALIST.shadow('#00f0ff') }}
+                            >
+                                {/* Inner technical pattern */}
+                                <div className="absolute inset-2 border border-[#00f0ff]/30" />
+                                <div className="absolute inset-4 border border-dashed border-[#00f0ff]/20" />
+                                
+                                {/* Progress arc simulation */}
+                                <div 
+                                    className="absolute inset-0"
+                                    style={{
+                                        background: `conic-gradient(from 180deg, #ff5500 ${progressToNextLevel * 3.6}deg, transparent ${progressToNextLevel * 3.6}deg)`,
+                                        opacity: 0.8
+                                    }}
+                                />
+                                
+                                <div className="flex flex-col items-center z-10">
+                                    <span className="text-[8px] font-mono text-[#00f0ff] uppercase tracking-widest">LVL</span>
+                                    <span className="text-5xl font-black text-white leading-none my-1" style={{ textShadow: '3px 3px 0 #ff5500' }}>{level}</span>
+                                    <div className="w-8 h-1 bg-[#00f0ff] mt-1" />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* XP Bar - Technical Progress */}
+                        <div className="flex-1 flex flex-col gap-2 justify-center">
+                            <div className="flex items-baseline justify-between">
+                                <span className="text-2xl font-black text-[#ff5500] font-mono">
+                                    {xp}<span className="text-sm text-[#ccff00]">_XP</span>
+                                </span>
+                                <span className="text-[10px] font-mono text-zinc-500 uppercase">
+                                    TARGET: {nextLevelXP}
+                                </span>
+                            </div>
+                            
+                            {/* Technical Progress Bar */}
+                            <div className="relative bg-[#141414] border-4 border-black p-1" style={{ boxShadow: '4px 4px 0 #000' }}>
+                                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#00f0ff] via-[#ccff00] to-[#ff5500] opacity-50" />
+                                <div className="flex items-center h-8 relative overflow-hidden">
+                                    <div 
+                                        className="h-full bg-[#ccff00] border-r-2 border-black relative"
+                                        style={{ width: `${progressToNextLevel}%` }}
+                                    >
+                                        {/* Scanline effect on progress */}
+                                        <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_50%,rgba(0,0,0,0.3)_50%)] bg-[length:4px_100%]" />
+                                    </div>
+                                </div>
+                                <div className="absolute -right-2 -top-2 bg-[#ccff00] text-black text-[8px] font-black px-2 py-0.5">
+                                    {progressToNextLevel}%
+                                </div>
+                            </div>
+                        </div>
+                    </motion.div>
+                </header>
+
+                {/* Search - Terminal Input Style */}
+                <motion.div variants={itemVariants} className="relative z-50">
+                    <div className={cn(
+                        "relative flex items-center bg-[#141414] border-4 border-black transition-all duration-150",
+                        isFocused ? "border-[#00f0ff]" : ""
+                    )}
+                    style={{
+                        boxShadow: isFocused ? BRUTALIST.shadow('#00f0ff') : '4px 4px 0 #000'
+                    }}
+                    >
+                        <div className="ml-4 w-6 h-6 flex items-center justify-center">
+                            <Search className="w-5 h-5 text-[#00f0ff]" strokeWidth={3} />
+                        </div>
+                        <div className="w-2 h-2 bg-[#00f0ff] animate-pulse ml-2" />
+                        <input
+                            type="text"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            onFocus={() => setIsFocused(true)}
+                            onBlur={() => setTimeout(() => setIsFocused(false), 200)}
+                            placeholder="DIGITE_O_TOPICO..."
+                            className="w-full min-w-0 bg-transparent px-3 py-4 focus:outline-none placeholder:text-zinc-600 text-[#00f0ff] font-mono text-sm sm:text-base tracking-wider"
+                        />
+                    </div>
+
+                    {/* Search Results Dropdown */}
+                    <AnimatePresence>
+                        {isFocused && search && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -15 }}
+                                animate={{ opacity: 1, y: 8 }}
+                                exit={{ opacity: 0, y: -15 }}
+                                className="absolute top-full left-0 right-0 bg-[#0a0a0a] border-4 border-[#00f0ff] z-50"
+                                style={{ boxShadow: '8px 8px 0 #00f0ff' }}
+                            >
+                                <div className="p-1">
+                                    {filteredTopics.map((t, i) => (
+                                        <button
+                                            key={t}
+                                            onMouseDown={() => { setSearch(t); setIsFocused(false); }}
+                                            className={cn(
+                                                "flex items-center gap-3 w-full text-left p-3 font-mono text-sm transition-all border-2 border-transparent",
+                                                i % 2 === 0 ? "bg-[#141414] hover:bg-[#1a1a1a]" : "bg-[#1a1a1a] hover:bg-[#141414]",
+                                                "hover:border-[#00f0ff] text-white hover:text-[#00f0ff]"
+                                            )}
+                                        >
+                                            <span className="text-[#ff5500]">{`>`}</span>
+                                            {t}
+                                        </button>
+                                    ))}
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </motion.div>
 
-                {/* Gamification Stats */}
-                <div className="flex items-center justify-between gap-4">
-                    {/* Level Circle */}
-                    <motion.div
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        className="relative flex-shrink-0 w-[110px] h-[110px] bg-zinc-800 border-4 border-black rounded-full shadow-[6px_6px_0_rgba(0,0,0,1)] flex items-center justify-center p-1"
-                    >
-                        {/* Segment overlay using conic gradient */}
-                        <div
-                            className="absolute inset-[4px] rounded-full"
-                            style={{ background: `conic-gradient(#f97316 ${progressToNextLevel}%, transparent ${progressToNextLevel}%)`, WebkitMask: 'radial-gradient(transparent 58%, black 60%)' }}
-                        ></div>
-                        {/* Static dark overlay to make empty parts look distinct, optional */}
-                        <div className="absolute inset-[4px] rounded-full border-4 border-orange-500 border-dashed opacity-30"></div>
-
-                        <div className="flex flex-col items-center z-10 translate-y-1">
-                            <span className="text-[10px] font-black text-orange-500 uppercase tracking-widest leading-none">Level</span>
-                            <span className="text-4xl font-black text-white leading-none my-1">{level}</span>
-                            <span className="text-[8px] font-black text-orange-400 text-center leading-[1.1] max-w-[70px] uppercase">Estudante de Cálculo</span>
-                        </div>
-                    </motion.div>
-
-                    {/* XP and Progress */}
-                    <motion.div
-                        initial={{ x: 20, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        className="flex-1 space-y-3"
-                    >
-                        <div>
-                            <p className="text-3xl font-black text-orange-500">{xp} <span className="text-lg">XP</span></p>
-                            <p className="text-xs font-bold text-zinc-700 uppercase tracking-wider">{nextLevelXP - progressToNextLevel} para próximo nível</p>
-                        </div>
-                        <div className="bg-zinc-800 border-4 border-black p-1 shadow-[4px_4px_0_rgba(0,0,0,1)] flex items-center">
-                            <div className="flex-1 h-6 bg-zinc-900 border-r-4 border-black overflow-hidden flex">
-                                <div
-                                    className="h-full bg-lime-400 border-r-4 border-black"
-                                    style={{ width: `${progressToNextLevel}%` }}
-                                />
-                            </div>
-                            <p className="text-xs font-black text-lime-400 w-12 text-center">{progressToNextLevel}%</p>
-                        </div>
-                    </motion.div>
-                </div>
-            </header>
-
-            <motion.div variants={itemVariants} className="relative z-50">
-                <div className={cn(
-                    "relative flex items-center bg-white border-4 border-black transition-all duration-200 mt-2",
-                    isFocused ? "shadow-[8px_8px_0_#000]" : "shadow-[6px_6px_0_#000]"
-                )}>
-                    <Search className="ml-4 w-6 h-6 text-black flex-shrink-0" strokeWidth={3} />
-                    <input
-                        type="text"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        onFocus={() => setIsFocused(true)}
-                        onBlur={() => setTimeout(() => setIsFocused(false), 200)}
-                        placeholder="O QUE VAMOS ESTUDAR HOJE?"
-                        className="w-full min-w-0 bg-transparent px-3 py-4 focus:outline-none placeholder:text-zinc-700 text-black font-black uppercase tracking-wider text-sm sm:text-base md:text-lg"
+                {/* Navigation Cards - Grid Layout */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
+                    <Card
+                        variants={itemVariants}
+                        title="Flashcards AI"
+                        description="REFORCE_CONCEITOS"
+                        icon={<BookCheck className="w-7 h-7" />}
+                        color="cyan"
+                        accentColor="#00f0ff"
+                        onClick={() => onNavigate('flashcards', currentTopic)}
+                    />
+                    <Card
+                        variants={itemVariants}
+                        title="Modo Aula"
+                        description="APRESENTACAO_HD"
+                        icon={<Presentation className="w-7 h-7" />}
+                        color="orange"
+                        accentColor="#ff5500"
+                        onClick={() => onNavigate('presentation', currentTopic)}
+                    />
+                    <Card
+                        variants={itemVariants}
+                        title="Chat IA"
+                        description="TIRE_SUAS_DUVIDAS"
+                        icon={<MessageSquare className="w-7 h-7" />}
+                        color="lime"
+                        accentColor="#ccff00"
+                        onClick={() => onNavigate('chat')}
+                    />
+                    <Card
+                        variants={itemVariants}
+                        title="Desafio"
+                        description="TESTE_CONHECIMENTO"
+                        icon={<Trophy className="w-7 h-7" />}
+                        color="yellow"
+                        accentColor="#facc15"
+                        onClick={() => onNavigate('quiz', currentTopic)}
                     />
                 </div>
 
-                <AnimatePresence>
-                    {isFocused && search && (
-                        <motion.div
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 5 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            className="absolute top-full mt-2 left-0 right-0 p-2 bg-zinc-900 border-4 border-black shadow-[6px_6px_0_rgba(0,0,0,1)] z-50"
-                        >
-                            {filteredTopics.map(t => (
-                                <button
-                                    key={t}
-                                    onMouseDown={() => { setSearch(t); setIsFocused(false); }}
-                                    className="flex items-center gap-3 w-full text-left p-4 hover:bg-zinc-800 text-sm font-black uppercase tracking-wider text-white transition-colors border-4 border-transparent hover:border-black"
-                                >
-                                    {t}
-                                </button>
-                            ))}
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                {/* Bottom decorative element */}
+                <motion.div 
+                    variants={itemVariants}
+                    className="flex items-center justify-center gap-2 pt-4"
+                >
+                    <div className="h-1 flex-1 bg-gradient-to-r from-transparent via-[#00f0ff] to-transparent opacity-50" />
+                    <span className="text-[10px] font-mono text-zinc-600 tracking-[0.3em]">
+                        SISTEMA_ONLINE
+                    </span>
+                    <div className="h-1 flex-1 bg-gradient-to-r from-transparent via-[#00f0ff] to-transparent opacity-50" />
+                </motion.div>
             </motion.div>
-
-            <div className="space-y-4 mt-2">
-                <Card
-                    variants={itemVariants}
-                    title="Flashcards AI"
-                    description="Reforce conceitos fundamentais"
-                    icon={<BookCheck className="w-8 h-8" />}
-                    color="signal"
-                    onClick={() => onNavigate('flashcards', currentTopic)}
-                />
-                <Card
-                    variants={itemVariants}
-                    title="Modo Aula"
-                    description="Apresentação em alta definição"
-                    icon={<Presentation className="w-8 h-8" />}
-                    color="cyan"
-                    onClick={() => onNavigate('presentation', currentTopic)}
-                />
-                <Card
-                    variants={itemVariants}
-                    title="Chat IA"
-                    description="Tire dúvidas agora mesmo"
-                    icon={<MessageSquare className="w-8 h-8" />}
-                    color="emerald"
-                    onClick={() => onNavigate('chat')}
-                />
-                <Card
-                    variants={itemVariants}
-                    title="Desafio Guidorizzi"
-                    description="Teste seus conhecimentos"
-                    icon={<Trophy className="w-8 h-8" />}
-                    color="lime"
-                    onClick={() => onNavigate('quiz', currentTopic)}
-                />
-            </div>
-        </motion.div>
+        </div>
     );
 };
 
-const Card = ({ title, description, icon, color, onClick, variants }) => {
-    const colorMap = {
-        cyan: {
-            border: "border-cyan-400",
-            text: "text-cyan-400",
-            iconColor: "text-cyan-400"
-        },
-        signal: {
-            border: "border-orange-500",
-            text: "text-orange-500",
-            iconColor: "text-orange-500"
-        },
-        lime: {
-            border: "border-lime-400",
-            text: "text-lime-400",
-            iconColor: "text-lime-400"
-        },
-        emerald: {
-            border: "border-emerald-400",
-            text: "text-emerald-400",
-            iconColor: "text-emerald-400"
-        }
-    };
-
-    const colors = colorMap[color] || colorMap.cyan;
-
+const Card = ({ title, description, icon, color, accentColor, onClick, variants }) => {
     return (
         <motion.button
             variants={variants}
             whileTap={{
-                scale: 0.98,
+                scale: 0.97,
                 transition: { duration: 0.1 }
             }}
             onClick={onClick}
-            className={cn(
-                "group relative w-full p-4 sm:p-5 text-left transition-all overflow-visible",
-                "bg-zinc-800 border-4 border-black outline-none focus:ring-4 focus:ring-offset-2 focus:ring-offset-black focus:ring-white",
-            )}
+            className="group relative p-4 sm:p-5 text-left transition-all bg-[#141414] border-4 border-black hover:border-transparent"
             style={{
-                boxShadow: `8px 8px 0px 0px #000`
+                boxShadow: BRUTALIST.shadow('#000')
             }}
         >
-            <div className="flex items-center gap-4 sm:gap-6 relative z-10">
-                {/* Icon Layout */}
-                <div className={cn(
-                    "flex-shrink-0 w-12 h-12 flex items-center justify-center transition-transform duration-200 group-hover:scale-110",
-                    colors.iconColor
-                )}>
+            {/* Hover glow effect */}
+            <div 
+                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
+                style={{
+                    boxShadow: `inset 0 0 30px ${accentColor}30, ${BRUTALIST.shadow(accentColor)}`
+                }}
+            />
+            
+            {/* Corner accents on hover */}
+            <div className="absolute top-0 left-0 w-3 h-3 border-l-2 border-t-2 border-transparent group-hover:border-white/50 transition-colors" />
+            <div className="absolute top-0 right-0 w-3 h-3 border-r-2 border-t-2 border-transparent group-hover:border-white/50 transition-colors" />
+            <div className="absolute bottom-0 left-0 w-3 h-3 border-l-2 border-b-2 border-transparent group-hover:border-white/50 transition-colors" />
+            <div className="absolute bottom-0 right-0 w-3 h-3 border-r-2 border-b-2 border-transparent group-hover:border-white/50 transition-colors" />
+
+            <div className="flex items-center gap-4 relative z-10">
+                {/* Icon Container */}
+                <div 
+                    className="flex-shrink-0 w-11 h-11 flex items-center justify-center border-2 transition-transform duration-200 group-hover:scale-110"
+                    style={{ 
+                        borderColor: accentColor,
+                        color: accentColor,
+                        backgroundColor: `${accentColor}10`
+                    }}
+                >
                     {icon}
                 </div>
 
                 {/* Content */}
                 <div className="flex-1 min-w-0">
-                    <h3 className={cn("font-black text-xl sm:text-2xl tracking-tighter uppercase leading-none", colors.text)}>
+                    <h3 
+                        className="font-black text-lg sm:text-xl tracking-wider uppercase leading-none"
+                        style={{ color: accentColor, textShadow: `2px 2px 0 ${accentColor}40` }}
+                    >
                         {title}
                     </h3>
-                    <p className="text-zinc-100 text-[10px] sm:text-xs font-bold uppercase tracking-widest mt-1 md:mt-2 truncate sm:whitespace-normal">
+                    <p className="text-zinc-500 text-[9px] sm:text-[10px] font-mono uppercase tracking-widest mt-2">
                         {description}
                     </p>
+                </div>
+
+                {/* Arrow indicator */}
+                <div className="text-zinc-700 group-hover:text-white transition-colors">
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
                 </div>
             </div>
         </motion.button>
