@@ -3,17 +3,70 @@
 @plugin "@tailwindcss/typography";
 
 @theme {
-    --color-ink: #050505;
-    --color-technical: #f8f9fa;
-    --color-signal: #ff5500;
-    --color-acid: #a3e635;
-    /* Premium Brutalist Design Colors */
-    --color-premium-blue: #1152d4;
-    --color-cyber: #00f0ff;
-    --color-neon-lime: #ccff00;
-    --color-hot-pink: #ff0080;
-    --color-electric-orange: #ff4400;
-    --font-sans: 'Space Grotesk', system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-brand-orange: #FF9F1C;
+  --color-brand-lime: #CCFF00;
+  --color-brand-cyan: #00E5FF;
+  --color-brand-dark: #1A1A1A;
+  --color-brand-gray: #333333;
+  --color-brand-light-gray: #4A4A4A;
+
+  /* Preserve existing colors for backward compatibility */
+  --color-ink: #050505;
+  --color-technical: #f8f9fa;
+  --color-signal: #ff5500;
+  --color-acid: #a3e635;
+  --color-premium-blue: #1152d4;
+  --color-cyber: #00f0ff;
+  --color-neon-lime: #ccff00;
+  --color-hot-pink: #ff0080;
+  --color-electric-orange: #ff4400;
+}
+
+@layer base {
+  body {
+    @apply bg-[#121212] text-white font-sans antialiased;
+  }
+}
+
+@layer components {
+  .circuit-bg {
+    background-color: #1a1a1a;
+    background-image: 
+      linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 20px 20px;
+    position: relative;
+  }
+
+  .circuit-bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10 L30 10 L30 30 M70 10 L90 10 L90 30 M10 70 L10 90 L30 90 M70 90 L90 90 L90 70' fill='none' stroke='rgba(255,255,255,0.03)' stroke-width='1'/%3E%3Ccircle cx='30' cy='30' r='2' fill='rgba(255,255,255,0.03)'/%3E%3Ccircle cx='70' cy='70' r='2' fill='rgba(255,255,255,0.03)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  .brutal-shadow {
+    box-shadow: 6px 6px 0px 0px rgba(0,0,0,1);
+  }
+
+  .brutal-shadow-sm {
+    box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
+  }
+
+  .header-clip {
+    clip-path: polygon(5% 0%, 95% 0%, 100% 20%, 100% 80%, 95% 100%, 5% 100%, 0% 80%, 0% 20%);
+  }
+
+  .btn-extruded {
+    @apply relative border-4 border-black transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none;
+    box-shadow: 6px 6px 0px 0px rgba(0,0,0,1);
+  }
 }
 
 /* Mobile overflow prevention - Samsung Internet Browser fix */
