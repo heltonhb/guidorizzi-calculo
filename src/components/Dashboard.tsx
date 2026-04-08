@@ -38,6 +38,11 @@ const Dashboard = ({ onNavigate }) => {
             animate="visible"
             variants={containerVariants}
             className="flex flex-col gap-6 sm:gap-8 pb-10 px-2 sm:px-0"
+            style={{
+                // Fundo acinzentado com gradiente sutil
+                background: "linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%)",
+                minHeight: "100vh"
+            }}
         >
             <header className="space-y-8">
                 {/* Title */}
@@ -221,31 +226,30 @@ const Card = ({ title, description, icon, color, onClick, variants }) => {
             onClick={onClick}
             className={cn(
                 "group relative w-full p-4 sm:p-5 text-left transition-all overflow-visible",
-                "bg-[#0a0a0a] border-4 rounded-xl outline-none focus:ring-4 focus:ring-offset-2 focus:ring-offset-black focus:ring-white",
+                "bg-zinc-800 border-4 border-black rounded-xl outline-none focus:ring-4 focus:ring-offset-2 focus:ring-offset-black focus:ring-white",
                 colors.border
             )}
             style={{
-                // 3D stacked shadow effect - multiple layers for depth
+                // 3D effect com sombras negras profundas
                 boxShadow: `
-                    0px 1px 0px 0px rgba(255,255,255,0.05) inset,
-                    0px -2px 0px 0px rgba(0,0,0,0.5) inset,
                     0px 8px 0px 0px ${colors.bevel},
-                    0px 16px 0px 0px #000,
-                    0px 24px 32px -8px rgba(0,0,0,0.6)
+                    0px 12px 0px 0px #000,
+                    0px 16px 24px -4px rgba(0,0,0,0.8),
+                    inset 0px 1px 0px 0px rgba(255,255,255,0.1)
                 `
             }}
         >
-            {/* Gradiente interno para efeito 3D */}
+            {/* Gradiente interno para profundidade */}
             <div className={cn(
-                "absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-0",
-                "bg-gradient-to-br", colors.gradient, "to-transparent"
+                "absolute inset-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-0",
+                "bg-gradient-to-b", colors.gradient, "to-transparent"
             )} />
-            
+
             {/* Borda brilhante no hover */}
             <div className={cn(
-                "absolute inset-[-1px] rounded-[14px] opacity-0 group-hover:opacity-50 transition-opacity duration-300 pointer-events-none",
+                "absolute inset-[-2px] rounded-[14px] opacity-0 group-hover:opacity-40 transition-opacity duration-300 pointer-events-none",
                 "shadow-[0_0_20px]", colors.iconColor
-            )} style={{ filter: 'blur(6px)' }} />
+            )} style={{ filter: 'blur(8px)' }} />
 
             <div className="flex items-center gap-4 sm:gap-6 relative z-10">
                 {/* Icon Layout */}
