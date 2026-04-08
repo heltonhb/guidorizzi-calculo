@@ -36,42 +36,55 @@ const LoadingSpinner = () => (
 function AppContent(): JSX.Element {
   const { view, setView, currentTopic, navigateTo } = React.useContext(AppContext);
 
+  // Background diferente para dashboard vs outras views
+  const isDashboard = view === 'dashboard';
+
   // 🔥 Inicializar console commands
   React.useEffect(() => {
     installConsoleCommands();
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#050505] text-zinc-100 font-sans selection:bg-cyber selection:text-zinc-950 relative max-w-[100vw]" style={{ overflowX: 'clip' }}>
-      {/* Brutalist Vibrant Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        {/* Laranja Vibrante */}
-        <motion.div
-          animate={{
-            x: [0, 100, 0],
-            y: [0, -50, 0],
-            scale: [1, 1.2, 1],
-            opacity: [0.15, 0.3, 0.15]
-          }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -top-[20%] -left-[20%] w-[60%] h-[60%] bg-[#ff5500] blur-[120px] rounded-full"
-        />
-        {/* Ciano Elétrico */}
-        <motion.div
-          animate={{
-            x: [0, -100, 0],
-            y: [0, 50, 0],
-            scale: [1, 1.3, 1],
-            opacity: [0.12, 0.25, 0.12]
-          }}
-          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -bottom-[20%] -right-[20%] w-[70%] h-[70%] bg-[#00f0ff] blur-[140px] rounded-full"
-        />
-        {/* Noise Texture */}
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.08] contrast-150 brightness-100 pointer-events-none"></div>
-        {/* Grid Pattern Overlay */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none"></div>
-      </div>
+    <div 
+      className="min-h-screen text-zinc-100 font-sans selection:bg-cyber selection:text-zinc-950 relative max-w-[100vw]" 
+      style={{ 
+        overflowX: 'clip',
+        background: isDashboard 
+          ? 'linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%)'
+          : '#050505'
+      }}
+    >
+      {/* Background apenas quando NÃO é dashboard */}
+      {!isDashboard && (
+        <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+          {/* Laranja Vibrante */}
+          <motion.div
+            animate={{
+              x: [0, 100, 0],
+              y: [0, -50, 0],
+              scale: [1, 1.2, 1],
+              opacity: [0.15, 0.3, 0.15]
+            }}
+            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute -top-[20%] -left-[20%] w-[60%] h-[60%] bg-[#ff5500] blur-[120px] rounded-full"
+          />
+          {/* Ciano Elétrico */}
+          <motion.div
+            animate={{
+              x: [0, -100, 0],
+              y: [0, 50, 0],
+              scale: [1, 1.3, 1],
+              opacity: [0.12, 0.25, 0.12]
+            }}
+            transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute -bottom-[20%] -right-[20%] w-[70%] h-[70%] bg-[#00f0ff] blur-[140px] rounded-full"
+          />
+          {/* Noise Texture */}
+          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.08] contrast-150 brightness-100 pointer-events-none"></div>
+          {/* Grid Pattern Overlay */}
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none"></div>
+        </div>
+      )}
 
       <main className="relative z-10 w-full max-w-lg mx-auto px-4 md:px-6 pt-10 pb-24 min-h-screen" style={{ overflowX: 'clip' }}>
         <AnimatePresence mode="wait">

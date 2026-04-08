@@ -38,11 +38,6 @@ const Dashboard = ({ onNavigate }) => {
             animate="visible"
             variants={containerVariants}
             className="flex flex-col gap-6 sm:gap-8 pb-10 px-2 sm:px-0"
-            style={{
-                // Fundo acinzentado com gradiente sutil
-                background: "linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%)",
-                minHeight: "100vh"
-            }}
         >
             <header className="space-y-8">
                 {/* Title */}
