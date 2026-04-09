@@ -44,6 +44,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@playwright/test": "^1.59.1",
     "@tailwindcss/vite": "^4.2.2",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
@@ -59,6 +60,7 @@
     "globals": "^16.5.0",
     "jsdom": "^29.0.1",
     "postcss": "^8.5.8",
+    "puppeteer": "^24.40.0",
     "supertest": "^7.2.2",
     "tailwindcss": "^4.2.2",
     "vite": "^7.3.1",
