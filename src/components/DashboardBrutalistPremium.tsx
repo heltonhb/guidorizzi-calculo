@@ -1,5 +1,5 @@
 import { useState, ReactNode } from 'react';
-import { BookOpen, ListTodo, Zap, MessageCircle } from 'lucide-react';
+import { BookOpen, Zap, MessageCircle, Trophy } from 'lucide-react';
 import { motion, Variants } from 'framer-motion';
 import { useAppContext } from '../hooks/useAppContext';
 
@@ -47,19 +47,15 @@ const DashboardBrutalistPremium = ({ onNavigate }: DashboardProps) => {
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className="min-h-screen flex flex-col bg-[#333333] max-w-md mx-auto relative pb-20"
-      style={{
-        backgroundImage: 'radial-gradient(circle at center, #444 1px, transparent 1px)',
-        backgroundSize: '20px 20px'
-      }}
+      className="min-h-screen flex flex-col max-w-md mx-auto relative pb-20 circuit-bg"
     >
       {/* Header */}
       <header className="p-4 pt-8">
         <motion.div
           variants={itemVariants}
-          className="bg-[#f89e13] text-black font-bold text-3xl text-center py-4 border-4 border-black rounded-lg shadow-precision uppercase tracking-wider"
+          className="bg-[#f89e13] text-black font-bold text-3xl text-center py-4 border-4 border-black header-clip shadow-precision uppercase tracking-wider"
         >
-          Cálculo Precision
+          CÁLCULO PRECISION
         </motion.div>
       </header>
 
@@ -107,7 +103,7 @@ const DashboardBrutalistPremium = ({ onNavigate }: DashboardProps) => {
 
         {/* Search Bar */}
         <motion.section variants={itemVariants} className="relative">
-          <div className="flex items-center bg-[#888888] border-4 border-black rounded-lg shadow-precision">
+            <div className="flex items-center bg-[var(--color-search-gray)] border-[6px] border-black rounded-lg brutal-shadow p-0">
             <svg
               className="w-6 h-6 text-black ml-4"
               fill="none"
@@ -135,35 +131,35 @@ const DashboardBrutalistPremium = ({ onNavigate }: DashboardProps) => {
         <nav className="space-y-4">
           <MenuItem
             variants={itemVariants}
-            title="Estude Conceitos"
-            description="Material Didático Completo"
+            title="FLASHCARDS"
+            description=""
             color="#92d000"
-            icon={<BookOpen className="w-8 h-8" />}
-            onClick={() => onNavigate('study')}
-          />
-          <MenuItem
-            variants={itemVariants}
-            title="Exercícios"
-            description="Pratique Resolvendo Problemas"
-            color="#00d2da"
-            icon={<ListTodo className="w-8 h-8" />}
-            onClick={() => onNavigate('quiz')}
-          />
-          <MenuItem
-            variants={itemVariants}
-            title="Flashcards AI"
-            description="Reforce Conceitos Fundamentais"
-            color="#ff8b22"
-            icon={<Zap className="w-8 h-8" />}
+            icon={<Zap className="w-10 h-10" />}
             onClick={() => onNavigate('flashcards')}
           />
           <MenuItem
             variants={itemVariants}
-            title="Chat Guidorizzi"
-            description="Converse com IA Especializada"
-            color="#00d084"
-            icon={<MessageCircle className="w-8 h-8" />}
+            title="MODO AULA"
+            description=""
+            color="#00d2da"
+            icon={<BookOpen className="w-10 h-10" />}
+            onClick={() => onNavigate('study')}
+          />
+          <MenuItem
+            variants={itemVariants}
+            title="CHAT IA"
+            description=""
+            color="#1152d4"
+            icon={<MessageCircle className="w-10 h-10" />}
             onClick={() => onNavigate('chat')}
+          />
+          <MenuItem
+            variants={itemVariants}
+            title="DESAFIO DO GUIDORIZZI"
+            description=""
+            color="#ff8b22"
+            icon={<Trophy className="w-10 h-10" />}
+            onClick={() => onNavigate('challenge')}
           />
         </nav>
       </main>
@@ -229,7 +225,7 @@ const MenuItem = ({
       whileHover={{ scale: 0.98 }}
       whileTap={{ scale: 0.95 }}
       onClick={onClick}
-      className="block w-full bg-[#1a1a1a] border-4 rounded-xl p-4 shadow-[6px_6px_0_black] flex items-center gap-4 relative overflow-hidden group text-left"
+      className="block w-full bg-[#1a1a1a] border-[6px] rounded-xl p-6 brutal-shadow flex items-center gap-6 relative overflow-hidden group text-left"
       style={{ borderColor: color }}
     >
       {/* Background overlay on active */}
@@ -240,7 +236,7 @@ const MenuItem = ({
 
       {/* Icon Box */}
       <div
-        className="flex-shrink-0 bg-black p-2 rounded-lg border-2 flex items-center justify-center"
+        className="flex-shrink-0 bg-black p-3 rounded-lg border-4 flex items-center justify-center"
         style={{
           borderColor: color,
           color: color
@@ -251,10 +247,12 @@ const MenuItem = ({
 
       {/* Text Content */}
       <div>
-        <h2 className="text-2xl font-bold uppercase tracking-wider" style={{ color }}>
+        <h2 className="text-3xl md:text-4xl font-extrabold uppercase tracking-wider" style={{ color }}>
           {title}
         </h2>
-        <p className="text-white text-sm uppercase font-bold">{description}</p>
+        {description ? (
+          <p className="text-white text-sm uppercase font-bold">{description}</p>
+        ) : null}
       </div>
 
       {/* Bottom accent line */}
