@@ -20,61 +20,74 @@ const Dashboard = ({ onNavigate }) => {
         visible: {
             opacity: 1,
             transition: {
-                staggerChildren: 0.08,
-                delayChildren: 0.15
+                staggerChildren: 0.1,
+                delayChildren: 0.2
             }
         }
     };
 
     const itemVariants = {
-        hidden: { y: 16, opacity: 0 },
+        hidden: { y: 24, opacity: 0 },
         visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 260, damping: 20 } }
     };
 
     return (
-        <div className="min-h-screen bg-[#000000]">
+        <div className="min-h-screen bg-[#000000] relative overflow-x-hidden">
+            {/* Atmospheric gradient background */}
+            <div className="fixed inset-0 pointer-events-none">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-[#102620]/30 rounded-full blur-[120px]" />
+                <div className="absolute bottom-0 right-0 w-[500px] h-[400px] bg-[#061A1C]/50 rounded-full blur-[100px]" />
+            </div>
+
             <motion.div
                 initial="hidden"
                 animate="visible"
                 variants={containerVariants}
-                className="flex flex-col gap-8 sm:gap-10 pb-12 px-4 sm:px-6 pt-6 sm:pt-8 max-w-xl mx-auto"
+                className="relative z-10 flex flex-col gap-12 sm:gap-16 pb-16 px-4 sm:px-6 pt-8 sm:pt-12 max-w-2xl mx-auto"
             >
-                <header className="space-y-8">
+                <header className="space-y-10">
                     <motion.div
-                        initial={{ y: -16, opacity: 0 }}
+                        initial={{ y: -24, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
-                        className="space-y-2"
+                        className="space-y-3"
                     >
-                        <h1 className="font-display text-4xl sm:text-5xl font-light tracking-tight text-white leading-[0.96]">
+                        {/* Hero typography - Shopify inspired */}
+                        <h1 className="font-display text-6xl sm:text-7xl lg:text-8xl font-light tracking-tight text-white leading-[0.92]">
                             Cálculo I
                         </h1>
-                        <p className="text-[#A1A1AA] text-base font-normal tracking-wide">
+                        <p className="text-[#A1A1AA] text-lg font-normal tracking-wide pl-1">
                             Hamilton Guidorizzi
                         </p>
                     </motion.div>
 
-                    <div className="flex items-center gap-5">
+                    <motion.div
+                        initial={{ x: 16, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        className="flex items-center gap-6"
+                    >
                         <motion.div
-                            initial={{ scale: 0.9, opacity: 0 }}
+                            initial={{ scale: 0.8, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
+                            transition={{ delay: 0.3 }}
                             className="flex-shrink-0"
                         >
-                            <div className="w-20 h-20 rounded-full bg-[#02090A] border border-[#1E2C31] flex flex-col items-center justify-center shadow-[0_0_0_1px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.1),0_4px_8px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.03)]">
-                                <p className="text-2xl font-light text-white">{level}</p>
+                            <div className="w-24 h-24 rounded-full bg-[#02090A] border border-[#1E2C31] flex flex-col items-center justify-center shadow-[0_0_0_1px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.1),0_4px_8px_rgba(0,0,0,0.1),0_8px_16px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.03)]">
+                                <p className="text-3xl font-light text-white">{level}</p>
                                 <p className="text-[10px] font-medium text-[#A1A1AA] tracking-widest uppercase">Nível</p>
                             </div>
                         </motion.div>
 
                         <motion.div
-                            initial={{ x: 12, opacity: 0 }}
+                            initial={{ x: 20, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
+                            transition={{ delay: 0.35 }}
                             className="flex-1 space-y-3"
                         >
                             <div className="flex items-baseline gap-2">
-                                <p className="text-2xl font-light text-white">{xp}</p>
-                                <p className="text-sm font-normal text-[#A1A1AA]">XP</p>
+                                <p className="text-3xl font-light text-white">{xp}</p>
+                                <p className="text-base font-normal text-[#A1A1AA]">XP</p>
                             </div>
-                            <div className="h-2 bg-[#061A1C] rounded-full overflow-hidden">
+                            <div className="h-2.5 bg-[#061A1C] rounded-full overflow-hidden">
                                 <motion.div
                                     className="h-full bg-[#36F4A4] rounded-full"
                                     initial={{ width: 0 }}
@@ -82,11 +95,11 @@ const Dashboard = ({ onNavigate }) => {
                                     transition={{ duration: 0.8, ease: "easeOut" }}
                                 />
                             </div>
-                            <p className="text-xs text-[#71717A]">
-                                {nextLevelXP - progressToNextLevel} XP para próximo nível
+                            <p className="text-sm text-[#71717A]">
+                                {nextLevelXP - Math.round(nextLevelXP * progressToNextLevel / 100)} XP para próximo nível
                             </p>
                         </motion.div>
-                    </div>
+                    </motion.div>
                 </header>
 
                 <motion.div variants={itemVariants} className="relative z-50">
@@ -170,21 +183,21 @@ const Card = ({ title, description, icon, onClick, variants }) => {
     return (
         <motion.button
             variants={variants}
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.99 }}
+            whileHover={{ scale: 1.02, y: -2 }}
+            whileTap={{ scale: 0.98 }}
             onClick={onClick}
-            className="group relative w-full p-5 text-left transition-all bg-[#02090A] border border-[#1E2C31] rounded-lg overflow-hidden shadow-[0_0_0_1px_rgba(0,0,0,0.1),0_2px_2px_rgba(0,0,0,0.1),0_4px_4px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.03)] hover:shadow-[0_0_0_1px_rgba(0,0,0,0.1),0_4px_4px_rgba(0,0,0,0.1),0_8px_8px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.05)] hover:border-[#36F4A4]/30"
+            className="group relative w-full p-5 text-left transition-all bg-[#02090A] border border-[#1E2C31] rounded-xl overflow-hidden shadow-[0_0_0_1px_rgba(0,0,0,0.1),0_2px_2px_rgba(0,0,0,0.1),0_4px_4px_rgba(0,0,0,0.1),0_8px_8px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.03)] hover:shadow-[0_0_0_1px_rgba(54,244,164,0.1),0_4px_4px_rgba(0,0,0,0.1),0_8px_8px_rgba(0,0,0,0.1),0_16px_16px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.05)] hover:border-[#36F4A4]/40"
         >
-            <div className="flex items-center gap-4">
-                <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-[#102620] rounded-lg text-[#36F4A4]">
+            <div className="flex items-center gap-5">
+                <div className="flex-shrink-0 w-14 h-14 flex items-center justify-center bg-[#102620] rounded-xl text-[#36F4A4]">
                     {icon}
                 </div>
 
                 <div className="flex-1 min-w-0">
-                    <h3 className="font-normal text-lg text-white tracking-tight">
+                    <h3 className="font-normal text-xl text-white tracking-tight">
                         {title}
                     </h3>
-                    <p className="text-sm text-[#71717A] mt-0.5">
+                    <p className="text-base text-[#71717A] mt-1">
                         {description}
                     </p>
                 </div>

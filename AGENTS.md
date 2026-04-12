@@ -1,6 +1,6 @@
 # Guidorizzi Cálculo I — Agent Guidelines
 
-Math learning platform for Cálculo I based on Hamilton Guidorizzi textbook.
+Brazilian Portuguese math learning platform for Cálculo I based on Hamilton Guidorizzi textbook.
 AI-powered chat, interactive graphs (mafs), quizzes, flashcards, and slide presentation mode.
 
 ## Tech Stack
@@ -39,11 +39,12 @@ vitest run --grep "pattern"
 ## Required Setup
 
 1. Copy `.env.example` to `.env` and add keys:
-   - `GROQ_API_KEY` (backend, in server.js) — get from https://console.groq.com
+   - `GROQ_API_KEY` (backend) — get from https://console.groq.com
    - `VITE_GROQ_API_KEY` (frontend build)
    - `VITE_GOOGLE_API_KEY` (frontend build)
 
-2. **Critical**: Backend expects `GROQ_API_KEY` (not `VITE_GROQ_API_KEY`) in server.js line 25. Frontend uses `VITE_GROQ_API_KEY`.
+2. **Critical**: Backend uses `GROQ_API_KEY` (server.js:25), frontend uses `VITE_GROQ_API_KEY`
+3. Default model: `llama-3.3-70b-versatile` (configurable via `GROQ_MODEL`)
 
 ## Code Style
 
