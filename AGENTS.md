@@ -1,7 +1,5 @@
 # Guidorizzi Cálculo I — Agent Guidelines
 
-## Project Overview
-
 Math learning platform for Cálculo I based on Hamilton Guidorizzi textbook.
 AI-powered chat, interactive graphs (mafs), quizzes, flashcards, and slide presentation mode.
 
@@ -13,176 +11,110 @@ AI-powered chat, interactive graphs (mafs), quizzes, flashcards, and slide prese
 - **Styling**: Tailwind CSS v4, Framer Motion
 - **Testing**: Vitest + jsdom
 - **Math**: KaTeX, react-markdown, remark-math, rehype-katex
-- **AI**: Groq SDK, Google GenAI
+- **AI**: Groq SDK (backend), Google GenAI (frontend)
 
----
-
-## Build, Lint, and Test Commands
-
-### Development
+## Developer Commands
 
 ```bash
-npm run dev              # Start Vite dev server
-npm run dev:all         # Dev + Express bridge (concurrently)
-npm run bridge          # Run Express bridge server (node server.js)
-npm run start           # Run production Express server
-npm run preview         # Preview production build
-```
+# Development
+npm run dev              # Vite client (localhost:5173)
+npm run bridge           # Express backend (localhost:3001)
+npm run dev:all          # Both concurrently (use this)
 
-### Build
+# Build & Quality
+npm run build            # Production build
+npm run lint             # ESLint
+npm run lint --fix       # Auto-fix lint issues
 
-```bash
-npm run build           # Vite production build
-```
+# Testing
+npm run test             # Watch mode
+npm run test:run         # Run once
+npm run test:coverage    # Coverage report
 
-### Linting
-
-```bash
-npm run lint            # ESLint on all files
-```
-
-### Testing
-
-```bash
-npm run test            # Run all tests in watch mode
-npm run test:run        # Run all tests once
-npm run test:coverage   # Run tests with coverage report
-
-# Run a single test file
+# Single test file or pattern
 vitest run src/__tests__/mathPreprocessor.test.js
-vitest run src/__tests__/answerValidator.test.js
-
-# Run tests matching a pattern
-vitest run --grep "mathPreprocessor"
+vitest run --grep "pattern"
 ```
 
----
+## Required Setup
 
-## Code Style Guidelines
+1. Copy `.env.example` to `.env` and add keys:
+   - `GROQ_API_KEY` (backend, in server.js) — get from https://console.groq.com
+   - `VITE_GROQ_API_KEY` (frontend build)
+   - `VITE_GOOGLE_API_KEY` (frontend build)
 
-### Formatting
+2. **Critical**: Backend expects `GROQ_API_KEY` (not `VITE_GROQ_API_KEY`) in server.js line 25. Frontend uses `VITE_GROQ_API_KEY`.
 
-- **Prettier**: Not configured — rely on ESLint and manual formatting
+## Code Style
+
+- **Prettier**: Not configured — ESLint only
 - **Indentation**: 2 spaces
 - **Semicolons**: Required
 - **Quotes**: Double quotes (`"`)
-- **Line width**: Soft 100-char limit
-
-### TypeScript
-
-- **Target**: ES2020, ESNext modules
-- Path aliases: None configured (use relative imports)
-- Use explicit types for function parameters and return types
-- Prefer `.ts`/`.tsx` for new files over `.js`/`.jsx`
+- **Path aliases**: None — use relative imports
 
 ### ESLint Rules
 
-- Extends: `js.configs.recommended`, `reactHooks.configs.flat.recommended`, `reactRefresh.configs.vite`
-- `no-unused-vars`: Error (except variables starting with `^[A-Z_]`)
+- `no-unused-vars`: Error, but **exempts** variables starting with `^[A-Z_]` AND `motion`, `AnimatePresence`
 - React hooks rules enabled
 - React refresh allowed
 
 ### File Naming
 
-| Element          | Convention      | Example                     |
-| ---------------- | --------------- | --------------------------- |
-| TypeScript       | PascalCase      | `App.tsx`, `useSmartChat.ts`|
-| JavaScript       | camelCase       | `mathPreprocessor.js`      |
-| React components | PascalCase      | `ChatGuidorizzi.tsx`        |
-| Hooks            | camelCase       | `useSmartChat.ts`          |
-
-### Imports
-
-- **Order**: external → relative (`./`, `../`)
-- Group: React imports, then services, then components, then utils
-- No barrel exports — import from specific modules
-
-### Error Handling
-
-- Use ErrorBoundary for React component trees
-- Custom hooks should use `useErrorHandler` for async errors
-- API errors: return meaningful HTTP status codes + error messages
-- Never silently catch and ignore errors
-
-### React Patterns
-
-- Use functional components with hooks
-- Context for global state (`AppContext`, `ThemeContext`)
-- Custom hooks for reusable logic (`useSmartChat`, `useLocalStorage`)
-- `clsx` + `tailwind-merge` for conditional classes
-
-### Math Content
-
-- KaTeX for inline/display math
-- Wrap math in `$$...$$` for display, `$...$` for inline
-- Use `remark-math` and `rehype-katex` for markdown processing
-- Preprocess user input with `mathPreprocessor.js`
-
-### Security
-
-- **NEVER** commit API keys or secrets (check `.env` files)
-- Validate all API inputs (Groq/GenAI calls)
-- Sanitize user content before rendering
-- Use Helmet middleware for Express
-
----
+| Type | Convention | Example |
+|------|------------|---------|
+| TypeScript | PascalCase | `App.tsx`, `useSmartChat.ts` |
+| JavaScript | camelCase | `mathPreprocessor.js` |
+| React components | PascalCase | `ChatGuidorizzi.tsx` |
 
 ## Architecture
 
-### Source Structure (`src/`)
-
 ```
-├── components/      # React UI components
-│   ├── ChatGuidorizzi.tsx     # Main AI chat
-│   ├── InteractiveGraph.jsx   # Mafs integration
-│   ├── QuizMode.jsx           # Quiz functionality
-│   ├── Flashcards.jsx         # Flashcard system
-│   ├── PresentationMode.jsx   # Slide presentation
-│   └── ...
-├── context/          # React contexts
-│   ├── AppContext.jsx         # Global app state
-│   └── ThemeContext.tsx       # Theme (light/dark)
-├── hooks/            # Custom React hooks
-│   ├── useSmartChat.ts         # AI chat logic
-│   ├── useLocalStorage.ts      # Persistence
-│   └── ...
-├── services/         # Business logic
-│   ├── api.js                # API calls to AI providers
-│   ├── prompts.js            # System prompts
-│   ├── promptTemplates.js    # Template system
-│   ├── answerValidator.js    # Quiz answer validation
-│   └── chatContext.js        # Conversation context
-├── utils/            # Utilities
-│   ├── mathPreprocessor.js   # Math input preprocessing
-│   └── jsonParser.js         # JSON handling
-├── lib/              # Helper libraries
-│   └── notebookConsole.js    # Console output
-└── __tests__/        # Test files
-    ├── mathPreprocessor.test.js
-    ├── answerValidator.test.js
-    └── jsonParser.test.js
+src/
+├── components/      # React UI (ChatGuidorizzi, QuizMode, Flashcards, PresentationMode, InteractiveGraph)
+├── context/         # AppContext.jsx, ThemeContext.tsx
+├── hooks/           # useSmartChat.ts, useLocalStorage.js, useErrorHandler.js
+├── services/         # api.js, prompts.js, promptTemplates.js, answerValidator.js, chatContext.js
+├── utils/           # mathPreprocessor.js, jsonParser.js
+├── data/            # content.json (RAG content)
+└── __tests__/       # Test files
+
+server/
+├── routes/          # query.js, generate.js
+├── services/        # ragService.js
+└── middleware/      # auth.js
 ```
 
 ### API Integration
 
-- **Groq**: Primary LLM provider (fast inference)
-- **Google GenAI**: Backup/specialized tasks
-- All API calls go through `src/services/api.js`
-- Prompts in `src/services/prompts.js` and `src/services/promptTemplates.js`
+- **Frontend → Backend**: `src/services/api.js` calls `/api/query` and `/api/generate/*`
+- **Backend**: Express server (server.js) on port 3001
+- **Groq**: Primary LLM (configured in server.js)
+- **GenAI**: Available in frontend services
 
-### State Management
+## Math Content
 
-- React Context for global state (theme, user preferences)
-- Local component state for UI-only state
-- `useLocalStorage` hook for persistence
+- KaTeX for inline/display math
+- Display: `$$...$$`, inline: `$...$`
+- Preprocess user input with `mathPreprocessor.js` before rendering
 
----
+## Testing
 
-## Review Focus
+- Coverage thresholds (build fails if not met):
+  - Lines: 60%, Functions: 60%, Branches: 50%, Statements: 60%
+- Test pattern: `src/**/*.{test,spec}.{js,jsx,ts,tsx}`
+- Excluded from coverage: `node_modules/`, `src/__tests__/`, `omniroute/**`
 
-- **Math rendering**: KaTeX expressions must render correctly
-- **API errors**: Handle gracefully with user feedback
-- **State consistency**: Context updates should not cause unnecessary re-renders
-- **Testing**: New features should have corresponding test files
-- **Bundle size**: Keep vendor chunks in check (`vendor-react`, `vendor-motion`, `vendor-math`)
-- **PWA**: Service worker registers automatically via `vite-plugin-pwa`
+## Bundle Optimization
+
+Vendor chunks are split automatically:
+- `vendor-react`: react, react-dom
+- `vendor-motion`: framer-motion
+- `vendor-math`: katex, react-markdown, remark-math, rehype-katex
+- `vendor-ai`: groq-sdk, @google/genai
+
+## Common Issues
+
+- **Port 3001 in use**: `lsof -ti:3001 | xargs kill -9`
+- **Missing API keys**: Check `.env` exists AND `GROQ_API_KEY` is set for backend
+- **Build fails on coverage**: Increase coverage or adjust thresholds in `vitest.config.ts`
