@@ -17,6 +17,7 @@ export const createGenerateRouter = (groq, model) => {
 
     // Helper: chama Groq com JSON mode e sanitiza LaTeX
     const callGroqJson = async (systemPrompt, userPrompt) => {
+        let raw = null;
         try {
             const completion = await groq.chat.completions.create({
                 messages: [
@@ -26,7 +27,7 @@ export const createGenerateRouter = (groq, model) => {
                 model,
                 response_format: { type: 'json_object' },
             });
-            const raw = completion.choices[0]?.message?.content;
+            raw = completion.choices[0]?.message?.content;
             
             // Tentar sanitizar e parsear
             const sanitized = sanitizeLatexJson(raw);
@@ -34,9 +35,15 @@ export const createGenerateRouter = (groq, model) => {
         } catch (parseError) {
             console.error('[callGroqJson] Erro ao parsear JSON:', parseError.message);
             // Tentar uma abordagem mais agressiva de reparo
-            const repaired = repairJson(raw);
-            if (repaired) {
-                return JSON.parse(repaired);
+            if (raw) {
+                const repaired = repairJson(raw);
+                if (repaired) {
+                    try {
+                        return JSON.parse(repaired);
+                    } catch (e) {
+                         console.error('[callGroqJson] Reparador também falhou:', e.message);
+                    }
+                }
             }
             throw new Error(`Falha ao processar resposta da IA: ${parseError.message}`);
         }
