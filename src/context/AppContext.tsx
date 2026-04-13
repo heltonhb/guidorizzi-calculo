@@ -20,6 +20,17 @@ export const AppProvider = ({ children }) => {
   const [view, setView] = useState('dashboard');
   const [errors, setErrors] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  
+  // Mock Progress State (Section Level)
+  const [userProgress, setUserProgress] = useState(() => {
+    return {
+      'Limites': 65,
+      'Derivadas': 30,
+      'Continuidade': 100,
+      'Teorema do Confronto': 0
+    };
+  });
   
   // Slides globais (persistem entre navegações)
   const [cachedSlides, setCachedSlides] = useState({});
@@ -91,6 +102,11 @@ export const AppProvider = ({ children }) => {
   const navigateTo = useCallback((newView, topic = '') => {
     if (topic) setCurrentTopic(topic);
     setView(newView);
+    setIsSidebarOpen(false); // Close sidebar on navigation
+  }, []);
+
+  const toggleSidebar = useCallback(() => {
+    setIsSidebarOpen(prev => !prev);
   }, []);
 
   const cacheSlides = useCallback((topic, slides) => {
@@ -139,6 +155,11 @@ export const AppProvider = ({ children }) => {
     globalFavorites,
     updateFavorites,
     isFavorited,
+    // Sidebar State
+    isSidebarOpen,
+    toggleSidebar,
+    // Progress Data
+    userProgress,
     // Gamification
     ...gamification,
     onQuizComplete: gamification.onQuizComplete,

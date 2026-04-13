@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
 import contentData from '../data/content.json';
 import { useAppContext } from '../hooks/useAppContext';
+import { performDeepSearch } from '../utils/searchUtils';
 
 const NeobrutalistCard = ({ title, colorCode, icon, onClick }: { title: string, colorCode: string, icon: React.ReactNode, onClick: () => void }) => (
     <motion.button
@@ -29,10 +30,9 @@ const NeobrutalistCard = ({ title, colorCode, icon, onClick }: { title: string, 
 const Dashboard = ({ onNavigate }: { onNavigate: (view: string, topic?: string) => void }) => {
     const [search, setSearch] = useState('');
     const [isFocused, setIsFocused] = useState(false);
-    const { xp, level, progressToNextLevel, nextLevelXP } = useAppContext();
+    const { xp, level, progressToNextLevel, nextLevelXP, userProgress } = useAppContext();
 
-    const topics = Object.keys(contentData);
-    const filteredTopics = topics.filter(t => t.toLowerCase().includes(search.toLowerCase()));
+    const filteredTopics = performDeepSearch(search, contentData);
 
     const currentTopic = search.trim() !== '' ? search : (filteredTopics[0] || 'Limites');
 
@@ -139,6 +139,38 @@ const Dashboard = ({ onNavigate }: { onNavigate: (view: string, topic?: string) 
                             )}
                         </AnimatePresence>
                     </motion.div>
+
+                    {/* Recent Progress Section */}
+                    {Object.entries(userProgress).length > 0 && (
+                        <motion.div 
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.25 }}
+                            className="bg-black border-[4px] border-black rounded-lg p-5 shadow-[6px_6px_0px_#FFA800] space-y-4 mt-8"
+                        >
+                            <h2 className="text-sm font-black text-[#FFA800] uppercase tracking-[3px] flex items-center gap-2">
+                                <Trophy className="w-4 h-4" />
+                                Seu Progresso
+                            </h2>
+                            <div className="space-y-4">
+                                {Object.entries(userProgress).filter(([_, prog]) => (prog as number) > 0).map(([topic, prog]) => (
+                                    <div key={topic} className="space-y-2">
+                                        <div className="flex justify-between items-end">
+                                            <span className="text-[10px] font-black text-white uppercase tracking-wider">{topic}</span>
+                                            <span className="text-[10px] font-black text-[#CCFF00]">{prog as number}%</span>
+                                        </div>
+                                        <div className="h-3 w-full bg-[#1A1A1A] border-[2px] border-[#333] overflow-hidden">
+                                            <motion.div 
+                                                initial={{ width: 0 }}
+                                                animate={{ width: `${prog}%` }}
+                                                className="h-full bg-[#CCFF00]"
+                                            />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </motion.div>
+                    )}
 
                     {/* Navigation Buttons */}
                     <motion.div 

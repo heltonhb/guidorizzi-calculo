@@ -9,7 +9,9 @@ import { ErrorNotification } from './components/ErrorNotification';
 import { ToastProvider } from './components/Toast';
 import DashboardContainer from './components/DashboardContainer';
 import BottomNav from './components/BottomNav';
+import NavigationSidebar from './components/NavigationSidebar';
 import { installConsoleCommands } from './lib/notebookConsole';
+import { Menu } from 'lucide-react';
 
 // Lazy load heavy components for better performance
 const StudyMaterial = lazy(() => import('./components/StudyMaterial'));
@@ -34,7 +36,7 @@ const LoadingSpinner = () => (
 );
 
 function AppContent(): JSX.Element {
-  const { view, setView, currentTopic, navigateTo } = React.useContext(AppContext);
+  const { view, setView, currentTopic, navigateTo, toggleSidebar, isSidebarOpen } = React.useContext(AppContext);
 
   // Background diferente para dashboard vs outras views
   const isDashboard = view === 'dashboard';
@@ -54,6 +56,7 @@ function AppContent(): JSX.Element {
           : '#050505'
       }}
     >
+      <NavigationSidebar />
       {/* Background apenas quando NÃO é dashboard */}
       {!isDashboard && (
         <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
@@ -86,7 +89,22 @@ function AppContent(): JSX.Element {
         </div>
       )}
 
-      <main className="relative z-10 w-full max-w-lg mx-auto px-4 md:px-6 pt-10 pb-24 min-h-screen" style={{ overflowX: 'clip' }}>
+      <main className="relative z-10 w-full max-w-lg mx-auto px-4 md:px-6 pt-6 pb-24 min-h-screen" style={{ overflowX: 'clip' }}>
+        {/* Top Floating Mini-Header for Navigation */}
+        <div className="flex items-center justify-between mb-8">
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              onClick={toggleSidebar}
+              className="p-3 bg-white border-[3px] border-black shadow-[4px_4px_0px_#000] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#000] transition-all z-50 overflow-visible"
+            >
+              <Menu className="w-6 h-6 text-black" strokeWidth={3} />
+            </motion.button>
+            <div className="px-3 py-1 bg-black border-[2px] border-[#CCFF00] rounded-sm">
+               <span className="text-[10px] font-black text-[#CCFF00] uppercase tracking-[3px]">
+                 GUIDORIZZI v1
+               </span>
+            </div>
+        </div>
         <AnimatePresence mode="wait">
           {view === 'dashboard' && (
             <motion.div
