@@ -165,6 +165,7 @@ Modular knowledge domains that agents can load on-demand. based on task context.
 | `i18n-localization`       | Internationalization      |
 | `performance-profiling`   | Web Vitals, optimization  |
 | `systematic-debugging`    | Troubleshooting           |
+| `master-skill`            | Project Source of Truth   |
 
 ---
 
@@ -185,6 +186,7 @@ Slash command procedures. Invoke with `/command`.
 | `/status`        | Check project status     |
 | `/test`          | Run tests                |
 | `/ui-ux-pro-max` | Design with 50 styles    |
+| `/master-skill`  | Project Mastery Management|
 
 ---
 
@@ -267,9 +269,9 @@ For details, see [scripts/README.md](scripts/README.md)
 | Metric              | Value                         |
 | ------------------- | ----------------------------- |
 | **Total Agents**    | 20                            |
-| **Total Skills**    | 36                            |
-| **Total Workflows** | 11                            |
-| **Total Scripts**   | 2 (master) + 18 (skill-level) |
+| **Total Skills**    | 37                            |
+| **Total Workflows** | 12                            |
+| **Total Scripts**   | 3 (master) + 18 (skill-level) |
 | **Coverage**        | ~90% web/mobile development   |
 
 ---

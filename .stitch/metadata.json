@@ -1,0 +1,14 @@
+{
+  "projectId": "3643494398791256088",
+  "title": "Cálculo Precision Dashboard",
+  "visibility": "PRIVATE",
+  "projectType": "PROJECT_DESIGN",
+  "origin": "STITCH",
+  "deviceType": "MOBILE",
+  "designTheme": {
+    "colorMode": "DARK",
+    "font": "INTER",
+    "roundness": "ROUND_EIGHT"
+  },
+  "screens": {}
+}

@@ -5,7 +5,28 @@ import { cn } from '../lib/utils';
 import contentData from '../data/content.json';
 import { useAppContext } from '../hooks/useAppContext';
 
-const Dashboard = ({ onNavigate }) => {
+const NeobrutalistCard = ({ title, colorCode, icon, onClick }: { title: string, colorCode: string, icon: React.ReactNode, onClick: () => void }) => (
+    <motion.button
+        whileTap={{ scale: 0.96, x: 4, y: 4, boxShadow: '4px 4px 0px #000' }}
+        whileHover={{ x: -2, y: -2, boxShadow: '10px 10px 0px #000' }}
+        onClick={onClick}
+        className={cn(
+            "w-full flex items-center p-5 rounded-lg bg-[#111111] border-[4px] shadow-[8px_8px_0px_#000] transition-all",
+        )}
+        style={{ borderColor: colorCode }}
+    >
+        <div className="flex-shrink-0 mr-4 flex items-center justify-center p-1" style={{ color: colorCode }}>
+            {icon}
+        </div>
+        <div className="flex-1 text-left">
+            <h3 className="text-xl sm:text-2xl font-black tracking-widest uppercase italic" style={{ color: colorCode, textShadow: '2px 2px 0px #000' }}>
+                {title}
+            </h3>
+        </div>
+    </motion.button>
+);
+
+const Dashboard = ({ onNavigate }: { onNavigate: (view: string, topic?: string) => void }) => {
     const [search, setSearch] = useState('');
     const [isFocused, setIsFocused] = useState(false);
     const { xp, level, progressToNextLevel, nextLevelXP } = useAppContext();
@@ -15,194 +36,145 @@ const Dashboard = ({ onNavigate }) => {
 
     const currentTopic = search.trim() !== '' ? search : (filteredTopics[0] || 'Limites');
 
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.1,
-                delayChildren: 0.2
-            }
-        }
-    };
-
-    const itemVariants = {
-        hidden: { y: 24, opacity: 0 },
-        visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 260, damping: 20 } }
-    };
-
     return (
-        <div className="min-h-screen bg-[#000000] relative overflow-x-hidden">
-            {/* Atmospheric gradient background */}
-            <div className="fixed inset-0 pointer-events-none">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-[#102620]/30 rounded-full blur-[120px]" />
-                <div className="absolute bottom-0 right-0 w-[500px] h-[400px] bg-[#061A1C]/50 rounded-full blur-[100px]" />
-            </div>
+        <div className="min-h-[100dvh] bg-[#222222] relative overflow-x-hidden pt-6 font-mono selection:bg-[#CCFF00] selection:text-black flex flex-col items-center">
+            {/* Dark circuit board texture using CSS pattern */}
+            <div className="fixed inset-0 pointer-events-none opacity-[0.15] bg-[linear-gradient(rgba(0,0,0,1)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,1)_1px,transparent_1px)] bg-[size:24px_24px] z-0" />
+            
+            <div className="relative z-10 w-full max-w-[420px] px-6 pb-24 space-y-8">
 
-            <motion.div
-                initial="hidden"
-                animate="visible"
-                variants={containerVariants}
-                className="relative z-10 flex flex-col gap-12 sm:gap-16 pb-16 px-4 sm:px-6 pt-8 sm:pt-12 max-w-2xl mx-auto"
-            >
-                <header className="space-y-10">
-                    <motion.div
-                        initial={{ y: -24, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        className="space-y-3"
-                    >
-                        {/* Hero typography - Shopify inspired */}
-                        <h1 className="font-display text-6xl sm:text-7xl lg:text-8xl font-light tracking-tight text-white leading-[0.92]">
-                            Cálculo I
-                        </h1>
-                        <p className="text-[#A1A1AA] text-lg font-normal tracking-wide pl-1">
-                            Hamilton Guidorizzi
+                {/* Top Header */}
+                <motion.div 
+                    initial={{ y: -30, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    className="bg-[#FFA800] border-[4px] border-black rounded-xl p-3 shadow-[8px_8px_0px_0px_#000] text-center w-full"
+                >
+                    <h1 className="text-[1.75rem] font-black text-black tracking-tighter uppercase leading-tight">
+                        Cálculo Precision
+                    </h1>
+                </motion.div>
+
+                {/* Level and XP Section */}
+                <motion.div 
+                    initial={{ x: -30, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.1 }}
+                    className="flex flex-row items-center gap-6 w-full"
+                >
+                    {/* Level Badge */}
+                    <div className="relative flex-shrink-0 w-[115px] h-[115px] bg-[#2A2A2A] rounded-full border-[6px] border-[#FF4F00] shadow-[6px_6px_0px_0px_#000] flex flex-col items-center justify-center z-10">
+                        {/* Circular progress visual approximation */}
+                        <div className="absolute inset-1 rounded-full border-[6px] border-[#FF9F0A] border-t-transparent opacity-90 rotate-[45deg]" />
+                        <div className="absolute inset-1 rounded-full border-[6px] border-[#CCFF00] border-b-transparent border-r-transparent opacity-80 rotate-[130deg]" />
+
+                        <p className="text-[#FF9F0A] text-[10px] font-black uppercase tracking-widest mt-1">Level</p>
+                        <p className="text-[#FF9F0A] text-5xl font-black leading-none drop-shadow-[2px_2px_0px_#000]">{level}</p>
+                        <p className="text-[#FF9F0A] text-[8px] font-black uppercase text-center leading-tight mt-1 max-w-[80%] mx-auto opacity-90">
+                            Estudante de Cálculo
                         </p>
-                    </motion.div>
+                    </div>
 
+                    {/* XP Progress Data */}
+                    <div className="flex-1 flex flex-col justify-center space-y-1">
+                        <div className="flex items-baseline gap-2">
+                            <span className="text-[2rem] font-black text-[#FFA800] drop-shadow-[2px_2px_0px_#000]">{xp} XP</span>
+                        </div>
+                        <p className="text-[11px] font-bold text-zinc-300 tracking-wide">
+                            {nextLevelXP - Math.round(nextLevelXP * progressToNextLevel / 100)} para próximo nível
+                        </p>
+
+                        <div className="h-6 w-full bg-[#111] rounded border-[3px] border-[#FFA800] shadow-[4px_4px_0px_0px_#000] mt-2 relative overflow-hidden">
+                            <motion.div 
+                                initial={{ width: 0 }}
+                                animate={{ width: `${progressToNextLevel}%` }}
+                                transition={{ duration: 1, ease: "easeOut" }}
+                                className="absolute top-0 left-0 bottom-0 bg-[#CCFF00]"
+                            />
+                            <div className="absolute right-2 top-0 bottom-0 flex items-center z-10 mix-blend-difference">
+                                <span className="text-[11px] font-black text-[#CCFF00] tracking-widest drop-shadow-[1px_1px_0px_#000]">{Math.round(progressToNextLevel)}%</span>
+                            </div>
+                        </div>
+                    </div>
+                </motion.div>
+
+                <div className="w-full relative pt-2">
+                    {/* Search Input */}
                     <motion.div
-                        initial={{ x: 16, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        className="flex items-center gap-6"
+                        initial={{ scale: 0.95, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: 0.2 }}
+                        className="relative z-50"
                     >
-                        <motion.div
-                            initial={{ scale: 0.8, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            transition={{ delay: 0.3 }}
-                            className="flex-shrink-0"
-                        >
-                            <div className="w-24 h-24 rounded-full bg-[#02090A] border border-[#1E2C31] flex flex-col items-center justify-center shadow-[0_0_0_1px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.1),0_4px_8px_rgba(0,0,0,0.1),0_8px_16px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.03)]">
-                                <p className="text-3xl font-light text-white">{level}</p>
-                                <p className="text-[10px] font-medium text-[#A1A1AA] tracking-widest uppercase">Nível</p>
-                            </div>
-                        </motion.div>
-
-                        <motion.div
-                            initial={{ x: 20, opacity: 0 }}
-                            animate={{ x: 0, opacity: 1 }}
-                            transition={{ delay: 0.35 }}
-                            className="flex-1 space-y-3"
-                        >
-                            <div className="flex items-baseline gap-2">
-                                <p className="text-3xl font-light text-white">{xp}</p>
-                                <p className="text-base font-normal text-[#A1A1AA]">XP</p>
-                            </div>
-                            <div className="h-2.5 bg-[#061A1C] rounded-full overflow-hidden">
-                                <motion.div
-                                    className="h-full bg-[#36F4A4] rounded-full"
-                                    initial={{ width: 0 }}
-                                    animate={{ width: `${progressToNextLevel}%` }}
-                                    transition={{ duration: 0.8, ease: "easeOut" }}
-                                />
-                            </div>
-                            <p className="text-sm text-[#71717A]">
-                                {nextLevelXP - Math.round(nextLevelXP * progressToNextLevel / 100)} XP para próximo nível
-                            </p>
-                        </motion.div>
-                    </motion.div>
-                </header>
-
-                <motion.div variants={itemVariants} className="relative z-50">
-                    <div className={cn(
-                        "relative flex items-center bg-[#061A1C] border border-[#3F3F46] rounded-lg transition-all duration-200",
-                        isFocused && "border-[#36F4A4] ring-2 ring-[#36F4A4]/20"
-                    )}>
-                        <Search className={cn(
-                            "ml-4 w-5 h-5 transition-colors duration-200",
-                            isFocused ? "text-[#36F4A4]" : "text-[#71717A]"
-                        )} />
+                        <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none z-20">
+                            <Search className="h-6 w-6 text-black" strokeWidth={3} />
+                        </div>
                         <input
                             type="text"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             onFocus={() => setIsFocused(true)}
                             onBlur={() => setTimeout(() => setIsFocused(false), 200)}
-                            placeholder="O que vamos estudar?"
-                            className="w-full min-w-0 bg-transparent px-4 py-4 focus:outline-none placeholder:text-[#71717A] text-white font-normal text-base"
+                            placeholder="O QUE VAMOS ESTUDAR HOJE?"
+                            className="w-full h-[3.5rem] pl-[52px] pr-4 bg-[#A8A8A8] border-[4px] border-black font-black text-black rounded-lg shadow-[6px_6px_0px_0px_#000] placeholder:text-zinc-800 transition-all uppercase outline-none focus:translate-x-[2px] focus:translate-y-[2px] focus:shadow-[4px_4px_0px_0px_#000]"
                         />
-                    </div>
 
-                    <AnimatePresence>
-                        {isFocused && search && filteredTopics.length > 0 && (
-                            <motion.div
-                                initial={{ opacity: 0, y: -8 }}
-                                animate={{ opacity: 1, y: 4 }}
-                                exit={{ opacity: 0, y: -8 }}
-                                className="absolute top-full mt-2 left-0 right-0 bg-[#02090A] border border-[#1E2C31] rounded-lg shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] z-50 overflow-hidden"
-                            >
-                                {filteredTopics.slice(0, 5).map(t => (
-                                    <button
-                                        key={t}
-                                        onClick={() => { setSearch(t); setIsFocused(false); }}
-                                        className="flex items-center gap-3 w-full text-left px-4 py-3 hover:bg-[#102620] text-sm font-normal text-white transition-colors border-b border-[#1E2C31]/50 last:border-0"
-                                    >
-                                        {t}
-                                    </button>
-                                ))}
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </motion.div>
+                        <AnimatePresence>
+                            {isFocused && search && filteredTopics.length > 0 && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -4 }}
+                                    animate={{ opacity: 1, y: 8 }}
+                                    exit={{ opacity: 0, y: -4 }}
+                                    className="absolute top-full left-0 right-0 bg-[#E0E0E0] border-[4px] border-black rounded-lg shadow-[6px_6px_0px_#000] z-[100] overflow-hidden"
+                                >
+                                    {filteredTopics.slice(0, 5).map(t => (
+                                        <button
+                                            key={t}
+                                            onClick={() => { setSearch(t); setIsFocused(false); }}
+                                            className="block w-full text-left px-5 py-3 hover:bg-black hover:text-[#CCFF00] text-black text-sm font-black uppercase transition-colors border-b-[3px] border-black border-dashed last:border-0"
+                                        >
+                                            {t}
+                                        </button>
+                                    ))}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </motion.div>
 
-                <div className="space-y-3">
-                    <Card
-                        variants={itemVariants}
-                        title="Flashcards"
-                        description="Revise conceitos fundamentais"
-                        icon={<BookCheck className="w-6 h-6" />}
-                        onClick={() => onNavigate('flashcards', currentTopic)}
-                    />
-                    <Card
-                        variants={itemVariants}
-                        title="Apresentação"
-                        description="Slides em alta definição"
-                        icon={<Presentation className="w-6 h-6" />}
-                        onClick={() => onNavigate('presentation', currentTopic)}
-                    />
-                    <Card
-                        variants={itemVariants}
-                        title="Chat AI"
-                        description="Tire suas dúvidas"
-                        icon={<MessageSquare className="w-6 h-6" />}
-                        onClick={() => onNavigate('chat')}
-                    />
-                    <Card
-                        variants={itemVariants}
-                        title="Quiz"
-                        description="Teste seus conhecimentos"
-                        icon={<Trophy className="w-6 h-6" />}
-                        onClick={() => onNavigate('quiz', currentTopic)}
-                    />
-                </div>
-            </motion.div>
-        </div>
-    );
-};
-
-const Card = ({ title, description, icon, onClick, variants }) => {
-    return (
-        <motion.button
-            variants={variants}
-            whileHover={{ scale: 1.02, y: -2 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={onClick}
-            className="group relative w-full p-5 text-left transition-all bg-[#02090A] border border-[#1E2C31] rounded-xl overflow-hidden shadow-[0_0_0_1px_rgba(0,0,0,0.1),0_2px_2px_rgba(0,0,0,0.1),0_4px_4px_rgba(0,0,0,0.1),0_8px_8px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.03)] hover:shadow-[0_0_0_1px_rgba(54,244,164,0.1),0_4px_4px_rgba(0,0,0,0.1),0_8px_8px_rgba(0,0,0,0.1),0_16px_16px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.05)] hover:border-[#36F4A4]/40"
-        >
-            <div className="flex items-center gap-5">
-                <div className="flex-shrink-0 w-14 h-14 flex items-center justify-center bg-[#102620] rounded-xl text-[#36F4A4]">
-                    {icon}
-                </div>
-
-                <div className="flex-1 min-w-0">
-                    <h3 className="font-normal text-xl text-white tracking-tight">
-                        {title}
-                    </h3>
-                    <p className="text-base text-[#71717A] mt-1">
-                        {description}
-                    </p>
+                    {/* Navigation Buttons */}
+                    <motion.div 
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.3 }}
+                        className="flex flex-col gap-5 mt-8 relative z-0"
+                    >
+                        <NeobrutalistCard
+                            title="FLASHCARDS"
+                            colorCode="#CCFF00"
+                            icon={<BookCheck className="w-8 h-8" strokeWidth={2.5} />}
+                            onClick={() => onNavigate('flashcards', currentTopic)}
+                        />
+                        <NeobrutalistCard
+                            title="MODO AULA"
+                            colorCode="#00FFFF"
+                            icon={<Presentation className="w-8 h-8" strokeWidth={2.5} />}
+                            onClick={() => onNavigate('presentation', currentTopic)}
+                        />
+                        <NeobrutalistCard
+                            title="CHAT IA"
+                            colorCode="#2962FF"
+                            icon={<MessageSquare className="w-8 h-8" strokeWidth={2.5} />}
+                            onClick={() => onNavigate('chat')}
+                        />
+                        <NeobrutalistCard
+                            title="DESAFIO DO GUIDORIZZI"
+                            colorCode="#FF6D00"
+                            icon={<Trophy className="w-8 h-8" strokeWidth={2.5} />}
+                            onClick={() => onNavigate('quiz', currentTopic)}
+                        />
+                    </motion.div>
                 </div>
             </div>
-        </motion.button>
+        </div>
     );
 };
 
